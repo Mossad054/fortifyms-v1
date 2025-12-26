@@ -18,6 +18,13 @@ export interface ChecklistItem {
     hint?: string; // "What to look for" or "Inspector Note"
     type: ResponseType;
     options?: string[]; // For Dropdown or MultipleChoice
+    numericConfig?: {
+        target: number;
+        tolerancePercent?: number; // e.g. 10% -> +/- 10% of target is COMPLIANT
+        min?: number; // Absolute min (below = Critical Fail)
+        max?: number; // Absolute max (above = Critical Fail)
+        unit: string;
+    };
     unit?: string; // For Numeric
     criticality: Criticality;
     weight?: number; // Points assigned if compliant
@@ -52,10 +59,41 @@ export interface AuditResponse {
     notes?: string;
     evidenceUrls?: string[];
     isNonCompliant?: boolean;
+    flagLevel?: 'Red' | 'Yellow' | 'None'; // Auto-calculated based on logic
+    score?: number; // Points earned
+    maxScore?: number; // Points possible
+}
+
+export interface AuditFlag {
+    id: string;
+    auditId: string;
+    itemId: string;
+    severity: 'Red' | 'Yellow';
+    message: string;
+    generatedAt: string;
+}
+
+export interface AuditFlag {
+    id: string;
+    auditId: string;
+    itemId: string;
+    severity: 'Red' | 'Yellow';
+    message: string;
+    generatedAt: string;
+}
+
+export interface AuditSchedule {
+    id: string;
+    millId: string;
+    templateId: string;
+    scheduledDate: string; // ISO Date
+    assignedInspectorId: string;
+    status: 'Pending' | 'Overdue' | 'Completed';
 }
 
 export interface AuditSession {
     id: string;
+    scheduleId?: string; // Link to schedule
     templateId: string;
     millId: string;
     inspectorId?: string; // Null for self-audit

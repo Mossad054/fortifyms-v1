@@ -11,8 +11,8 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle2, XCircle, AlertTriangle, Camera, FileText, MapPin, Scale } from 'lucide-react'
 import { toast } from 'sonner'
-import { ChecklistTemplate, ChecklistItem, AuditResponse } from '@/lib/types/compliance-audit'
-import { MOCK_TEMPLATES } from '@/lib/mock-data/compliance'
+import { ChecklistTemplate, ChecklistItem, AuditResponse, AuditSchedule } from '@/lib/types/compliance-audit'
+import { MOCK_TEMPLATES, MOCK_SCHEDULES, MOCK_MILLS } from '@/lib/mock-data/compliance'
 
 interface InspectionWizardProps {
     open: boolean
@@ -29,52 +29,102 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
     const activeTemplate = MOCK_TEMPLATES[0]
 
     const handleAnswer = (itemId: string, value: any) => {
-        // Determine non-compliance based on value
+        // Find the item config
+        let item: ChecklistItem | undefined
+        activeTemplate.sections.forEach(s => {
+            const found = s.items.find(i => i.id === itemId)
+            if (found) item = found
+        })
+        if (!item) return
+
         let isNonCompliant = false
-        if (value === 'No') isNonCompliant = true
-        if (typeof value === 'string' && (value.includes('Negative') || value.includes('Poor'))) isNonCompliant = true
+        let flagLevel: 'Red' | 'Yellow' | 'None' = 'None'
+        let score = 0
+        const maxScore = item.weight || 0
+
+        // 1. Numeric Scoring (Sliding Scale)
+        if (item.type === 'Numeric' && item.numericConfig && typeof value === 'number') {
+            const { target, tolerancePercent = 0, min = -Infinity, max = Infinity } = item.numericConfig
+            const tolerance = target * (tolerancePercent / 100)
+
+            if (value >= (target - tolerance) && value <= (target + tolerance)) {
+                // In Spec
+                score = maxScore
+            } else if (value >= min && value <= max) {
+                // Marginal (Out of spec but within limits)
+                score = maxScore * 0.5 // 50% points
+                flagLevel = 'Yellow'
+                isNonCompliant = true // Technically non-compliant but not critical failure? Prompt says "Marginal results automatically generate yellow flags"
+            } else {
+                // Critical Failure (Out of bounds)
+                score = 0
+                flagLevel = 'Red'
+                isNonCompliant = true
+            }
+        }
+        // 2. Binary / Choice Scoring
+        else {
+            if (value === 'No' || (typeof value === 'string' && (value.includes('Negative') || value.includes('Poor')))) {
+                score = 0
+                isNonCompliant = true
+                if (item.criticality === 'Critical') flagLevel = 'Red'
+                else if (item.criticality === 'Major') flagLevel = 'Yellow'
+            } else {
+                score = maxScore
+            }
+        }
 
         setResponses(prev => ({
             ...prev,
-            [itemId]: { ...prev[itemId], itemId, value, isNonCompliant }
+            [itemId]: { ...prev[itemId], itemId, value, isNonCompliant, score, maxScore, flagLevel }
         }))
     }
 
     const calculateResult = () => {
-        // 1. Critical Failures Check
-        const criticalFail = Object.values(responses).some(r => {
-            let isCritical = false;
-            activeTemplate.sections.forEach(s => s.items.forEach(i => {
-                if (i.id === r.itemId && i.criticality === 'Critical') isCritical = true
-            }))
-            return isCritical && r.isNonCompliant
-        })
-
-        if (criticalFail) return 'Non-Compliant (Critical Failure)'
-
-        // 2. Weighted Scoring
         let totalScore = 0
-        let maxPossible = 0
+        let totalMax = 0
+        let criticalFailure = false
+        let sectionFailures: string[] = []
 
-        activeTemplate.sections.forEach(s => {
-            s.items.forEach(i => {
-                const weight = i.weight || 1
-                maxPossible += weight
+        activeTemplate.sections.forEach(section => {
+            let sectionScore = 0
+            let sectionMax = 0
 
-                const response = responses[i.id]
-                // If responded and NOT non-compliant, add points
-                // (Assuming un-answered items are 0 points)
-                if (response && !response.isNonCompliant) {
-                    totalScore += weight
+            section.items.forEach(item => {
+                const response = responses[item.id]
+                const itemMax = item.weight || 0
+                sectionMax += itemMax
+
+                if (response) {
+                    sectionScore += (response.score || 0)
+                    // Critical Item Check
+                    if (item.criticality === 'Critical' && response.isNonCompliant && response.flagLevel === 'Red') {
+                        criticalFailure = true
+                    }
                 }
             })
+
+            totalScore += sectionScore
+            totalMax += sectionMax
+
+            // Section Threshold Check
+            if (section.minimumPassThreshold) {
+                const percentage = sectionMax > 0 ? (sectionScore / sectionMax) * 100 : 0
+                if (percentage < section.minimumPassThreshold) {
+                    sectionFailures.push(section.title)
+                }
+            }
         })
 
-        const percent = maxPossible > 0 ? (totalScore / maxPossible) * 100 : 0
+        if (criticalFailure) return 'Non-Compliant (Critical Failure)'
+        if (sectionFailures.length > 0) return `Non-Compliant (${sectionFailures.length} Section Failures)`
 
-        if (percent >= 90) return 'Certified'
-        if (percent >= 70) return 'Conditional Approval'
-        return 'Non-Compliant'
+        const overallPercent = totalMax > 0 ? (totalScore / totalMax) * 100 : 0
+
+        if (overallPercent >= 90) return `Excellent (${overallPercent.toFixed(1)}%)`
+        if (overallPercent >= 75) return `Good (${overallPercent.toFixed(1)}%)`
+        if (overallPercent >= 60) return `Needs Improvement (${overallPercent.toFixed(1)}%)`
+        return `Non-Compliant (${overallPercent.toFixed(1)}%)`
     }
 
     const handleSubmit = () => {
@@ -108,46 +158,88 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                 </DialogHeader>
 
                 <div className="flex-1 flex overflow-hidden">
-                    {/* Setup Step */}
+                    {/* Step 1: Schedule Selection */}
                     {step === 'setup' && (
-                        <div className="p-8 w-full max-w-md mx-auto space-y-6 self-center">
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label>Target Facility</Label>
-                                    <Select onValueChange={v => setAuditMeta({ ...auditMeta, millId: v })}>
-                                        <SelectTrigger><SelectValue placeholder="Select Mill" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="M-001">Unga Limited (Nairobi)</SelectItem>
-                                            <SelectItem value="M-002">Mombasa Maize Millers</SelectItem>
-                                            <SelectItem value="M-003">Pembe Flour Mills</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                        <div className="p-8 w-full max-w-3xl mx-auto space-y-6 self-center animate-in fade-in zoom-in-50">
+                            <div className="text-center mb-8">
+                                <h2 className="text-2xl font-bold">Assigned Inspection Schedules</h2>
+                                <p className="text-zinc-500">Select a scheduled audit to initiate.</p>
+                            </div>
+
+                            <div className="grid gap-4">
+                                {MOCK_SCHEDULES.map(schedule => {
+                                    const mill = MOCK_MILLS[schedule.millId]
+                                    const template = MOCK_TEMPLATES.find(t => t.id === schedule.templateId)
+                                    return (
+                                        <div
+                                            key={schedule.id}
+                                            onClick={() => {
+                                                setAuditMeta({ millId: schedule.millId, commodity: template?.commodity || 'Maize', type: 'Official' })
+                                                setStep('verify')
+                                            }}
+                                            className="bg-zinc-50 border p-4 rounded-xl flex items-center justify-between cursor-pointer hover:border-zinc-900 transition-colors group"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`p-3 rounded-full ${schedule.status === 'Overdue' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                                                    <Scale className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-lg group-hover:text-zinc-900">{mill?.name || schedule.millId}</h4>
+                                                    <p className="text-sm text-zinc-500">{template?.title}</p>
+                                                    <div className="flex gap-2 mt-2 text-xs font-medium text-zinc-400">
+                                                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {mill?.region}</span>
+                                                        <span>•</span>
+                                                        <span>{schedule.scheduledDate}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col items-end gap-2">
+                                                <Badge variant={schedule.status === 'Overdue' ? 'destructive' : 'secondary'}>
+                                                    {schedule.status === 'Pending' ? 'Scheduled' : schedule.status}
+                                                </Badge>
+                                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    Select <CheckCircle2 className="w-4 h-4 ml-1" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Step 2: Verification */}
+                    {step === 'verify' && (
+                        <div className="p-8 w-full max-w-lg mx-auto space-y-6 self-center animate-in slide-in-from-right-10">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <FileText className="w-8 h-8 text-zinc-600" />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Commodity Line</Label>
-                                    <Select value={auditMeta.commodity} onValueChange={v => setAuditMeta({ ...auditMeta, commodity: v })}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Maize Flour">Maize Flour</SelectItem>
-                                            <SelectItem value="Rice">Rice</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                <h2 className="text-2xl font-bold">Verify Protocol</h2>
+                                <p className="text-zinc-500">Confirm audit parameters before loading.</p>
+                            </div>
+
+                            <div className="space-y-4 border rounded-xl p-4 bg-zinc-50">
+                                <div className="flex justify-between py-2 border-b">
+                                    <span className="text-sm text-zinc-500">Target Facility</span>
+                                    <span className="font-medium text-right">{MOCK_MILLS[auditMeta.millId]?.name || auditMeta.millId}</span>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Inspection Type</Label>
-                                    <Select value={auditMeta.type} onValueChange={v => setAuditMeta({ ...auditMeta, type: v })}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Routine">Routine Annual</SelectItem>
-                                            <SelectItem value="Spot Check">Spot Check</SelectItem>
-                                            <SelectItem value="Re-Audit">Re-Audit (CAPA Follow-up)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                <div className="flex justify-between py-2 border-b">
+                                    <span className="text-sm text-zinc-500">Protocol Standard</span>
+                                    <span className="font-medium text-right">{activeTemplate.version}</span>
+                                </div>
+                                <div className="flex justify-between py-2">
+                                    <span className="text-sm text-zinc-500">Total Checkpoints</span>
+                                    <span className="font-medium text-right">{activeTemplate.sections.reduce((acc, s) => acc + s.items.length, 0)} Items</span>
                                 </div>
                             </div>
-                            <Button className="w-full bg-zinc-900" onClick={() => setStep('audit')} disabled={!auditMeta.millId}>
-                                Initialize Protocol
-                            </Button>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button variant="outline" onClick={() => setStep('setup')}>Back</Button>
+                                <Button className="bg-zinc-900" onClick={() => setStep('audit')}>
+                                    Load Digital Checklist
+                                </Button>
+                            </div>
                         </div>
                     )}
 
@@ -328,7 +420,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                             <div className="flex gap-4 justify-center">
                                 <Button variant="outline" onClick={() => setStep('audit')}>Review Findings</Button>
                                 <Button className="bg-zinc-900 px-8" onClick={handleSubmit}>
-                                    Submit Official Record
+                                    Save Audit Findings
                                 </Button>
                             </div>
                         </div>

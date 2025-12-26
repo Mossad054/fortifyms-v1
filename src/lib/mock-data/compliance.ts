@@ -16,6 +16,7 @@ export const MOCK_TEMPLATES: ChecklistTemplate[] = [
                 id: 'S1',
                 title: '1. Premix Storage & Handling',
                 description: 'Verification of premix quality protection and inventory control.',
+                minimumPassThreshold: 80, // Section threshold
                 items: [
                     {
                         id: '1.1',
@@ -61,6 +62,7 @@ export const MOCK_TEMPLATES: ChecklistTemplate[] = [
                 id: 'S2',
                 title: '2. Dosing Equipment',
                 description: 'Assessment of micro-doser condition and calibration.',
+                minimumPassThreshold: 70,
                 items: [
                     {
                         id: '2.1',
@@ -99,7 +101,14 @@ export const MOCK_TEMPLATES: ChecklistTemplate[] = [
                         unit: 'g/min',
                         criticality: 'Critical',
                         weight: 10,
-                        hint: 'Collect premix for 60 seconds and weigh it.'
+                        hint: 'Collect premix for 60 seconds and weigh it.',
+                        numericConfig: {
+                            target: 150,
+                            tolerancePercent: 10, // 135-165 is good.
+                            min: 100, // < 100 is Critical Failure
+                            max: 200, // > 200 is Critical Failure
+                            unit: 'g/min'
+                        }
                     }
                 ]
             },
@@ -134,6 +143,7 @@ export const MOCK_TEMPLATES: ChecklistTemplate[] = [
                 id: 'S4',
                 title: '4. Quality Control (QC)',
                 description: 'Verification of internal testing and rapid assays.',
+                minimumPassThreshold: 75,
                 items: [
                     {
                         id: '4.1',
@@ -318,3 +328,32 @@ export const MOCK_AUDIT_LOGS: AuditSession[] = [
         responses: {}
     }
 ]
+
+export const MOCK_SCHEDULES: AuditSchedule[] = [
+    {
+        id: 'SCH-2024-001',
+        millId: 'M-001',
+        templateId: 'T-MAIZE-EXT',
+        scheduledDate: '2025-01-10',
+        assignedInspectorId: 'INS-005',
+        status: 'Pending'
+    },
+    {
+        id: 'SCH-2024-002',
+        millId: 'M-002',
+        templateId: 'T-MAIZE-EXT',
+        scheduledDate: '2025-01-12',
+        assignedInspectorId: 'INS-005',
+        status: 'Pending'
+    },
+    {
+        id: 'SCH-2024-003',
+        millId: 'M-003',
+        templateId: 'T-MAIZE-EXT',
+        scheduledDate: '2024-12-28',
+        assignedInspectorId: 'INS-005',
+        status: 'Overdue'
+    }
+]
+
+
