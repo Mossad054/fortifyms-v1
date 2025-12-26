@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base Colors - Warm & Premium */
+    --background: 40 14% 93%;
+    /* #F0EFEA */
+    --foreground: 220 13% 10%;
+    /* #1a1b1e - Very dark grey/black */
+
+    /* Card & Surfaces - Glassmorphism ready */
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 10%;
+
+    /* Brand Colors - Nature/Food Inspired */
+    --primary: 142 76% 36%;
+    /* #16a34a - Fresh Green */
+    --primary-foreground: 355.7 100% 97.3%;
+
+    --secondary: 40 14% 88%;
+    /* Slightly darker than bg */
+    --secondary-foreground: 220 13% 10%;
+
+    --muted: 40 14% 85%;
+    --muted-foreground: 220 8% 46%;
+
+    --accent: 142 76% 96%;
+    /* Very light green hint */
+    --accent-foreground: 142 76% 36%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 142 76% 36%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark Mode - Deep Warm Grey */
+    --background: 220 13% 10%;
+    --foreground: 40 14% 93%;
+
+    --card: 220 13% 14%;
+    --card-foreground: 40 14% 93%;
+
+    --popover: 220 13% 14%;
+    --popover-foreground: 40 14% 93%;
+
+    --primary: 142 70% 50%;
+    --primary-foreground: 220 13% 10%;
+
+    --secondary: 220 13% 18%;
+    --secondary-foreground: 40 14% 93%;
+
+    --muted: 220 13% 18%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 220 13% 18%;
+    --accent-foreground: 40 14% 93%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 40 14% 93%;
+
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    --ring: 142 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-color: #F0EFEA;
+    /* Strict enforcement */
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+
+  /* Glassmorphism Logic */
+  .glass-panel {
+    @apply bg-white/60 backdrop-blur-lg border border-white/40 shadow-sm transition-all duration-300;
+  }
+
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300;
+  }
+
+  /* Food-Related Animations */
+  .animate-grain-float {
+    animation: grain-float 6s ease-in-out infinite;
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+}
+
+@keyframes grain-float {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+/* Scrollbar Polish */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}

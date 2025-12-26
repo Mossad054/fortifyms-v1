@@ -9,17 +9,17 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 // User Roles and Authentication
 model User {
   id                String   @id @default(cuid())
-  email             String   @unique
+  email             String?  @unique
   name              String?
-  password          String?
-  role              UserRole @default(MILL_OPERATOR)
+  image             String?
+  role              String   @default("MILL_OPERATOR")
   isActive          Boolean  @default(true)
   emailVerified     DateTime?
   millId            String?
@@ -70,15 +70,7 @@ model UserProfile {
   @@map("user_profiles")
 }
 
-enum UserRole {
-  MILL_OPERATOR
-  MILL_MANAGER
-  FWGA_INSPECTOR
-  FWGA_PROGRAM_MANAGER
-  INSTITUTIONAL_BUYER
-  LOGISTICS_PLANNER
-  SYSTEM_ADMIN
-}
+
 
 // Mill Management
 model Mill {
@@ -1232,9 +1224,9 @@ model ProcurementBid {
 // Alerts, Notifications & Escalation Engine
 model Alert {
   id                String   @id @default(cuid())
-  type              AlertType
-  category          AlertCategory
-  severity          AlertSeverity
+  type              String
+  category          String
+  severity          String
   title             String
   message           String
   summary           String?
@@ -1244,7 +1236,7 @@ model Alert {
   sourceType        String   // QC_TEST, BATCH_LOG, COMPLIANCE_AUDIT, MAINTENANCE, etc.
   sourceId          String?  // ID of the source record
   millId            String?
-  status            AlertStatus @default(ACTIVE)
+  status            String   @default("ACTIVE")
   isAcknowledged    Boolean  @default(false)
   acknowledgedAt    DateTime?
   acknowledgedBy    String?
@@ -1273,8 +1265,8 @@ model AlertNotification {
   id                String   @id @default(cuid())
   alertId           String
   userId            String
-  channel           NotificationChannel
-  status            NotificationStatus @default(PENDING)
+  channel           String
+  status            String   @default("PENDING")
   sentAt            DateTime?
   deliveredAt       DateTime?
   readAt            DateTime?
@@ -1301,9 +1293,8 @@ model AlertEscalation {
   fromUserId        String?
   toUserId          String
   level             Int      // 1, 2, 3, 4... representing escalation level
-  reason            EscalationReason
-  triggerCondition  String   // JSON string of escalation trigger
-  status            EscalationStatus @default(PENDING)
+  reason            String
+  status            String   @default("PENDING")
   escalatedAt       DateTime @default(now())
   acknowledgedAt    DateTime?
   resolvedAt        DateTime?
@@ -1322,9 +1313,8 @@ model AlertAction {
   id                String   @id @default(cuid())
   alertId           String
   userId            String
-  actionType        ActionType
-  description       String
-  status            ActionStatus @default(PENDING)
+  actionType        String
+  status            String   @default("PENDING")
   dueDate           DateTime?
   completedAt       DateTime?
   notes             String?
@@ -1342,9 +1332,9 @@ model AlertAction {
 
 model AlertTemplate {
   id                String   @id @default(cuid())
-  type              AlertType
-  category          AlertCategory
-  severity          AlertSeverity
+  type              String
+  category          String
+  severity          String
   title             String
   message           String
   summary           String?
@@ -1387,9 +1377,9 @@ model NotificationDeliveryLog {
   id                String   @id @default(cuid())
   alertId           String?
   notificationId    String?
-  channel           NotificationChannel
+  channel           String
   recipient         String   // Email address or phone number
-  status            DeliveryStatus
+  status            String
   sentAt            DateTime
   deliveredAt       DateTime?
   responseAt        DateTime?
@@ -1399,106 +1389,7 @@ model NotificationDeliveryLog {
   @@map("notification_delivery_logs")
 }
 
-// Enums for Alert System
-enum AlertType {
-  QC_FAILURE
-  CONTAMINATION_RISK
-  PREMIX_EXPIRY
-  CRITICAL_NON_COMPLIANCE
-  COMPLIANCE_SCORE_DROP
-  CERTIFICATION_EXPIRY
-  CALIBRATION_DUE
-  CALIBRATION_OVERDUE
-  EQUIPMENT_DRIFT
-  PREMIX_USAGE_ANOMALY
-  LOW_PREMIX_INVENTORY
-  PRODUCTION_TARGET_MISS
-  NEW_RFP_MATCH
-  BID_DEADLINE_APPROACHING
-  DELIVERY_DELAY
-  DELIVERY_ISSUE
-  TRAINING_OVERDUE
-  NEW_TRAINING_AVAILABLE
-}
 
-enum AlertCategory {
-  QUALITY_SAFETY
-  COMPLIANCE
-  MAINTENANCE
-  PRODUCTION
-  PROCUREMENT_DELIVERY
-  TRAINING_COMPLIANCE
-}
-
-enum AlertSeverity {
-  CRITICAL
-  HIGH
-  MEDIUM
-  LOW
-}
-
-enum AlertStatus {
-  ACTIVE
-  ACKNOWLEDGED
-  RESOLVED
-  ESCALATED
-  CLOSED
-}
-
-enum NotificationChannel {
-  PUSH
-  SMS
-  EMAIL
-  IN_SYSTEM
-}
-
-enum NotificationStatus {
-  PENDING
-  SENT
-  DELIVERED
-  READ
-  FAILED
-}
-
-enum EscalationReason {
-  NO_ACKNOWLEDGMENT
-  NO_ACTION_TAKEN
-  REPEAT_ISSUE
-  MANUAL_ESCALATION
-}
-
-enum EscalationStatus {
-  PENDING
-  ACKNOWLEDGED
-  RESOLVED
-  BYPASSED
-}
-
-enum ActionType {
-  INVESTIGATE
-  CORRECTIVE_ACTION
-  SCHEDULE_MAINTENANCE
-  QUARANTINE_BATCH
-  CONTACT_SUPPORT
-  DOCUMENT_FINDINGS
-  REVIEW_PROCESS
-  UPDATE_PROCEDURES
-}
-
-enum ActionStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum DeliveryStatus {
-  PENDING
-  SENT
-  DELIVERED
-  FAILED
-  BOUNCED
-}
 
 // Action Items Management
 model ActionItem {
@@ -1510,8 +1401,8 @@ model ActionItem {
   assignedToId      String
   assignedToName    String
   assignedToEmail   String
-  priority          ActionItemPriority @default(MEDIUM)
-  status            ActionItemStatus @default(PENDING)
+  priority          String   @default("MEDIUM")
+  status            String @default("PENDING")
   dueDate           DateTime
   estimatedHours    Int?
   actualHours       Int?
@@ -1584,7 +1475,7 @@ model ActionItemTemplate {
   title             String
   description       String
   requiredAction    String
-  priority          ActionItemPriority @default(MEDIUM)
+  priority          String   @default("MEDIUM")
   estimatedHours    Int?
   defaultDueHours   Int
   tags              String?  // JSON array of tags
@@ -1596,20 +1487,7 @@ model ActionItemTemplate {
   @@map("action_item_templates")
 }
 
-enum ActionItemPriority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
 
-enum ActionItemStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  OVERDUE
-  CANCELLED
-}
 
 model AuditLog {
   id                String   @id @default(cuid())
