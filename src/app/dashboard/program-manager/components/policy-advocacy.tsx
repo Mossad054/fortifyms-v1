@@ -27,7 +27,8 @@ import {
 import {
     FileText, Globe, TrendingUp, CheckCircle2, AlertCircle,
     Clock, Users, Target, Megaphone, Download, Plus,
-    BarChart3, Flag, Award, MessageSquare, Send, DollarSign
+    BarChart3, Flag, Award, MessageSquare, Send, DollarSign,
+    Building2
 } from 'lucide-react'
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 

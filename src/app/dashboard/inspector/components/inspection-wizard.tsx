@@ -12,7 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle2, XCircle, AlertTriangle, Camera, FileText, MapPin, Scale } from 'lucide-react'
 import { toast } from 'sonner'
 import { ChecklistTemplate, ChecklistItem, AuditResponse, AuditSchedule } from '@/lib/types/compliance-audit'
+import { Evidence } from '@/lib/types/evidence'
 import { MOCK_TEMPLATES, MOCK_SCHEDULES, MOCK_MILLS } from '@/lib/mock-data/compliance'
+import { EvidenceUpload } from './evidence-upload'
+import { calculateAuditResult } from '@/lib/utils/audit-calculator'
 
 interface InspectionWizardProps {
     open: boolean
@@ -37,26 +40,42 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
         })
         if (!item) return
 
+        if (value === 'N/A') {
+            setResponses(prev => ({
+                ...prev,
+                [itemId]: {
+                    ...prev[itemId],
+                    itemId,
+                    value: 'N/A',
+                    isNA: true,
+                    score: 0,
+                    maxScore: item.weight || 0,
+                    isNonCompliant: false,
+                    flagLevel: 'None'
+                }
+            }))
+            return
+        }
+
         let isNonCompliant = false
         let flagLevel: 'Red' | 'Yellow' | 'None' = 'None'
         let score = 0
+        let deviationPercent = 0
         const maxScore = item.weight || 0
 
         // 1. Numeric Scoring (Sliding Scale)
         if (item.type === 'Numeric' && item.numericConfig && typeof value === 'number') {
             const { target, tolerancePercent = 0, min = -Infinity, max = Infinity } = item.numericConfig
             const tolerance = target * (tolerancePercent / 100)
+            deviationPercent = ((value - target) / target) * 100
 
             if (value >= (target - tolerance) && value <= (target + tolerance)) {
-                // In Spec
                 score = maxScore
             } else if (value >= min && value <= max) {
-                // Marginal (Out of spec but within limits)
-                score = maxScore * 0.5 // 50% points
+                score = maxScore * 0.5
                 flagLevel = 'Yellow'
-                isNonCompliant = true // Technically non-compliant but not critical failure? Prompt says "Marginal results automatically generate yellow flags"
+                isNonCompliant = true
             } else {
-                // Critical Failure (Out of bounds)
                 score = 0
                 flagLevel = 'Red'
                 isNonCompliant = true
@@ -76,56 +95,48 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
 
         setResponses(prev => ({
             ...prev,
-            [itemId]: { ...prev[itemId], itemId, value, isNonCompliant, score, maxScore, flagLevel }
+            [itemId]: {
+                ...prev[itemId],
+                itemId,
+                value,
+                isNA: false,
+                isNonCompliant,
+                score,
+                maxScore,
+                flagLevel,
+                deviationPercent
+            }
+        }))
+    }
+
+    const handleEvidenceUpload = (itemId: string, evidence: Evidence) => {
+        setResponses(prev => ({
+            ...prev,
+            [itemId]: {
+                ...prev[itemId],
+                evidence: [...(prev[itemId]?.evidence || []), evidence]
+            }
+        }))
+    }
+
+    const handleEvidenceDelete = (itemId: string, evidenceId: string) => {
+        setResponses(prev => ({
+            ...prev,
+            [itemId]: {
+                ...prev[itemId],
+                evidence: (prev[itemId]?.evidence || []).filter(e => e.id !== evidenceId)
+            }
         }))
     }
 
     const calculateResult = () => {
-        let totalScore = 0
-        let totalMax = 0
-        let criticalFailure = false
-        let sectionFailures: string[] = []
-
-        activeTemplate.sections.forEach(section => {
-            let sectionScore = 0
-            let sectionMax = 0
-
-            section.items.forEach(item => {
-                const response = responses[item.id]
-                const itemMax = item.weight || 0
-                sectionMax += itemMax
-
-                if (response) {
-                    sectionScore += (response.score || 0)
-                    // Critical Item Check
-                    if (item.criticality === 'Critical' && response.isNonCompliant && response.flagLevel === 'Red') {
-                        criticalFailure = true
-                    }
-                }
-            })
-
-            totalScore += sectionScore
-            totalMax += sectionMax
-
-            // Section Threshold Check
-            if (section.minimumPassThreshold) {
-                const percentage = sectionMax > 0 ? (sectionScore / sectionMax) * 100 : 0
-                if (percentage < section.minimumPassThreshold) {
-                    sectionFailures.push(section.title)
-                }
-            }
-        })
-
-        if (criticalFailure) return 'Non-Compliant (Critical Failure)'
-        if (sectionFailures.length > 0) return `Non-Compliant (${sectionFailures.length} Section Failures)`
-
-        const overallPercent = totalMax > 0 ? (totalScore / totalMax) * 100 : 0
-
-        if (overallPercent >= 90) return `Excellent (${overallPercent.toFixed(1)}%)`
-        if (overallPercent >= 75) return `Good (${overallPercent.toFixed(1)}%)`
-        if (overallPercent >= 60) return `Needs Improvement (${overallPercent.toFixed(1)}%)`
-        return `Non-Compliant (${overallPercent.toFixed(1)}%)`
+        const result = calculateAuditResult(activeTemplate, responses)
+        if (result.grade.includes('Non-Compliant')) return result.grade
+        return `${result.grade} (${result.overallPercent.toFixed(1)}%)`
     }
+
+    const auditResult = calculateAuditResult(activeTemplate, responses)
+
 
     const handleSubmit = () => {
         const result = calculateResult()
@@ -148,7 +159,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                 Official Regulatory Inspection
                             </DialogTitle>
                             <DialogDescription className="text-zinc-400 mt-1">
-                                FWGA Authority • {activeTemplate.regulatoryReference}
+                                FWGA Authority • {activeTemplate.regulatoryReference} • v{activeTemplate.version}
                             </DialogDescription>
                         </div>
                         <Badge variant="outline" className="border-zinc-700 text-zinc-300">
@@ -174,7 +185,12 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                         <div
                                             key={schedule.id}
                                             onClick={() => {
-                                                setAuditMeta({ millId: schedule.millId, commodity: template?.commodity || 'Maize', type: 'Official' })
+                                                setAuditMeta({
+                                                    millId: schedule.millId,
+                                                    commodity: template?.commodity || 'Maize',
+                                                    type: 'Official',
+                                                    templateVersion: template?.version || '1.0.0'
+                                                } as any)
                                                 setStep('verify')
                                             }}
                                             className="bg-zinc-50 border p-4 rounded-xl flex items-center justify-between cursor-pointer hover:border-zinc-900 transition-colors group"
@@ -303,7 +319,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                                                     )}
                                                                 </div>
                                                                 <div className="flex flex-col gap-1 items-end ml-4">
-                                                                     <Badge variant={item.criticality === 'Critical' ? 'destructive' : 'secondary'}>
+                                                                    <Badge variant={item.criticality === 'Critical' ? 'destructive' : 'secondary'}>
                                                                         {item.criticality}
                                                                     </Badge>
                                                                     {item.weight && <span className="text-xs font-medium text-zinc-400">{item.weight} pts</span>}
@@ -313,65 +329,115 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
 
                                                         {/* Input Controls */}
                                                         <div className="flex items-center gap-4">
-                                                        <div className="flex flex-col gap-3">
-                                                            {item.type === 'YesNo' && (
-                                                                <div className="flex gap-2">
-                                                                    <Button
-                                                                        variant={responses[item.id]?.value === 'Yes' ? 'default' : 'outline'}
-                                                                        className={responses[item.id]?.value === 'Yes' ? "bg-green-600 hover:bg-green-700" : ""}
-                                                                        onClick={() => handleAnswer(item.id, 'Yes')}
-                                                                    >
-                                                                        Yes
-                                                                    </Button>
-                                                                    <Button
-                                                                        variant={responses[item.id]?.value === 'No' ? 'destructive' : 'outline'}
-                                                                        onClick={() => handleAnswer(item.id, 'No')}
-                                                                    >
-                                                                        No
-                                                                    </Button>
-                                                                </div>
-                                                            )}
-                                                            
-                                                            {item.type === 'MultipleChoice' && item.options && (
-                                                                <div className="flex flex-wrap gap-2">
-                                                                    {item.options.map(opt => (
+                                                            <div className="flex flex-col gap-3">
+                                                                {item.type === 'YesNo' && (
+                                                                    <div className="flex gap-2">
                                                                         <Button
-                                                                            key={opt}
-                                                                            variant={responses[item.id]?.value === opt ? 'default' : 'outline'}
-                                                                            onClick={() => handleAnswer(item.id, opt)}
-                                                                            className="text-sm"
+                                                                            variant={responses[item.id]?.value === 'Yes' && !responses[item.id]?.isNA ? 'default' : 'outline'}
+                                                                            className={responses[item.id]?.value === 'Yes' && !responses[item.id]?.isNA ? "bg-green-600 hover:bg-green-700" : ""}
+                                                                            onClick={() => handleAnswer(item.id, 'Yes')}
+                                                                            disabled={responses[item.id]?.isNA}
                                                                         >
-                                                                            {opt}
+                                                                            Yes
                                                                         </Button>
-                                                                    ))}
-                                                                </div>
-                                                            )}
+                                                                        <Button
+                                                                            variant={responses[item.id]?.value === 'No' && !responses[item.id]?.isNA ? 'destructive' : 'outline'}
+                                                                            onClick={() => handleAnswer(item.id, 'No')}
+                                                                            disabled={responses[item.id]?.isNA}
+                                                                        >
+                                                                            No
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant={responses[item.id]?.isNA ? 'secondary' : 'outline'}
+                                                                            onClick={() => handleAnswer(item.id, 'N/A')}
+                                                                            className={responses[item.id]?.isNA ? "bg-zinc-800 text-white" : ""}
+                                                                        >
+                                                                            N/A
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
 
-                                                            {(item.type === 'Photo' || (item.requiredEvidence && item.requiredEvidence.includes('Photo'))) && (
-                                                                <Button variant="outline" className="w-fit">
-                                                                    <Camera className="w-4 h-4 mr-2" />
-                                                                    {responses[item.id]?.evidenceUrls ? 'Photo Logged' : 'Capture Evidence'}
-                                                                </Button>
-                                                            )}
-                                                            
-                                                            {item.type === 'Numeric' && (
-                                                                <div className="flex items-center gap-2">
-                                                                    <Input 
-                                                                        type="number" 
-                                                                        placeholder="0.00" 
-                                                                        className="w-24"
-                                                                        onChange={(e) => handleAnswer(item.id, parseFloat(e.target.value))}
-                                                                    />
-                                                                    <span className="text-zinc-500 text-sm">{item.unit}</span>
-                                                                </div>
-                                                            )}
+                                                                {item.type === 'MultipleChoice' && item.options && (
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        {item.options.map(opt => (
+                                                                            <Button
+                                                                                key={opt}
+                                                                                variant={responses[item.id]?.value === opt && !responses[item.id]?.isNA ? 'default' : 'outline'}
+                                                                                onClick={() => handleAnswer(item.id, opt)}
+                                                                                disabled={responses[item.id]?.isNA}
+                                                                                className="text-sm"
+                                                                            >
+                                                                                {opt}
+                                                                            </Button>
+                                                                        ))}
+                                                                        <Button
+                                                                            variant={responses[item.id]?.isNA ? 'secondary' : 'outline'}
+                                                                            onClick={() => handleAnswer(item.id, 'N/A')}
+                                                                            className={responses[item.id]?.isNA ? "bg-zinc-800 text-white" : ""}
+                                                                        >
+                                                                            N/A
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
+
+                                                                {(item.type === 'Photo' || (item.requiredEvidence && item.requiredEvidence.includes('Photo'))) && (
+                                                                    <div className="pt-2">
+                                                                        <EvidenceUpload
+                                                                            itemId={item.id}
+                                                                            auditId={`AUD-${auditMeta.millId}`} // Simple ID for now
+                                                                            existingEvidence={responses[item.id]?.evidence}
+                                                                            onUpload={(ev) => handleEvidenceUpload(item.id, ev)}
+                                                                            onDelete={(id) => handleEvidenceDelete(item.id, id)}
+                                                                        />
+                                                                    </div>
+                                                                )}
+
+                                                                {item.type === 'Numeric' && (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Input
+                                                                            type="number"
+                                                                            placeholder="0.00"
+                                                                            className="w-24"
+                                                                            onChange={(e) => handleAnswer(item.id, parseFloat(e.target.value))}
+                                                                            disabled={responses[item.id]?.isNA}
+                                                                            value={responses[item.id]?.value === 'N/A' ? '' : responses[item.id]?.value as any}
+                                                                        />
+                                                                        <span className="text-zinc-500 text-sm">{item.unit}</span>
+                                                                        <Button
+                                                                            variant={responses[item.id]?.isNA ? 'secondary' : 'outline'}
+                                                                            onClick={() => handleAnswer(item.id, 'N/A')}
+                                                                            className={responses[item.id]?.isNA ? "bg-zinc-800 text-white" : ""}
+                                                                        >
+                                                                            N/A
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
 
+                                                        {/* N/A Justification */}
+                                                        {responses[item.id]?.isNA && (
+                                                            <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
+                                                                <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2 block">Justification for N/A (Required)</Label>
+                                                                <Textarea
+                                                                    className="bg-white border-zinc-200"
+                                                                    placeholder="Describe why this regulatory requirement is not applicable to this facility..."
+                                                                    value={responses[item.id]?.naJustification || ''}
+                                                                    onChange={(e) => {
+                                                                        setResponses(prev => ({
+                                                                            ...prev,
+                                                                            [item.id]: { ...prev[item.id], naJustification: e.target.value }
+                                                                        }))
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        )}
+
                                                         {/* Non-Compliance Reason */}
-                                                        {responses[item.id]?.value === 'No' && (
-                                                            <div className="animate-in fade-in slide-in-from-top-2">
-                                                                <Label className="text-xs text-red-600 font-bold">OBSERVATION / DEVIATION</Label>
-                                                                <Textarea className="mt-1.5 border-red-200 focus:ring-red-500" placeholder="Describe the non-conformance..." />
+                                                        {responses[item.id]?.value === 'No' && !responses[item.id]?.isNA && (
+                                                            <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-red-50 rounded-lg border border-red-100">
+                                                                <Label className="text-[10px] font-bold uppercase tracking-widest text-red-600 mb-2 block">Observation / Deviation</Label>
+                                                                <Textarea className="bg-white border-red-200 focus:ring-red-500" placeholder="Describe the non-conformance..." />
                                                             </div>
                                                         )}
                                                     </div>
@@ -412,8 +478,23 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-zinc-400 uppercase">Computed Grade</p>
-                                        <p className="font-bold text-lg text-blue-600">{calculateResult()}</p>
+                                        <p className="font-bold text-lg text-blue-600">{auditResult.grade}</p>
                                     </div>
+                                </div>
+                                <div className="mt-8 pt-6 border-t text-left">
+                                    <div className="flex items-center justify-between p-3 bg-zinc-100 rounded-lg border border-zinc-200">
+                                        <div className="flex items-center gap-2">
+                                            <Scale className="w-4 h-4 text-zinc-500" />
+                                            <div>
+                                                <p className="text-[10px] font-bold text-zinc-500 uppercase">Calculation Hash (Immutability Lock)</p>
+                                                <p className="text-xs font-mono text-zinc-600 font-bold">{auditResult.calculationHash}</p>
+                                            </div>
+                                        </div>
+                                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">VALIDATED</Badge>
+                                    </div>
+                                    <p className="mt-4 text-[10px] text-zinc-400 italic">
+                                        This audit is now immutable. Any change to the responses or template v{activeTemplate.version} will void the calculation hash above.
+                                    </p>
                                 </div>
                             </div>
 

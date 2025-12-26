@@ -1,4 +1,4 @@
-import { ChecklistTemplate, AuditSession } from '@/lib/types/compliance-audit'
+import { ChecklistTemplate, AuditSession, AuditSchedule, AuditFlag } from '@/lib/types/compliance-audit'
 
 export const MOCK_TEMPLATES: ChecklistTemplate[] = [
     {
@@ -282,6 +282,7 @@ export const MOCK_AUDIT_LOGS: AuditSession[] = [
         score: 95,
         criticalFailures: [],
         overallResult: 'Certified',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
         responses: {}
     },
     {
@@ -296,6 +297,7 @@ export const MOCK_AUDIT_LOGS: AuditSession[] = [
         score: 65,
         criticalFailures: ['3.3'], // Doser calibration fail
         overallResult: 'Non-Compliant',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
         responses: {}
     },
     {
@@ -310,6 +312,7 @@ export const MOCK_AUDIT_LOGS: AuditSession[] = [
         score: 88,
         criticalFailures: [],
         overallResult: 'Certified',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
         responses: {}
     },
     // Adding mocks for Pending Reviews
@@ -325,6 +328,7 @@ export const MOCK_AUDIT_LOGS: AuditSession[] = [
         score: 87,
         criticalFailures: [],
         overallResult: 'Certified',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
         responses: {}
     }
 ]

@@ -1,4 +1,5 @@
 export type CommodityType = 'Maize Flour' | 'Rice' | 'Wheat Flour' | 'Salt' | 'Oil';
+import { Evidence } from './evidence';
 export type FortificationMethod = 'Continuous Dosing' | 'Batch Blending' | 'FRK Blending';
 export type Criticality = 'Critical' | 'Major' | 'Minor';
 export type ResponseType = 'YesNo' | 'Numeric' | 'Dropdown' | 'Text' | 'Photo' | 'Document' | 'MultipleChoice';
@@ -38,6 +39,7 @@ export interface ChecklistSection {
     description?: string;
     items: ChecklistItem[];
     weight?: number; // For scoring
+    minimumPassThreshold?: number; // e.g., 70 for 70%
 }
 
 export interface ChecklistTemplate {
@@ -57,20 +59,14 @@ export interface AuditResponse {
     itemId: string;
     value: string | number | boolean;
     notes?: string;
-    evidenceUrls?: string[];
+    evidence?: Evidence[];
     isNonCompliant?: boolean;
     flagLevel?: 'Red' | 'Yellow' | 'None'; // Auto-calculated based on logic
     score?: number; // Points earned
     maxScore?: number; // Points possible
-}
-
-export interface AuditFlag {
-    id: string;
-    auditId: string;
-    itemId: string;
-    severity: 'Red' | 'Yellow';
-    message: string;
-    generatedAt: string;
+    isNA?: boolean;
+    naJustification?: string;
+    deviationPercent?: number; // Deviation from target for numeric items
 }
 
 export interface AuditFlag {
@@ -107,4 +103,10 @@ export interface AuditSession {
     criticalFailures: string[]; // List of Critical Item IDs failed
     overallResult: 'Certified' | 'Conditionally Approved' | 'Non-Compliant';
     location?: { lat: number; lng: number };
+    templateVersion: string;
+    templateSnapshot?: ChecklistTemplate; // Complete template at time of audit
+    isLocked?: boolean; // Prevents further changes to responses
+    isFinalized?: boolean; // Audit complete and score locked
+    calculatedAt?: string;
+    calculationHash?: string; // Integrity check
 }
