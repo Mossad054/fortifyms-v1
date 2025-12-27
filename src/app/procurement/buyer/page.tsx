@@ -10,7 +10,13 @@ import {
     ShoppingCart, Truck, FileCheck, ArrowUpRight,
     BarChart, LayoutDashboard, FileText, Settings
 } from 'lucide-react'
+import { MyProcurements } from './components/my-procurements'
+import { SupplierPerformance } from './components/supplier-performance'
+import { SpendAnalytics } from './components/spend-analytics'
+import { QADashboard } from './components/qa-dashboard'
+import { BuyerReports } from './components/buyer-reports'
 import { RFPListView, SpendAnalysisView } from './views'
+import { NotificationCenter } from '@/components/ui/notification-center'
 
 export default function BuyerDashboard() {
     const router = useRouter()
@@ -28,34 +34,63 @@ export default function BuyerDashboard() {
                     </h1>
                     <p className="text-gray-600 mt-2">Manage RFPs, orders, and supplier relationships</p>
                 </div>
-                <Button
-                    variant="premium"
-                    size="lg"
-                    className="shadow-lg shadow-green-900/10"
-                    onClick={() => router.push('/procurement/rfp/new')}
-                >
-                    Create New RFP
-                </Button>
+                <div className="flex gap-3 items-center">
+                    <NotificationCenter />
+                    <Button
+                        variant="premium"
+                        size="lg"
+                        className="shadow-lg shadow-green-900/10"
+                        onClick={() => router.push('/procurement/rfp/new')}
+                    >
+                        Create New RFP
+                    </Button>
+                </div>
             </div>
 
             {/* Main Tabs Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4 md:w-[600px] bg-white/40 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
-                    <TabsTrigger value="overview" className="flex items-center gap-2">
+                <TabsList className="grid w-full grid-cols-6 bg-white/60 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+                    <TabsTrigger
+                        value="overview"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                    >
                         <LayoutDashboard className="h-4 w-4" />
-                        Overview
+                        <span className="hidden lg:inline">Overview</span>
                     </TabsTrigger>
-                    <TabsTrigger value="rfps" className="flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        RFPs
+                    <TabsTrigger
+                        value="procurements"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all"
+                    >
+                        <ShoppingCart className="h-4 w-4" />
+                        <span className="hidden lg:inline">Procurements</span>
                     </TabsTrigger>
-                    <TabsTrigger value="spend" className="flex items-center gap-2">
+                    <TabsTrigger
+                        value="suppliers"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-orange-500 data-[state=active]:text-white transition-all"
+                    >
+                        <Truck className="h-4 w-4" />
+                        <span className="hidden lg:inline">Suppliers</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="spend"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all"
+                    >
                         <BarChart className="h-4 w-4" />
-                        Analytics
+                        <span className="hidden lg:inline">Analytics</span>
                     </TabsTrigger>
-                    <TabsTrigger value="settings" className="flex items-center gap-2">
-                        <Settings className="h-4 w-4" />
-                        Settings
+                    <TabsTrigger
+                        value="qa"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all"
+                    >
+                        <FileCheck className="h-4 w-4" />
+                        <span className="hidden lg:inline">Quality</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="reports"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all"
+                    >
+                        <FileText className="h-4 w-4" />
+                        <span className="hidden lg:inline">Reports</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -86,6 +121,30 @@ export default function BuyerDashboard() {
                         />
                     </div>
 
+                    {/* Quick Actions Card */}
+                    <Card className="border-green-200 shadow-sm">
+                        <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div>
+                                <h2 className="text-xl font-bold mb-1 text-green-900">Procurement Actions</h2>
+                                <p className="text-green-600 text-sm">Quick access to orders and suppliers.</p>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                <Button onClick={() => setActiveTab('procurements')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                                    <ShoppingCart className="mr-2 h-4 w-4" /> My Procurements
+                                </Button>
+                                <Button onClick={() => setActiveTab('suppliers')} variant="outline" className="border-orange-200 hover:bg-orange-50 text-orange-700">
+                                    <Truck className="mr-2 h-4 w-4" /> Supplier Scorecards
+                                </Button>
+                                <Button onClick={() => setActiveTab('spend')} variant="outline" className="border-green-200 hover:bg-green-50 text-green-700">
+                                    <BarChart className="mr-2 h-4 w-4" /> Make Decision
+                                </Button>
+                                <Button onClick={() => setActiveTab('qa')} variant="outline" className="border-purple-200 hover:bg-purple-50 text-purple-700">
+                                    <FileCheck className="mr-2 h-4 w-4" /> Check Quality
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Integrated Views in Dashboard */}
                         <div className="col-span-2">
@@ -97,19 +156,29 @@ export default function BuyerDashboard() {
                     </div>
                 </TabsContent>
 
-                {/* --- RFPS TAB --- */}
-                <TabsContent value="rfps">
-                    <RFPListView />
+                {/* --- MY PROCUREMENTS TAB --- */}
+                <TabsContent value="procurements">
+                    <MyProcurements />
                 </TabsContent>
 
-                {/* --- SPEND TAB --- */}
+                {/* --- SUPPLIER PERFORMANCE TAB --- */}
+                <TabsContent value="suppliers">
+                    <SupplierPerformance />
+                </TabsContent>
+
+                {/* --- SPEND ANALYTICS TAB --- */}
                 <TabsContent value="spend">
-                    <SpendAnalysisView />
+                    <SpendAnalytics />
                 </TabsContent>
 
-                {/* --- SETTINGS TAB --- */}
-                <TabsContent value="settings">
-                    <Card><CardContent className="p-10 text-center text-muted-foreground">Supplier Management & preferences coming soon.</CardContent></Card>
+                {/* --- QUALITY ASSURANCE TAB --- */}
+                <TabsContent value="qa">
+                    <QADashboard />
+                </TabsContent>
+
+                {/* --- REPORTS TAB --- */}
+                <TabsContent value="reports">
+                    <BuyerReports />
                 </TabsContent>
 
             </Tabs>

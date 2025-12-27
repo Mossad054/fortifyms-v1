@@ -63,32 +63,32 @@ export default function ManagerDashboard() {
 
             {/* Main Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-7 lg:w-[900px] bg-white/40 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
-                    <TabsTrigger value="overview" className="flex items-center gap-2">
+                <TabsList className="grid w-full grid-cols-7 bg-white/40 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+                    <TabsTrigger value="overview" className="flex items-center justify-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                         <BarChart3 className="h-4 w-4" />
                         <span className="hidden lg:inline">Overview</span>
                     </TabsTrigger>
-                    <TabsTrigger value="approvals" className="flex items-center gap-2">
+                    <TabsTrigger value="approvals" className="flex items-center justify-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                         <FileCheck className="h-4 w-4" />
                         <span className="hidden lg:inline">Approvals</span>
                     </TabsTrigger>
-                    <TabsTrigger value="production" className="flex items-center gap-2">
+                    <TabsTrigger value="production" className="flex items-center justify-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                         <Factory className="h-4 w-4" />
                         <span className="hidden lg:inline">Production</span>
                     </TabsTrigger>
-                    <TabsTrigger value="compliance" className="flex items-center gap-2">
+                    <TabsTrigger value="compliance" className="flex items-center justify-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                         <Scale className="h-4 w-4" />
                         <span className="hidden lg:inline">Compliance</span>
                     </TabsTrigger>
-                    <TabsTrigger value="analytics" className="flex items-center gap-2">
+                    <TabsTrigger value="analytics" className="flex items-center justify-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                         <BarChart3 className="h-4 w-4" />
                         <span className="hidden lg:inline">Analytics</span>
                     </TabsTrigger>
-                    <TabsTrigger value="alerts" className="flex items-center gap-2">
+                    <TabsTrigger value="alerts" className="flex items-center justify-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                         <AlertCircle className="h-4 w-4" />
                         <span className="hidden lg:inline">Alerts</span>
                     </TabsTrigger>
-                    <TabsTrigger value="reports" className="flex items-center gap-2">
+                    <TabsTrigger value="reports" className="flex items-center justify-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                         <FileText className="h-4 w-4" />
                         <span className="hidden lg:inline">Reports</span>
                     </TabsTrigger>
@@ -128,14 +128,38 @@ export default function ManagerDashboard() {
                         />
                     </div>
 
+                    {/* Quick Actions Card */}
+                    <Card className="border-blue-200 shadow-sm">
+                        <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div>
+                                <h2 className="text-xl font-bold mb-1 text-blue-900">Management Actions</h2>
+                                <p className="text-blue-600 text-sm">Direct access to mill operations.</p>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                <Button onClick={() => setActiveTab('approvals')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                                    <FileCheck className="mr-2 h-4 w-4" /> Approve Batches
+                                </Button>
+                                <Button onClick={() => setActiveTab('production')} variant="outline" className="border-orange-200 hover:bg-orange-50 text-orange-700">
+                                    <Factory className="mr-2 h-4 w-4" /> Production Logs
+                                </Button>
+                                <Button onClick={() => setActiveTab('compliance')} variant="outline" className="border-green-200 hover:bg-green-50 text-green-700">
+                                    <Scale className="mr-2 h-4 w-4" /> Compliance Check
+                                </Button>
+                                <Button onClick={() => setActiveTab('analytics')} variant="outline" className="border-purple-200 hover:bg-purple-50 text-purple-700">
+                                    <BarChart3 className="mr-2 h-4 w-4" /> View Analytics
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     {/* Chart Area */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <Card className="col-span-2 glass-card border-none shadow-sm">
                             <CardHeader>
                                 <CardTitle>Production Trends</CardTitle>
                             </CardHeader>
-                            <CardContent className="h-[350px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[350px] min-w-0">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <BarChart data={productionTrend} barGap={8}>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} />
@@ -152,8 +176,8 @@ export default function ManagerDashboard() {
                             <CardHeader>
                                 <CardTitle>Compliance Status</CardTitle>
                             </CardHeader>
-                            <CardContent className="h-[350px] relative">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[350px] relative min-w-0">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <PieChart>
                                         <Pie
                                             data={complianceData}

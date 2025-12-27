@@ -26,6 +26,19 @@ const MOCK_MILLS = [
     { id: 'MILL-004', name: 'Eldoret Mills Co', lat: 0.5143, lng: 35.2698, complianceScore: 95, production: 380000, status: 'certified' },
     { id: 'MILL-005', name: 'Nakuru Grain Processors', lat: -0.3031, lng: 36.0800, complianceScore: 68, production: 210000, status: 'provisional' },
     { id: 'MILL-006', name: 'Thika Fortification Hub', lat: -1.0332, lng: 37.0690, complianceScore: 90, production: 350000, status: 'certified' },
+    // Expanded data
+    { id: 'MILL-007', name: 'Machakos Flour', lat: -1.5177, lng: 37.2634, complianceScore: 82, production: 150000, status: 'certified' },
+    { id: 'MILL-008', name: 'Nyeri Millers', lat: -0.4167, lng: 36.9500, complianceScore: 89, production: 180000, status: 'certified' },
+    { id: 'MILL-009', name: 'Meru Processors', lat: 0.0470, lng: 37.6498, complianceScore: 71, production: 120000, status: 'provisional' },
+    { id: 'MILL-010', name: 'Kitale Grain', lat: 1.0191, lng: 35.0023, complianceScore: 93, production: 250000, status: 'certified' },
+    { id: 'MILL-011', name: 'Kericho Tea & Grain', lat: -0.3692, lng: 35.2839, complianceScore: 85, production: 160000, status: 'certified' },
+    { id: 'MILL-012', name: 'Kakamega Millers', lat: 0.2827, lng: 34.7519, complianceScore: 65, production: 90000, status: 'provisional' },
+    { id: 'MILL-013', name: 'Voi Grain Hub', lat: -3.3964, lng: 38.5566, complianceScore: 78, production: 110000, status: 'certified' },
+    { id: 'MILL-014', name: 'Naivasha Processors', lat: -0.7172, lng: 36.4310, complianceScore: 88, production: 200000, status: 'certified' },
+    { id: 'MILL-015', name: 'Kisii High Quality', lat: -0.6817, lng: 34.7667, complianceScore: 91, production: 175000, status: 'certified' },
+    // Uganda Border
+    { id: 'MILL-016', name: 'Busia Border Mills', lat: 0.4608, lng: 34.1115, complianceScore: 74, production: 130000, status: 'provisional' },
+    { id: 'MILL-017', name: 'Malaba Grain', lat: 0.6333, lng: 34.2833, complianceScore: 83, production: 145000, status: 'certified' },
 ]
 
 const MOCK_BUYERS = [
@@ -34,6 +47,16 @@ const MOCK_BUYERS = [
     { id: 'BUY-003', name: 'WFP Relief Center', type: 'relief_agency', lat: -1.2921, lng: 36.8344 },
     { id: 'BUY-004', name: 'Coast Schools Network', type: 'school', lat: -4.0500, lng: 39.6600 },
     { id: 'BUY-005', name: 'Rift Valley Hospitals', type: 'hospital', lat: 0.5200, lng: 35.2800 },
+    // Expanded data
+    { id: 'BUY-006', name: 'Kisumu District Hospital', type: 'hospital', lat: -0.1000, lng: 34.7500 },
+    { id: 'BUY-007', name: 'Nyeri High School', type: 'school', lat: -0.4200, lng: 36.9600 },
+    { id: 'BUY-008', name: 'Machakos Relief Depot', type: 'relief_agency', lat: -1.5200, lng: 37.2700 },
+    { id: 'BUY-009', name: 'Thika Level 5', type: 'hospital', lat: -1.0400, lng: 37.0700 },
+    { id: 'BUY-010', name: 'Eldoret University', type: 'school', lat: 0.5250, lng: 35.2750 },
+    { id: 'BUY-011', name: 'Nakuru General', type: 'hospital', lat: -0.2800, lng: 36.0700 },
+    { id: 'BUY-012', name: 'Kakamega Schools', type: 'school', lat: 0.2900, lng: 34.7600 },
+    { id: 'BUY-013', name: 'Garissa Relief Hub', type: 'relief_agency', lat: -0.4532, lng: 39.6460 },
+    { id: 'BUY-014', name: 'Turkana Aid Center', type: 'relief_agency', lat: 3.1167, lng: 35.6000 },
 ]
 
 const MOCK_SUPPLY_ROUTES = [
@@ -42,6 +65,11 @@ const MOCK_SUPPLY_ROUTES = [
     { millId: 'MILL-002', buyerId: 'BUY-004', volume: 28000 },
     { millId: 'MILL-004', buyerId: 'BUY-005', volume: 38000 },
     { millId: 'MILL-006', buyerId: 'BUY-003', volume: 25000 },
+    { millId: 'MILL-010', buyerId: 'BUY-010', volume: 15000 },
+    { millId: 'MILL-003', buyerId: 'BUY-006', volume: 22000 },
+    { millId: 'MILL-008', buyerId: 'BUY-007', volume: 12000 },
+    { millId: 'MILL-007', buyerId: 'BUY-008', volume: 18000 },
+    { millId: 'MILL-016', buyerId: 'BUY-012', volume: 14000 },
 ]
 
 const REGIONAL_PRODUCTION = [
@@ -182,15 +210,13 @@ export function GeographicMap() {
                 <CardContent className="p-0">
                     <div className="relative w-full h-[600px] bg-gradient-to-br from-blue-50 to-green-50 overflow-hidden">
                         {/* Map Background */}
-                        <div className="absolute inset-0 opacity-10">
-                            <svg width="100%" height="100%">
-                                <defs>
-                                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="gray" strokeWidth="0.5" />
-                                    </pattern>
-                                </defs>
-                                <rect width="100%" height="100%" fill="url(#grid)" />
-                            </svg>
+                        <div className="absolute inset-0 opacity-90">
+                            <img
+                                src="/images/map_bg.png"
+                                alt="Satellite Map View"
+                                className="w-full h-full object-cover grayscale-[20%] contrast-125 brightness-90"
+                            />
+                            <div className="absolute inset-0 bg-blue-900/10 mix-blend-overlay"></div>
                         </div>
 
                         {/* Regional Choropleth (if enabled) ... */}

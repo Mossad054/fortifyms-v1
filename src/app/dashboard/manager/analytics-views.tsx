@@ -11,8 +11,11 @@ import {
 } from 'recharts'
 import {
     TrendingUp, TrendingDown, Factory, Package, AlertTriangle,
-    CheckCircle, Download, FileText, BarChart3, Calendar, Plus
+    CheckCircle, Download, FileText, BarChart3, Calendar, Plus, Lightbulb
 } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6']
 
@@ -50,8 +53,49 @@ const millPerformance = [
 
 // --- ANALYTICS VIEW ---
 export function AnalyticsView() {
+    const [period, setPeriod] = React.useState('monthly');
+    const [product, setProduct] = React.useState('all');
+
     return (
         <div className="space-y-6">
+            {/* Filters & Controls */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/50 p-4 rounded-xl border shadow-sm">
+                <div className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-semibold text-gray-900">Performance Analytics</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Select value={product} onValueChange={setProduct}>
+                        <SelectTrigger className="w-[180px] bg-white">
+                            <SelectValue placeholder="All Products" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Products</SelectItem>
+                            <SelectItem value="maize">Maize Flour</SelectItem>
+                            <SelectItem value="rice">Fortified Rice</SelectItem>
+                            <SelectItem value="wheat">Wheat Flour</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select value={period} onValueChange={setPeriod}>
+                        <SelectTrigger className="w-[140px] bg-white">
+                            <SelectValue placeholder="Period" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="weekly">Weekly</SelectItem>
+                            <SelectItem value="monthly">Monthly</SelectItem>
+                            <SelectItem value="quarterly">Quarterly</SelectItem>
+                            <SelectItem value="yearly">Yearly</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button variant="outline" className="bg-white">
+                        <Download className="w-4 h-4 mr-2" />
+                        Export Data
+                    </Button>
+                </div>
+            </div>
+
+
+
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <MetricCard
@@ -95,8 +139,8 @@ export function AnalyticsView() {
                             Export
                         </Button>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <CardContent className="h-[300px] min-w-0">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <AreaChart data={productionAnalytics}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
                                 <XAxis dataKey="month" axisLine={false} tickLine={false} />
@@ -115,8 +159,8 @@ export function AnalyticsView() {
                     <CardHeader>
                         <CardTitle className="text-lg">QC Test Results Distribution</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px] relative">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <CardContent className="h-[300px] relative min-w-0">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <PieChart>
                                 <Pie
                                     data={qcMetrics}
@@ -146,8 +190,8 @@ export function AnalyticsView() {
                     <CardHeader>
                         <CardTitle className="text-lg">Weekly Yield Performance</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <CardContent className="h-[300px] min-w-0">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <LineChart data={yieldTrends}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
                                 <XAxis dataKey="week" axisLine={false} tickLine={false} />
@@ -164,8 +208,8 @@ export function AnalyticsView() {
                     <CardHeader>
                         <CardTitle className="text-lg">Mill Performance Ranking</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <CardContent className="h-[300px] min-w-0">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <BarChart data={millPerformance} layout="vertical">
                                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e5e5" />
                                 <XAxis type="number" axisLine={false} tickLine={false} />
@@ -177,6 +221,29 @@ export function AnalyticsView() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* AI Interpretation Card (Moved to Bottom) */}
+            <Card className="border-blue-200 bg-blue-50/30 shadow-sm">
+                <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                        <div className="p-3 bg-blue-100 rounded-xl text-blue-600 shrink-0">
+                            <Lightbulb className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="font-bold text-lg text-blue-900">Performance Insights & Recommendations</h3>
+                            <p className="text-sm text-blue-800">
+                                Based on {period} data for <span className="font-semibold">{product === 'all' ? 'all products' : product}</span>:
+                            </p>
+                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-700 list-disc pl-4">
+                                <li>Production output is <span className="text-green-600 font-bold">trending up 5%</span> compared to previous period.</li>
+                                <li>Wheat Flour efficiency dropped slightly; recommend checking <span className="font-medium">Mill B settings</span>.</li>
+                                <li>Inventory levels for Premix are improved; maintain current reorder points.</li>
+                                <li>QC Pass Rate for Rice is excellent (99%), significantly above target.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }
@@ -186,7 +253,14 @@ export function ReportsView() {
     const router = useRouter()
     const [activeTab, setActiveTab] = React.useState<'generate' | 'scheduled' | 'history'>('generate')
     const [selectedCategory, setSelectedCategory] = React.useState<'all' | 'operational' | 'management' | 'regulatory'>('all')
-    const [selectedTemplate, setSelectedTemplate] = React.useState<string | null>(null)
+    const [selectedTemplate, setSelectedTemplate] = React.useState<any | null>(null)
+    const [previewOpen, setPreviewOpen] = React.useState(false)
+
+    // Handle preview
+    const handlePreview = (template: any) => {
+        setSelectedTemplate(template)
+        setPreviewOpen(true)
+    }
 
     // Import mock data (in real app, these would come from the report-types file)
     const reportTemplates = [
@@ -226,9 +300,15 @@ export function ReportsView() {
         }
     }
 
+    const [generating, setGenerating] = React.useState<string | null>(null)
+
     const handleGenerateReport = (templateId: string) => {
-        console.log('Generating report:', templateId)
-        // TODO: API call to generate report
+        setGenerating(templateId)
+        // Simulate API call
+        setTimeout(() => {
+            setGenerating(null)
+            alert(`Report generated successfully! Download started for ${templateId}.`)
+        }, 1500)
     }
 
     return (
@@ -337,11 +417,18 @@ export function ReportsView() {
                                             className="flex-1"
                                             size="sm"
                                             onClick={() => handleGenerateReport(template.id)}
+                                            disabled={generating === template.id}
                                         >
-                                            <Download className="w-4 h-4 mr-2" />
-                                            Generate
+                                            {generating === template.id ? (
+                                                <span className="animate-pulse">Generating...</span>
+                                            ) : (
+                                                <>
+                                                    <Download className="w-4 h-4 mr-2" />
+                                                    Generate
+                                                </>
+                                            )}
                                         </Button>
-                                        <Button variant="outline" size="sm">
+                                        <Button variant="outline" size="sm" onClick={() => handlePreview(template)}>
                                             Preview
                                         </Button>
                                     </div>
@@ -351,6 +438,69 @@ export function ReportsView() {
                     </div>
                 </div>
             )}
+
+            {/* Report Preview Dialog */}
+            <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+                <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-blue-50 rounded-lg">
+                                <FileText className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                                <DialogTitle>{selectedTemplate?.name}</DialogTitle>
+                                <DialogDescription>Preview of report structure and sample data</DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <ScrollArea className="flex-1 border rounded-lg bg-white p-8">
+                        {/* Mock Report Paper UI */}
+                        <div className="max-w-3xl mx-auto space-y-8 text-sm">
+                            {/* Report Header */}
+                            <div className="border-b pb-6 flex justify-between items-start">
+                                <div>
+                                    <h1 className="text-2xl font-bold text-gray-900 mb-1">Fortis Mill Management</h1>
+                                    <h2 className="text-xl text-gray-600">{selectedTemplate?.name}</h2>
+                                    <p className="text-gray-500 mt-2">Generated: {new Date().toLocaleDateString()}</p>
+                                </div>
+                                <div className="text-right text-gray-500">
+                                    <p>Report ID: PREVIEW-001</p>
+                                    <p>Classification: Internal Use</p>
+                                </div>
+                            </div>
+
+                            {/* Dynamic Sections based on template */}
+                            {selectedTemplate?.sections.map((section: string, idx: number) => (
+                                <div key={idx} className="space-y-4">
+                                    <h3 className="text-lg font-bold text-gray-800 border-l-4 border-blue-500 pl-3">{section}</h3>
+                                    <div className="bg-slate-50 p-4 rounded border border-gray-100 min-h-[100px] flex items-center justify-center text-gray-400 italic">
+                                        [Placeholder data visualization for {section}]
+                                    </div>
+                                    <p className="text-gray-600 leading-relaxed">
+                                        Sample narrative text explaining the metrics observed in the {section} section.
+                                        This area would typically contain detailed analysis, tables, or itemized lists relevant to the specific reporting period.
+                                    </p>
+                                </div>
+                            ))}
+
+                            {/* Footer */}
+                            <div className="border-t pt-6 text-center text-gray-400 text-xs">
+                                <p>© 2024 Fortis Management Systems. All rights reserved.</p>
+                                <p>This report is automatically generated. Please verify critical data points with the source system.</p>
+                            </div>
+                        </div>
+                    </ScrollArea>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setPreviewOpen(false)}>Close Preview</Button>
+                        <Button onClick={() => { setPreviewOpen(false); handleGenerateReport(selectedTemplate?.id); }}>
+                            <Download className="w-4 h-4 mr-2" />
+                            Generate Full Report
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Scheduled Reports Tab */}
             {activeTab === 'scheduled' && (

@@ -140,12 +140,20 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
 
     const handleSubmit = () => {
         const result = calculateResult()
-        toast.success("Inspection Logged", {
-            description: `Mill: ${auditMeta.millId} • Result: ${result}`
+        toast.success("Audit Submitted", {
+            description: `Mill: ${auditMeta.millId} • Result: ${result} • Sent to FGWA Manager`
         })
         onOpenChange(false)
         setStep('setup')
         setResponses({})
+    }
+
+    const handleSaveDraft = () => {
+        toast.info("Draft Saved", {
+            description: "Your progress has been saved locally."
+        })
+        // In a real app, this would persist the state
+        onOpenChange(false)
     }
 
     return (
@@ -446,16 +454,21 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                         ))}
                                     </div>
 
-                                    <div className="flex justify-end pt-8">
-                                        {activeSection < activeTemplate.sections.length - 1 ? (
-                                            <Button onClick={() => setActiveSection(activeSection + 1)}>
-                                                Next Section
-                                            </Button>
-                                        ) : (
-                                            <Button className="bg-green-600 hover:bg-green-700" onClick={() => setStep('summary')}>
-                                                Finalize Inspection
-                                            </Button>
-                                        )}
+                                    <div className="flex justify-between pt-8 border-t mt-8">
+                                        <Button variant="outline" onClick={handleSaveDraft}>
+                                            Save Draft & Exit
+                                        </Button>
+                                        <div className="flex gap-2">
+                                            {activeSection < activeTemplate.sections.length - 1 ? (
+                                                <Button onClick={() => setActiveSection(activeSection + 1)}>
+                                                    Next Section
+                                                </Button>
+                                            ) : (
+                                                <Button className="bg-green-600 hover:bg-green-700" onClick={() => setStep('summary')}>
+                                                    Finalize Inspection
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </ScrollArea>
@@ -500,8 +513,9 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
 
                             <div className="flex gap-4 justify-center">
                                 <Button variant="outline" onClick={() => setStep('audit')}>Review Findings</Button>
+                                <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
                                 <Button className="bg-zinc-900 px-8" onClick={handleSubmit}>
-                                    Save Audit Findings
+                                    Save and Submit
                                 </Button>
                             </div>
                         </div>

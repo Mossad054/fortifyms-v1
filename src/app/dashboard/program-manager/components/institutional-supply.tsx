@@ -9,9 +9,16 @@ import {
     TableBody,
     TableCell,
     TableHead,
+
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
 import {
     Package, TrendingUp, DollarSign, Clock, AlertCircle,
     CheckCircle2, Star, Download, MapPin, Users
@@ -68,7 +75,10 @@ const MARKET_COVERAGE = [
     { region: 'Central', served: 32, underserved: 10, uncovered: 3, demand: 490000, supply: 450000 },
 ]
 
+
 export function InstitutionalSupply() {
+    const [showGapAnalysis, setShowGapAnalysis] = React.useState(false)
+
     return (
         <div className="space-y-6">
             {/* Procurement Metrics */}
@@ -317,7 +327,8 @@ export function InstitutionalSupply() {
                             <MapPin className="w-4 h-4 text-blue-600" />
                             Market Penetration Matrix
                         </CardTitle>
-                        <Button variant="outline" size="sm" className="h-8">
+
+                        <Button variant="outline" size="sm" className="h-8" onClick={() => setShowGapAnalysis(true)}>
                             <Download className="w-3.5 h-3.5 mr-2" />
                             Gap Analysis
                         </Button>
@@ -393,6 +404,82 @@ export function InstitutionalSupply() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Gap Analysis Dialog */}
+            <Dialog open={showGapAnalysis} onOpenChange={setShowGapAnalysis}>
+                <DialogContent className="max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <MapPin className="w-5 h-5 text-blue-600" />
+                            Supply-Demand Gap Analysis
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                            <Card className="bg-orange-50 border-orange-100">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <AlertCircle className="w-4 h-4 text-orange-600" />
+                                        <h4 className="font-bold text-sm text-orange-900">Critical Shortfall</h4>
+                                    </div>
+                                    <p className="text-2xl font-black text-orange-700">120,000 KG</p>
+                                    <p className="text-xs text-orange-600">Western Region Deficit</p>
+                                </CardContent>
+                            </Card>
+                            <Card className="bg-blue-50 border-blue-100">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <TrendingUp className="w-4 h-4 text-blue-600" />
+                                        <h4 className="font-bold text-sm text-blue-900">Optimization Opportunity</h4>
+                                    </div>
+                                    <p className="text-2xl font-black text-blue-700">+45,000 KG</p>
+                                    <p className="text-xs text-blue-600">Nairobi Surplus Available</p>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <div className="bg-zinc-50 rounded-xl p-4 border">
+                            <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Regional Allocation matrix</h4>
+                            <div className="space-y-4">
+                                {MARKET_COVERAGE.map(region => {
+                                    const gap = region.demand - region.supply
+                                    const isDeficit = gap > 0
+                                    return (
+                                        <div key={region.region} className="flex items-center justify-between text-sm">
+                                            <div className="w-32 font-medium">{region.region}</div>
+                                            <div className="flex-1 px-4">
+                                                <div className="h-2 bg-zinc-200 rounded-full overflow-hidden flex">
+                                                    <div
+                                                        className="h-full bg-blue-500"
+                                                        style={{ width: `${Math.min((region.supply / region.demand) * 100, 100)}%` }}
+                                                    />
+                                                    {isDeficit && (
+                                                        <div className="h-full bg-red-400 opacity-50 flex-1" />
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className={`w-24 text-right font-bold ${isDeficit ? 'text-red-600' : 'text-green-600'}`}>
+                                                {isDeficit ? `-${(gap / 1000).toFixed(1)}k` : 'OK'}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <h4 className="font-bold text-blue-900 text-sm mb-2">AI Recommendation</h4>
+                            <p className="text-xs text-blue-700 leading-relaxed">
+                                Reroute 45k KG from <span className="font-bold">Nairobi</span> surplus to <span className="font-bold">Western</span> region to mitigate critical shortfall. Estimated impact: reduces Western deficit by 38%.
+                            </p>
+                            <Button size="sm" className="mt-3 bg-blue-600 hover:bg-blue-700 text-white w-full">
+                                Apply Allocation Strategy
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

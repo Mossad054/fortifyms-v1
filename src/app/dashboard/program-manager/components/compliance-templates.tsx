@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Plus, Search, FileText, CheckCircle2, ChevronRight, AlertTriangle, MoreVertical, Trash2, Save, Edit3, ArrowLeft } from 'lucide-react'
+import { Plus, Search, FileText, CheckCircle2, ChevronRight, AlertTriangle, MoreVertical, Trash2, Save, Edit3, ArrowLeft, Send } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -13,14 +13,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Switch } from '@/components/ui/switch'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 import { ChecklistTemplate, ChecklistSection, ChecklistItem, CommodityType, FortificationMethod, Criticality, ResponseType } from '@/lib/types/compliance-audit' // Adjust import path
-import { MOCK_TEMPLATES } from '@/lib/mock-data/compliance'
+import { MOCK_TEMPLATES, MOCK_MILLS } from '@/lib/mock-data/compliance'
 import { toast } from 'sonner'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
+import { CalendarIcon } from 'lucide-react'
 
 export function ComplianceTemplates() {
     const [view, setView] = React.useState<'list' | 'editor'>('list')
     const [templates, setTemplates] = React.useState<ChecklistTemplate[]>(MOCK_TEMPLATES)
     const [currentTemplate, setCurrentTemplate] = React.useState<Partial<ChecklistTemplate>>({})
+
+    // Rollout State
+    const [showRolloutDialog, setShowRolloutDialog] = React.useState(false)
+    const [rolloutTemplate, setRolloutTemplate] = React.useState<ChecklistTemplate | null>(null)
+    const [selectedMills, setSelectedMills] = React.useState<string[]>([])
+    const [rolloutDate, setRolloutDate] = React.useState<Date | undefined>(new Date())
 
     const handleCreateNew = () => {
         setCurrentTemplate({
@@ -58,6 +71,33 @@ export function ComplianceTemplates() {
         setView('list')
     }
 
+    const handleRollOut = (template: ChecklistTemplate) => {
+        setRolloutTemplate(template)
+        setShowRolloutDialog(true)
+        setSelectedMills([])
+    }
+
+    const confirmRollout = () => {
+        if (selectedMills.length === 0) {
+            toast.error("Please select at least one facility.")
+            return
+        }
+
+        toast.success("Checklist Deployed", {
+            description: `Deployed "${rolloutTemplate?.title}" to ${selectedMills.length} facilities.`
+        })
+        setShowRolloutDialog(false)
+        setSelectedMills([])
+    }
+
+    const toggleMillSelection = (millId: string) => {
+        if (selectedMills.includes(millId)) {
+            setSelectedMills(selectedMills.filter(id => id !== millId))
+        } else {
+            setSelectedMills([...selectedMills, millId])
+        }
+    }
+
     return (
         <div className="space-y-6">
             {view === 'list' && (
@@ -74,16 +114,16 @@ export function ComplianceTemplates() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {templates.map(template => (
-                            <Card key={template.id} className="hover:shadow-md transition-shadow group relative overflow-hidden">
+                            <Card key={template.id} className="hover:shadow-md transition-shadow group relative overflow-hidden flex flex-col">
                                 {template.status === 'Published' && <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-green-500/10 to-transparent rounded-bl-full -mr-12 -mt-12 pointer-events-none" />}
-                                <CardHeader className="pb-3">
+                                <CardHeader className="pb-3 flex-1">
                                     <div className="flex justify-between items-start mb-2">
                                         <Badge variant="outline" className="font-mono bg-zinc-50">{template.id}</Badge>
                                         <Badge className={`${template.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} hover:bg-opacity-80`}>
                                             {template.status}
                                         </Badge>
                                     </div>
-                                    <CardTitle className="text-lg leading-snug">{template.title}</CardTitle>
+                                    <CardTitle className="text-lg leading-snug line-clamp-2">{template.title}</CardTitle>
                                     <CardDescription className="flex items-center gap-2 mt-1">
                                         <FileText className="w-3 h-3" /> {template.regulatoryReference}
                                     </CardDescription>
@@ -93,16 +133,20 @@ export function ComplianceTemplates() {
                                         <Badge variant="secondary" className="text-xs">{template.commodity}</Badge>
                                         <span className="text-xs text-zinc-400 flex items-center">v{template.version}</span>
                                     </div>
-                                    <div className="text-xs text-zinc-500">
+                                    <div className="text-xs text-zinc-500 mb-2">
                                         Last Updated: {template.updatedAt}
                                     </div>
                                 </CardContent>
-                                <CardFooter className="pt-0 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <CardFooter className="pt-2 border-t bg-gray-50/50 flex justify-end gap-2">
                                     <Button variant="ghost" size="sm" onClick={() => handleEdit(template)}>
                                         <Edit3 className="w-4 h-4 mr-1" /> Edit
                                     </Button>
-                                    <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600">
-                                        <Trash2 className="w-4 h-4" />
+                                    <Button
+                                        size="sm"
+                                        className="bg-blue-600 hover:bg-blue-700"
+                                        onClick={() => handleRollOut(template)}
+                                    >
+                                        <Send className="w-4 h-4 mr-1" /> Roll Out
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -119,6 +163,71 @@ export function ComplianceTemplates() {
                     onCancel={() => setView('list')}
                 />
             )}
+
+            {/* Rollout Dialog */}
+            <Dialog open={showRolloutDialog} onOpenChange={setShowRolloutDialog}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Deploy Checklist</DialogTitle>
+                        <DialogDescription>
+                            Assign <strong>{rolloutTemplate?.title}</strong> to facilities.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Due Date</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-full justify-start text-left font-normal",
+                                            !rolloutDate && "text-muted-foreground"
+                                        )}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {rolloutDate ? format(rolloutDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        selected={rolloutDate}
+                                        onSelect={setRolloutDate}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <Label>Select Facilities</Label>
+                                <span className="text-xs text-muted-foreground">{selectedMills.length} selected</span>
+                            </div>
+                            <ScrollArea className="h-[200px] border rounded-md p-2">
+                                {Object.entries(MOCK_MILLS).map(([id, mill]) => (
+                                    <div key={id} className="flex items-center space-x-2 py-2 px-2 hover:bg-slate-50 rounded cursor-pointer" onClick={() => toggleMillSelection(id)}>
+                                        <Checkbox checked={selectedMills.includes(id)} />
+                                        <div className="flex-1">
+                                            <div className="text-sm font-medium">{mill.name}</div>
+                                            <div className="text-xs text-muted-foreground">{mill.region} • {mill.riskLevel} Risk</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </ScrollArea>
+                        </div>
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowRolloutDialog(false)}>Cancel</Button>
+                        <Button onClick={confirmRollout} disabled={selectedMills.length === 0}>
+                            <Send className="w-4 h-4 mr-2" /> Confirm Deployment
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

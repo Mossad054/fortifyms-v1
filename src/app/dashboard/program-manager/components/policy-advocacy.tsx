@@ -1,579 +1,260 @@
 'use client'
 
-import * as React from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import React, { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
-import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/components/ui/dialog'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
-import {
-    FileText, Globe, TrendingUp, CheckCircle2, AlertCircle,
-    Clock, Users, Target, Megaphone, Download, Plus,
-    BarChart3, Flag, Award, MessageSquare, Send, DollarSign,
-    Building2
-} from 'lucide-react'
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Globe, FileText, TrendingUp, Users, AlertCircle, ArrowRight, CheckCircle2, ChevronRight, BarChart3, Building2, UploadCloud, PieChart, Target, Zap, Plus, Settings } from 'lucide-react'
+import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
-// Policy Lifecycle Types
-type PolicyStatus = 'proposed' | 'adopted' | 'implementing' | 'monitoring' | 'completed'
-type PolicyType = 'mandatory' | 'voluntary' | 'pilot' | 'regulatory'
-
+// Types
 interface Policy {
     id: string
     title: string
-    type: PolicyType
-    status: PolicyStatus
-    country: string
-    adoptionDate?: string
-    implementationProgress: number
-    impactScore: number
-    millsAffected: number
-    advocacyCampaigns: number
+    region: string
+    status: 'Active' | 'Draft' | 'Review'
+    complianceRate: number
+    lastAudit: string
+    nextReview: string
 }
 
-// Mock Policy Data
+interface RegulatoryLandscape {
+    country: string
+    status: 'Mandatory' | 'Voluntary' | 'No Standards'
+    legislation: string
+    yearEnacted: string
+    gapAnalysis: string
+}
+
+// Mock Data
 const POLICIES: Policy[] = [
-    {
-        id: 'POL-001',
-        title: 'Mandatory Maize Fortification',
-        type: 'mandatory',
-        status: 'monitoring',
-        country: 'Kenya',
-        adoptionDate: '2023-01-15',
-        implementationProgress: 85,
-        impactScore: 92,
-        millsAffected: 35,
-        advocacyCampaigns: 3
-    },
-    {
-        id: 'POL-002',
-        title: 'Voluntary Wheat Fortification',
-        type: 'voluntary',
-        status: 'implementing',
-        country: 'Uganda',
-        adoptionDate: '2023-06-20',
-        implementationProgress: 65,
-        impactScore: 78,
-        millsAffected: 18,
-        advocacyCampaigns: 2
-    },
-    {
-        id: 'POL-003',
-        title: 'Rice Fortification Pilot',
-        type: 'pilot',
-        status: 'implementing',
-        country: 'Tanzania',
-        adoptionDate: '2024-03-10',
-        implementationProgress: 40,
-        impactScore: 65,
-        millsAffected: 8,
-        advocacyCampaigns: 1
-    },
-    {
-        id: 'POL-004',
-        title: 'Quality Standards Update',
-        type: 'regulatory',
-        status: 'adopted',
-        country: 'Kenya',
-        adoptionDate: '2024-09-01',
-        implementationProgress: 25,
-        impactScore: 55,
-        millsAffected: 42,
-        advocacyCampaigns: 1
-    },
+    { id: 'POL-001', title: 'National Premix Standards 2024', region: 'Kenya', status: 'Active', complianceRate: 98, lastAudit: '2024-11-15', nextReview: '2025-05-15' },
+    { id: 'POL-002', title: 'Importation Protocols - Maize', region: 'East Africa', status: 'Review', complianceRate: 85, lastAudit: '2024-10-20', nextReview: '2025-01-10' },
+    { id: 'POL-003', title: 'Small Scale Miller Exemption', region: 'Rural Districts', status: 'Draft', complianceRate: 0, lastAudit: 'N/A', nextReview: 'N/A' },
 ]
 
-const REGULATORY_LANDSCAPE = [
-    { country: 'Kenya', status: 'mandatory', maturity: 95, mills: 42, coverage: 88 },
-    { country: 'Uganda', status: 'voluntary', maturity: 75, mills: 28, coverage: 65 },
-    { country: 'Tanzania', status: 'pilot', maturity: 55, mills: 15, coverage: 42 },
-    { country: 'Rwanda', status: 'voluntary', maturity: 68, mills: 12, coverage: 58 },
-    { country: 'Burundi', status: 'none', maturity: 20, mills: 5, coverage: 15 },
-]
-
-const ADOPTION_TREND = [
-    { year: '2020', mandatory: 1, voluntary: 2, pilot: 1 },
-    { year: '2021', mandatory: 2, voluntary: 3, pilot: 2 },
-    { year: '2022', mandatory: 2, voluntary: 4, pilot: 3 },
-    { year: '2023', mandatory: 3, voluntary: 5, pilot: 4 },
-    { year: '2024', mandatory: 4, voluntary: 6, pilot: 5 },
+const REGULATORY_LANDSCAPE: RegulatoryLandscape[] = [
+    { country: 'Kenya', status: 'Mandatory', legislation: 'KS EAS 767:2019', yearEnacted: '2019', gapAnalysis: 'Fully Aligned' },
+    { country: 'Uganda', status: 'Mandatory', legislation: 'US EAS 767', yearEnacted: '2020', gapAnalysis: 'Minor Gaps in QC' },
+    { country: 'Tanzania', status: 'Voluntary', legislation: 'TZS 2023 (Draft)', yearEnacted: 'Pending', gapAnalysis: 'Enforcement Mechanism Missing' },
 ]
 
 const ADVOCACY_CAMPAIGNS = [
-    {
-        id: 'ADV-001',
-        title: 'National Fortification Awareness',
-        policy: 'POL-001',
-        status: 'active',
-        reach: 2500000,
-        engagement: 450000,
-        startDate: '2024-01-15',
-        budget: 150000,
-        milestones: 8,
-        completed: 6
-    },
-    {
-        id: 'ADV-002',
-        title: 'School Nutrition Program',
-        policy: 'POL-001',
-        status: 'active',
-        reach: 850000,
-        engagement: 320000,
-        startDate: '2024-03-01',
-        budget: 85000,
-        milestones: 5,
-        completed: 4
-    },
-    {
-        id: 'ADV-003',
-        title: 'Industry Stakeholder Engagement',
-        policy: 'POL-004',
-        status: 'planning',
-        reach: 500000,
-        engagement: 0,
-        startDate: '2024-12-01',
-        budget: 45000,
-        milestones: 6,
-        completed: 0
-    },
+    { id: 'CAM-001', title: 'Fortify Future 2025', target: 'Legislators', reach: '150 MPs', status: 'Active', impact: 'High' },
+    { id: 'CAM-002', title: 'Consumer Awareness Wk', target: 'Public', reach: '5M Citizens', status: 'Planning', impact: 'Pending' },
 ]
 
-const IMPACT_METRICS = {
-    totalPolicies: 15,
-    activePolicies: 4,
-    millsCovered: 97,
-    populationReach: 12500000,
-    complianceImprovement: 23,
-    nutritionalOutcomes: 18,
-}
-
 export function PolicyAdvocacy() {
-    const [selectedPolicy, setSelectedPolicy] = React.useState<Policy | null>(null)
-    const [showPolicyDialog, setShowPolicyDialog] = React.useState(false)
-    const [showAdvocacyDialog, setShowAdvocacyDialog] = React.useState(false)
+    const [activeTab, setActiveTab] = useState('landscape')
 
-    const getStatusColor = (status: PolicyStatus) => {
-        switch (status) {
-            case 'proposed': return 'bg-gray-100 text-gray-700'
-            case 'adopted': return 'bg-blue-100 text-blue-700'
-            case 'implementing': return 'bg-yellow-100 text-yellow-700'
-            case 'monitoring': return 'bg-green-100 text-green-700'
-            case 'completed': return 'bg-purple-100 text-purple-700'
-            default: return 'bg-gray-100 text-gray-700'
-        }
+    // Landscape State
+    const [landscapes, setLandscapes] = useState(REGULATORY_LANDSCAPE)
+    const [showAddLandscape, setShowAddLandscape] = useState(false)
+    const [newLandscape, setNewLandscape] = useState<Partial<RegulatoryLandscape>>({})
+
+    // Framework Wizard State
+    const [showFrameworkWizard, setShowFrameworkWizard] = useState(false)
+    const [frameworkStep, setFrameworkStep] = useState(1)
+    const [frameworkData, setFrameworkData] = useState<any>({})
+
+    // Implementation Report State
+    const [showImplementationDialog, setShowImplementationDialog] = useState(false)
+    const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null)
+
+    // Manifest Adjustment State
+    const [showManifestDialog, setShowManifestDialog] = useState(false)
+
+    // Campaign Deployment State
+    const [showCampaignWizard, setShowCampaignWizard] = useState(false)
+    const [campaignStep, setCampaignStep] = useState(1)
+    const [campaignData, setCampaignData] = useState<any>({})
+
+    // Asset Management State
+    const [showAssetDialog, setShowAssetDialog] = useState(false)
+    const [selectedCampaignForAssets, setSelectedCampaignForAssets] = useState<string | null>(null)
+
+    // Impact Brief State
+    const [showImpactBrief, setShowImpactBrief] = useState(false)
+
+    // Handlers
+    const handleAssetManage = (campaignId: string) => {
+        setSelectedCampaignForAssets(campaignId)
+        setShowAssetDialog(true)
     }
 
-    const getTypeColor = (type: PolicyType) => {
-        switch (type) {
-            case 'mandatory': return 'bg-red-100 text-red-700 border-red-200'
-            case 'voluntary': return 'bg-green-100 text-green-700 border-green-200'
-            case 'pilot': return 'bg-blue-100 text-blue-700 border-blue-200'
-            case 'regulatory': return 'bg-purple-100 text-purple-700 border-purple-200'
-            default: return 'bg-gray-100 text-gray-700 border-gray-200'
+    const handleFrameworkUpload = () => {
+        // Simulate upload
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = '.pdf,.docx'
+        input.onchange = (e: any) => {
+            const file = e.target.files[0]
+            if (file) {
+                toast.success("File Uploaded", { description: `${file.name} attached to framework.` })
+                setFrameworkData({ ...frameworkData, documentName: file.name })
+            }
         }
+        input.click()
+    }
+    const handleAddLandscape = () => {
+        if (!newLandscape.country || !newLandscape.status) {
+            toast.error("Please fill in required fields")
+            return
+        }
+        setLandscapes([...landscapes, newLandscape as RegulatoryLandscape])
+        setShowAddLandscape(false)
+        setNewLandscape({})
+        toast.success("New Landscape Added")
+    }
+
+    const handleFrameworkFinish = () => {
+        toast.success("Framework Drafted", { description: `${frameworkData.title || 'New Policy'} added to roadmap.` })
+        setShowFrameworkWizard(false)
+        setFrameworkStep(1)
+        setFrameworkData({})
+    }
+
+    const handleCampaignLaunch = () => {
+        toast.success("Campaign Deployed", { description: `${campaignData.name || 'Campaign'} represents a ${campaignData.budget || '$0'} investment.` })
+        setShowCampaignWizard(false)
+        setCampaignStep(1)
+        setCampaignData({})
     }
 
     return (
         <div className="space-y-6">
-            {/* Impact Summary Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 shrink-0">
-                <Card className="hover:shadow-md transition-all border-zinc-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Legislative Base</CardTitle>
-                        <div className="p-2 rounded-full bg-blue-50">
-                            <FileText className="h-4 w-4 text-blue-600" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-zinc-900">{IMPACT_METRICS.totalPolicies}</div>
-                        <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-tighter">Total Frameworks</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all border-zinc-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Live Enforcement</CardTitle>
-                        <div className="p-2 rounded-full bg-green-50">
-                            <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-zinc-900">{IMPACT_METRICS.activePolicies}</div>
-                        <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-tighter">Active Mandates</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all border-zinc-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Industrial Depth</CardTitle>
-                        <div className="p-2 rounded-full bg-purple-50">
-                            <Target className="h-4 w-4 text-purple-600" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-zinc-900">{IMPACT_METRICS.millsCovered}</div>
-                        <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-tighter">Impacted Entities</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all border-zinc-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Public Health</CardTitle>
-                        <div className="p-2 rounded-full bg-orange-50">
-                            <Users className="h-4 w-4 text-orange-600" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-zinc-900">{(IMPACT_METRICS.populationReach / 1000000).toFixed(1)}M</div>
-                        <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-tighter">Est. Net Reach</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all border-zinc-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Compliance Δ</CardTitle>
-                        <div className="p-2 rounded-full bg-indigo-50">
-                            <TrendingUp className="h-4 w-4 text-indigo-600" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-indigo-600">+{IMPACT_METRICS.complianceImprovement}%</div>
-                        <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-tighter">Efficiency Gain</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all border-zinc-200">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Outcome α</CardTitle>
-                        <div className="p-2 rounded-full bg-pink-50">
-                            <Award className="h-4 w-4 text-pink-600" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black text-pink-600">+{IMPACT_METRICS.nutritionalOutcomes}%</div>
-                        <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-tighter">Biomarker Shift</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <Tabs defaultValue="landscape" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-5 lg:w-[900px] bg-white/40 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
-                    <TabsTrigger value="landscape" className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all">
-                        <Globe className="w-4 h-4" />
-                        <span className="hidden lg:inline">Landscape</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="adoption" className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all">
-                        <Flag className="w-4 h-4" />
-                        <span className="hidden lg:inline">Adoption</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="implementation" className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all">
-                        <Target className="w-4 h-4" />
-                        <span className="hidden lg:inline">Implementation</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="advocacy" className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all">
-                        <Megaphone className="w-4 h-4" />
-                        <span className="hidden lg:inline">Advocacy</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="impact" className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all">
-                        <BarChart3 className="w-4 h-4" />
-                        <span className="hidden lg:inline">Impact</span>
-                    </TabsTrigger>
+            <Tabs defaultValue="landscape" value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+                <TabsList className="grid w-full grid-cols-5 lg:w-[800px]">
+                    <TabsTrigger value="landscape">Landscape</TabsTrigger>
+                    <TabsTrigger value="adoption">Adoption</TabsTrigger>
+                    <TabsTrigger value="implementation">Implementation</TabsTrigger>
+                    <TabsTrigger value="advocacy">Advocacy</TabsTrigger>
+                    <TabsTrigger value="impact">Impact</TabsTrigger>
                 </TabsList>
 
-                {/* REGULATORY LANDSCAPE TAB */}
-                <TabsContent value="landscape">
-                    <Card className="border-none shadow-md overflow-hidden bg-white">
-                        <CardHeader className="border-b py-3 px-6">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-base flex items-center gap-2">
-                                    <Globe className="w-4 h-4 text-zinc-400" />
-                                    National Framework Maturity
-                                </CardTitle>
-                                <Button variant="outline" size="sm" className="h-8">
-                                    <Download className="w-3.5 h-3.5 mr-2" />
-                                    Legislative Map
-                                </Button>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {REGULATORY_LANDSCAPE.map((country) => (
-                                    <div key={country.country} className="flex flex-col border-2 border-zinc-100 rounded-2xl overflow-hidden hover:border-zinc-300 transition-all group bg-white shadow-sm">
-                                        <div className="p-4 border-b bg-zinc-50/50 flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <Flag className="w-4 h-4 text-zinc-400" />
-                                                <h4 className="font-bold text-zinc-900 text-sm">{country.country}</h4>
-                                            </div>
-                                            <Badge className={`border-none px-2 py-0 h-5 text-[8px] font-black tracking-widest ${country.status === 'mandatory' ? 'bg-red-100 text-red-700' :
-                                                country.status === 'voluntary' ? 'bg-green-100 text-green-700' :
-                                                    country.status === 'pilot' ? 'bg-blue-100 text-blue-700' : 'bg-zinc-100 text-zinc-500'
-                                                }`}>
-                                                {country.status.toUpperCase()}
-                                            </Badge>
-                                        </div>
+                {/* 1. REGULATORY LANDSCAPE */}
+                <TabsContent value="landscape" className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <h2 className="text-2xl font-bold tracking-tight">Regulatory Landscape</h2>
+                            <p className="text-muted-foreground">Monitor regional compliance standards and gaps.</p>
+                        </div>
+                        <Button onClick={() => setShowAddLandscape(true)}>
+                            <Plus className="w-4 h-4 mr-2" /> Add Landscape
+                        </Button>
+                    </div>
 
-                                        <div className="p-4 space-y-5">
-                                            <div>
-                                                <div className="flex justify-between items-end mb-1.5">
-                                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">Regulatory Maturity</span>
-                                                    <span className="text-xs font-black text-zinc-900">{country.maturity}%</span>
-                                                </div>
-                                                <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-zinc-900 rounded-full transition-all duration-1000" style={{ width: `${country.maturity}%` }} />
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-                                                    <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-1">Active Mills</p>
-                                                    <p className="text-lg font-black text-zinc-900 leading-none">{country.mills}</p>
-                                                </div>
-                                                <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-                                                    <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-1">Coverage</p>
-                                                    <p className="text-lg font-black text-zinc-900 leading-none">{country.coverage}%</p>
-                                                </div>
-                                            </div>
-
-                                            {country.status === 'none' && (
-                                                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                                                    <AlertCircle className="w-3.5 h-3.5 text-blue-600" />
-                                                    <p className="text-[10px] text-blue-700 font-bold leading-tight">Framework gap identified. Priority advocacy required.</p>
-                                                </div>
-                                            )}
-                                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {landscapes.map((item, idx) => (
+                            <Card key={idx} className="border-l-4 border-l-blue-500">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <CardTitle className="text-xl flex items-center gap-2">
+                                            <Globe className="w-5 h-5 text-blue-500" /> {item.country}
+                                        </CardTitle>
+                                        <Badge variant={item.status === 'Mandatory' ? 'default' : 'secondary'}>{item.status}</Badge>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* POLICY ADOPTION TAB */}
-                <TabsContent value="adoption">
-                    <div className="space-y-6">
-                        <Card className="border-none shadow-md overflow-hidden bg-white">
-                            <CardHeader className="border-b py-3 px-6 bg-white">
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4 text-red-600" />
-                                        Legislative Momentum Trend
-                                    </CardTitle>
-                                    <Button size="sm" onClick={() => setShowPolicyDialog(true)} className="h-8 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-[11px]">
-                                        <Plus className="w-3.5 h-3.5 mr-2" />
-                                        DRAFT NEW FRAMEWORK
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="pt-6">
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={ADOPTION_TREND}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                        <XAxis dataKey="year" axisLine={false} tickLine={false} fontSize={12} />
-                                        <YAxis axisLine={false} tickLine={false} fontSize={12} />
-                                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                        <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 700, paddingTop: '10px' }} />
-                                        <Bar dataKey="mandatory" fill="#ef4444" name="Mandatory Mandates" stackId="a" radius={[0, 0, 0, 0]} />
-                                        <Bar dataKey="voluntary" fill="#10b981" name="Voluntary Standards" stackId="a" radius={[0, 0, 0, 0]} />
-                                        <Bar dataKey="pilot" fill="#3b82f6" name="Pilot Initiatives" stackId="a" radius={[4, 4, 0, 0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-
-                                <div className="mt-6 p-4 bg-zinc-900 rounded-2xl text-white shadow-lg overflow-hidden relative">
-                                    <div className="absolute top-0 right-0 p-4 opacity-10">
-                                        <TrendingUp className="w-16 h-16 rotate-12" />
+                                    <CardDescription>Legislation: {item.legislation}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-muted-foreground">Enacted:</span>
+                                        <span className="font-medium">{item.yearEnacted}</span>
                                     </div>
-                                    <div className="flex items-start gap-3">
-                                        <div className="p-2 bg-white/10 rounded-lg">
-                                            <TrendingUp className="w-4 h-4 text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-xs uppercase tracking-widest text-blue-400 mb-1">Growth Intelligence</h4>
-                                            <p className="text-[11px] text-zinc-300 leading-relaxed font-medium">
-                                                Policy adoption has scaled <span className="text-white font-black">150% YoY</span>. Mandatory mandates now dictate <span className="text-white font-black">27%</span> of national frameworks, reinforcing the shift towards strict regulatory enforcement.
-                                            </p>
-                                        </div>
+                                    <div className="bg-slate-50 p-3 rounded-md text-sm">
+                                        <span className="font-semibold text-slate-700">Gap Analysis:</span>
+                                        <p className="text-slate-600 mt-1">{item.gapAnalysis}</p>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Active Policies Table */}
-                        <Card className="border-none shadow-md overflow-hidden bg-white">
-                            <CardHeader className="border-b py-3 px-6 bg-white">
-                                <CardTitle className="text-base flex items-center gap-2">
-                                    <FileText className="w-4 h-4 text-zinc-400" />
-                                    Global Regulatory Registry
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <Table>
-                                    <TableHeader className="bg-zinc-50/50">
-                                        <TableRow>
-                                            <TableHead className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">ID</TableHead>
-                                            <TableHead className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Framework Title</TableHead>
-                                            <TableHead className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Classification</TableHead>
-                                            <TableHead className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Jurisdiction</TableHead>
-                                            <TableHead className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Enforcement</TableHead>
-                                            <TableHead className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Adopted</TableHead>
-                                            <TableHead className="text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500">Entities Affected</TableHead>
-                                            <TableHead className="text-right text-[10px] font-bold uppercase tracking-wider text-zinc-500">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {POLICIES.map((policy) => (
-                                            <TableRow key={policy.id} className="hover:bg-zinc-50/50 transition-colors group">
-                                                <TableCell className="font-mono text-[10px] font-bold text-zinc-500">{policy.id}</TableCell>
-                                                <TableCell className="font-bold text-zinc-900 text-xs">{policy.title}</TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className={`text-[8px] font-black tracking-widest h-5 ${getTypeColor(policy.type)}`}>
-                                                        {policy.type.toUpperCase()}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-xs font-bold text-zinc-600">{policy.country}</TableCell>
-                                                <TableCell>
-                                                    <Badge className={`border-none px-2 py-0 h-5 text-[8px] font-black tracking-widest ${getStatusColor(policy.status)}`}>
-                                                        {policy.status.toUpperCase()}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-[10px] font-bold text-zinc-500">
-                                                    {policy.adoptionDate ? new Date(policy.adoptionDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'PENDING'}
-                                                </TableCell>
-                                                <TableCell className="text-center font-black text-zinc-900 text-xs">{policy.millsAffected}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        className="h-8 text-[11px] font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                                        onClick={() => {
-                                                            setSelectedPolicy(policy)
-                                                            setShowPolicyDialog(true)
-                                                        }}
-                                                    >
-                                                        Details
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button variant="ghost" className="w-full text-blue-600 hover:text-blue-700">View Legal Text <ArrowRight className="w-4 h-4 ml-2" /></Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
                     </div>
                 </TabsContent>
 
-                {/* IMPLEMENTATION MONITORING TAB */}
-                <TabsContent value="implementation">
-                    <Card className="border-none shadow-md overflow-hidden bg-white">
-                        <CardHeader className="border-b py-3 px-6 bg-white">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-base flex items-center gap-2">
-                                    <Target className="w-4 h-4 text-blue-600" />
-                                    Execution Fidelity Monitoring
-                                </CardTitle>
-                                <Button variant="outline" size="sm" className="h-8">
-                                    <Download className="w-3.5 h-3.5 mr-2" />
-                                    Audit Manifest
-                                </Button>
-                            </div>
+                {/* 2. POLICY ADOPTION */}
+                <TabsContent value="adoption" className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <h2 className="text-2xl font-bold tracking-tight">Policy Adoption Roadmap</h2>
+                            <p className="text-muted-foreground">Manage the pipeline of new fortification policies.</p>
+                        </div>
+                        <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowFrameworkWizard(true)}>
+                            <Plus className="w-4 h-4 mr-2" /> Draft New Framework
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                            { stage: 'Drafting', count: 2, items: ['Rice Fortification Bill', 'Salt Iodine Revision'] },
+                            { stage: 'Stakeholder Review', count: 1, items: ['Premix Tax Exemption'] },
+                            { stage: 'Final Approval', count: 1, items: ['Oil Fortification Standard'] },
+                        ].map(col => (
+                            <Card key={col.stage} className="bg-slate-50/50">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium uppercase text-muted-foreground flex justify-between">
+                                        {col.stage} <Badge variant="outline">{col.count}</Badge>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    {col.items.map(item => (
+                                        <div key={item} className="bg-white p-3 rounded shadow-sm border flex justify-between items-center group cursor-pointer hover:border-blue-300 transition-colors">
+                                            <span className="font-medium text-sm">{item}</span>
+                                            <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500" />
+                                        </div>
+                                    ))}
+                                    <Button variant="ghost" size="sm" className="w-full text-muted-foreground border-dashed border-2">+ Add Item</Button>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </TabsContent>
+
+                {/* 3. IMPLEMENTATION MONITORING */}
+                <TabsContent value="implementation" className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Active Policy Implementation Status</CardTitle>
+                            <CardDescription>Tracking real-world application of enacted standards.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-6">
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                {POLICIES.filter(p => p.status === 'implementing' || p.status === 'monitoring').map((policy) => (
-                                    <div key={policy.id} className="flex flex-col border-2 border-zinc-100 rounded-2xl overflow-hidden hover:border-zinc-300 transition-all bg-white shadow-sm">
-                                        <div className="p-4 border-b bg-zinc-50/50 flex items-center justify-between">
-                                            <div>
-                                                <h4 className="font-bold text-zinc-900 text-sm">{policy.title}</h4>
-                                                <p className="text-[10px] font-mono text-zinc-500 font-bold uppercase tracking-widest">{policy.id} // {policy.country}</p>
+                        <CardContent>
+                            <div className="space-y-6">
+                                {POLICIES.map(policy => (
+                                    <div key={policy.id} className="flex flex-col md:flex-row items-center justify-between p-4 border rounded-xl hover:bg-slate-50 transition-colors gap-4">
+                                        <div className="flex items-center gap-4 flex-1">
+                                            <div className={`p-2 rounded-lg ${policy.complianceRate > 90 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                <Building2 className="w-6 h-6" />
                                             </div>
-                                            <Badge className={`border-none px-2 py-0 h-5 text-[8px] font-black tracking-widest ${getStatusColor(policy.status)}`}>
-                                                {policy.status.toUpperCase()}
-                                            </Badge>
+                                            <div>
+                                                <h4 className="font-bold text-base">{policy.title}</h4>
+                                                <div className="flex gap-2 text-sm text-muted-foreground mt-1">
+                                                    <Badge variant="outline">{policy.region}</Badge>
+                                                    <span>Last Audit: {policy.lastAudit}</span>
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <div className="p-4 space-y-6">
-                                            <div className="grid grid-cols-2 gap-6">
-                                                <div className="space-y-4">
-                                                    <div className="space-y-1.5">
-                                                        <div className="flex justify-between items-end">
-                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tight">Deployment Progress</span>
-                                                            <span className="text-xs font-black text-blue-600">{policy.implementationProgress}%</span>
-                                                        </div>
-                                                        <div className="h-1.5 w-full bg-blue-50 rounded-full overflow-hidden">
-                                                            <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{ width: `${policy.implementationProgress}%` }} />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="space-y-1.5">
-                                                        <div className="flex justify-between items-end">
-                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tight">Public Health Impact</span>
-                                                            <span className="text-xs font-black text-green-600">{policy.impactScore}%</span>
-                                                        </div>
-                                                        <div className="h-1.5 w-full bg-green-50 rounded-full overflow-hidden">
-                                                            <div className="h-full bg-green-600 rounded-full transition-all duration-1000" style={{ width: `${policy.impactScore}%` }} />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 gap-2">
-                                                    <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100 flex items-center justify-between">
-                                                        <div className="flex items-center gap-2">
-                                                            <Building2 className="w-3.5 h-3.5 text-zinc-400" />
-                                                            <span className="text-[9px] font-bold text-zinc-500 uppercase">Impacted</span>
-                                                        </div>
-                                                        <span className="text-sm font-black text-zinc-900">{policy.millsAffected} Mills</span>
-                                                    </div>
-                                                    <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100 flex items-center justify-between">
-                                                        <div className="flex items-center gap-2">
-                                                            <Megaphone className="w-3.5 h-3.5 text-zinc-400" />
-                                                            <span className="text-[9px] font-bold text-zinc-500 uppercase">Campaigns</span>
-                                                        </div>
-                                                        <span className="text-sm font-black text-zinc-900">{policy.advocacyCampaigns} Active</span>
-                                                    </div>
-                                                </div>
+                                        <div className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold">{policy.complianceRate}%</div>
+                                                <div className="text-xs text-muted-foreground uppercase">Compliance</div>
                                             </div>
-
-                                            <div className="pt-2">
-                                                <h5 className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-3 border-b pb-1">Milestone Checklist</h5>
-                                                <div className="grid grid-cols-1 gap-2">
-                                                    {[
-                                                        { title: 'Stakeholder Consultation', status: 'completed' },
-                                                        { title: 'Regulatory Framework Finalized', status: 'completed' },
-                                                        { title: 'Regional Capacity Building', status: policy.implementationProgress >= 50 ? 'completed' : 'in_progress' },
-                                                        { title: 'National Monitoring Setup', status: policy.implementationProgress >= 75 ? 'completed' : 'pending' },
-                                                        { title: 'Long-term Impact Study', status: policy.implementationProgress >= 90 ? 'completed' : 'pending' },
-                                                    ].map((milestone, idx) => (
-                                                        <div key={idx} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-zinc-50/50 border border-zinc-100">
-                                                            {milestone.status === 'completed' ? (
-                                                                <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-                                                            ) : milestone.status === 'in_progress' ? (
-                                                                <Clock className="w-3.5 h-3.5 text-orange-500 animate-pulse" />
-                                                            ) : (
-                                                                <div className="w-3.5 h-3.5 rounded-full border border-zinc-300" />
-                                                            )}
-                                                            <span className={`text-[10px] font-bold ${milestone.status === 'completed' ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                                                                {milestone.title}
-                                                            </span>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                            <div className="flex gap-2">
+                                                <Button variant="outline" size="sm" onClick={() => setShowManifestDialog(true)}>Adjust Manifest</Button>
+                                                <Button size="sm" onClick={() => { setSelectedPolicy(policy); setShowImplementationDialog(true); }}>View Details</Button>
                                             </div>
                                         </div>
                                     </div>
@@ -583,86 +264,359 @@ export function PolicyAdvocacy() {
                     </Card>
                 </TabsContent>
 
-                {/* ADVOCACY CAMPAIGNS TAB */}
-                <TabsContent value="advocacy">
-                    <div className="space-y-6">
-                        <Card className="border-none shadow-md overflow-hidden bg-white">
-                            <CardHeader className="border-b py-3 px-6 bg-white">
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <Megaphone className="w-4 h-4 text-orange-600" />
-                                        Social Mobilization Hub
-                                    </CardTitle>
-                                    <Button size="sm" onClick={() => setShowAdvocacyDialog(true)} className="h-8 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-[11px]">
-                                        <Plus className="w-3.5 h-3.5 mr-2" />
-                                        DEPLOY CAMPAIGN
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-6">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    {ADVOCACY_CAMPAIGNS.map((campaign) => (
-                                        <div key={campaign.id} className="group relative border-2 border-zinc-100 rounded-2xl overflow-hidden hover:border-orange-100 transition-all bg-white shadow-sm flex flex-col">
-                                            <div className="p-4 border-b bg-orange-50/30 flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="p-2 bg-orange-100 rounded-xl group-hover:scale-110 transition-transform">
-                                                        <Megaphone className="w-4 h-4 text-orange-600" />
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="font-bold text-zinc-900 text-sm">{campaign.title}</h4>
-                                                        <p className="text-[10px] font-mono text-zinc-500 font-bold tracking-tight">{campaign.id} // Link: {campaign.policy}</p>
-                                                    </div>
-                                                </div>
-                                                <Badge className={`border-none px-2 py-0 h-5 text-[8px] font-black tracking-widest ${campaign.status === 'active' ? 'bg-green-100 text-green-700' :
-                                                    campaign.status === 'planning' ? 'bg-blue-100 text-blue-700' : 'bg-zinc-100 text-zinc-500'
-                                                    }`}>
-                                                    {campaign.status.toUpperCase()}
-                                                </Badge>
+                {/* 4. ADVOCACY */}
+                <TabsContent value="advocacy" className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-2xl font-bold">Advocacy Campaigns</h2>
+                        <Button onClick={() => setShowCampaignWizard(true)}>
+                            <Zap className="w-4 h-4 mr-2" /> Deploy Campaign
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {ADVOCACY_CAMPAIGNS.map(camp => (
+                            <Card key={camp.id}>
+                                <CardHeader>
+                                    <div className="flex justify-between">
+                                        <Badge>{camp.status}</Badge>
+                                        <Users className="w-5 h-5 text-muted-foreground" />
+                                    </div>
+                                    <CardTitle className="mt-2">{camp.title}</CardTitle>
+                                    <CardDescription>Target: {camp.target}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-slate-50 p-3 rounded">
+                                            <div className="text-xs text-muted-foreground">Estimated Reach</div>
+                                            <div className="text-lg font-bold">{camp.reach}</div>
+                                        </div>
+                                        <div className="bg-slate-50 p-3 rounded">
+                                            <div className="text-xs text-muted-foreground">Impact Score</div>
+                                            <div className="text-lg font-bold">{camp.impact}</div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button variant="outline" className="w-full" onClick={() => handleAssetManage(camp.id)}>Manage Assets</Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {/* Asset Management Dialog */}
+                    <Dialog open={showAssetDialog} onOpenChange={setShowAssetDialog}>
+                        <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                                <DialogTitle>Campaign Asset Library</DialogTitle>
+                                <DialogDescription>Manage creative assets for {ADVOCACY_CAMPAIGNS.find(c => c.id === selectedCampaignForAssets)?.title}</DialogDescription>
+                            </DialogHeader>
+                            <Tabs defaultValue="images" className="w-full">
+                                <TabsList>
+                                    <TabsTrigger value="images">Images & Graphics</TabsTrigger>
+                                    <TabsTrigger value="video">Video Content</TabsTrigger>
+                                    <TabsTrigger value="docs">Press Kits & Docs</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="images" className="space-y-4">
+                                    <div className="grid grid-cols-3 gap-4 mt-4">
+                                        <Card className="overflow-hidden group relative cursor-pointer">
+                                            <div className="bg-slate-200 h-32 flex items-center justify-center text-slate-400 group-hover:bg-slate-300 transition-colors">
+                                                <Globe className="w-8 h-8" />
                                             </div>
+                                            <CardFooter className="p-2 text-xs font-medium">campaign_banner_v1.jpg</CardFooter>
+                                        </Card>
+                                        <Card className="overflow-hidden group relative cursor-pointer">
+                                            <div className="bg-slate-200 h-32 flex items-center justify-center text-slate-400 group-hover:bg-slate-300 transition-colors">
+                                                <Users className="w-8 h-8" />
+                                            </div>
+                                            <CardFooter className="p-2 text-xs font-medium">social_post_01.png</CardFooter>
+                                        </Card>
+                                        <div className="border-2 border-dashed rounded-xl flex flex-col items-center justify-center min-h-[160px] cursor-pointer hover:bg-slate-50 text-slate-400">
+                                            <UploadCloud className="w-8 h-8 mb-2" />
+                                            <span className="text-sm">Upload Image</span>
+                                        </div>
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="video">
+                                    <div className="py-12 text-center text-muted-foreground">No video assets uploaded yet.</div>
+                                </TabsContent>
+                                <TabsContent value="docs">
+                                    <div className="py-12 text-center text-muted-foreground">No documents uploaded yet.</div>
+                                </TabsContent>
+                            </Tabs>
+                            <DialogFooter>
+                                <Button onClick={() => setShowAssetDialog(false)}>Done</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </TabsContent>
 
-                                            <div className="p-4 space-y-4 flex-1">
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-                                                        <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Total Reach</p>
-                                                        <div className="flex items-center gap-1.5">
-                                                            <Users className="w-3.5 h-3.5 text-blue-600" />
-                                                            <p className="text-lg font-black text-zinc-900 leading-none">{(campaign.reach / 1000000).toFixed(1)}M</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-                                                        <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Engagement</p>
-                                                        <div className="flex items-center gap-1.5">
-                                                            <MessageSquare className="w-3.5 h-3.5 text-green-600" />
-                                                            <p className="text-lg font-black text-zinc-900 leading-none">{(campaign.engagement / 1000).toFixed(0)}k</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                {/* 5. IMPACT */}
+                <TabsContent value="impact" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <Card className="md:col-span-2">
+                            <CardHeader>
+                                <CardTitle>Health Outcomes Correlation</CardTitle>
+                                <CardDescription>Mapping fortification compliance to reduction in deficiency rates.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="h-[300px] flex items-end justify-center bg-white border rounded-xl p-8 gap-6">
+                                {[
+                                    { year: '2020', val: 45, label: 'Baseline' },
+                                    { year: '2021', val: 55, label: 'Pilot' },
+                                    { year: '2022', val: 72, label: 'Expansion' },
+                                    { year: '2023', val: 88, label: 'Scaling' },
+                                    { year: '2024', val: 95, label: 'Current' }
+                                ].map((d, i) => (
+                                    <div key={d.year} className="flex flex-col items-center gap-2 group cursor-pointer w-full max-w-[60px]">
+                                        <div className="text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity mb-1">{d.val}%</div>
+                                        <div className="w-full bg-blue-100 rounded-t-md relative hover:bg-blue-200 transition-all duration-500" style={{ height: `${d.val * 2}px` }}>
+                                            <div className="absolute bottom-0 w-full bg-blue-500 rounded-t-md transition-all duration-1000" style={{ height: `${d.val * 2 * (d.val / 100)}px` }}></div>
+                                        </div>
+                                        <div className="text-xs text-muted-foreground font-medium">{d.year}</div>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                        <div className="space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Key Metrics</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {[
+                                        { label: 'Lives Impacted', val: '12.5M' },
+                                        { label: 'DALYs Averted', val: '450k' },
+                                        { label: 'Economic Return', val: '$1 : $8' }
+                                    ].map(m => (
+                                        <div key={m.label} className="flex justify-between items-center border-b pb-2 last:border-0 last:pb-0">
+                                            <span className="text-sm text-muted-foreground">{m.label}</span>
+                                            <span className="font-bold text-lg">{m.val}</span>
+                                        </div>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                            <Button size="lg" className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => setShowImpactBrief(true)}>
+                                <FileText className="w-4 h-4 mr-2" /> Generate Impact Brief
+                            </Button>
+                        </div>
+                    </div>
+                </TabsContent>
+            </Tabs>
 
-                                                <div className="space-y-1.5">
-                                                    <div className="flex justify-between items-end">
-                                                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tight">Campaign Saturation</span>
-                                                        <span className="text-xs font-black text-zinc-900">
-                                                            {campaign.completed}/{campaign.milestones} Milestones
-                                                        </span>
-                                                    </div>
-                                                    <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
-                                                        <div
-                                                            className="h-full bg-orange-500 rounded-full transition-all duration-1000"
-                                                            style={{ width: `${(campaign.completed / campaign.milestones) * 100}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
+            {/* DIALOGS */}
 
-                                                <div className="flex items-center justify-between pt-2">
-                                                    <div className="flex items-center gap-1">
-                                                        <DollarSign className="w-3 h-3 text-zinc-400" />
-                                                        <span className="text-[10px] font-bold text-zinc-500">Allocation: ${(campaign.budget / 1000).toFixed(0)}k</span>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <Button variant="ghost" size="sm" className="h-7 text-[10px] font-black text-zinc-400 hover:text-zinc-600 px-2">ANALYTICS</Button>
-                                                        <Button variant="outline" size="sm" className="h-7 text-[10px] font-black text-zinc-900 border-zinc-200 hover:bg-zinc-50 px-2">MANIFEST</Button>
-                                                    </div>
+            {/* 1. Add Landscape Dialog */}
+            <Dialog open={showAddLandscape} onOpenChange={setShowAddLandscape}>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>Add Regulatory Landscape</DialogTitle></DialogHeader>
+                    <div className="space-y-4 py-2">
+                        <div className="space-y-2">
+                            <Label>Country/Region</Label>
+                            <Select onValueChange={v => setNewLandscape({ ...newLandscape, country: v })}>
+                                <SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Nigeria">Nigeria</SelectItem>
+                                    <SelectItem value="Ethiopia">Ethiopia</SelectItem>
+                                    <SelectItem value="Rwanda">Rwanda</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Status</Label>
+                            <Select onValueChange={v => setNewLandscape({ ...newLandscape, status: v as any })}>
+                                <SelectTrigger><SelectValue placeholder="Select Status" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Mandatory">Mandatory</SelectItem>
+                                    <SelectItem value="Voluntary">Voluntary</SelectItem>
+                                    <SelectItem value="No Standards">No Standards</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Relevant Legislation</Label>
+                            <Input placeholder="e.g. Act 204 of 2023" onChange={e => setNewLandscape({ ...newLandscape, legislation: e.target.value })} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Year Enacted</Label>
+                            <Input placeholder="YYYY" onChange={e => setNewLandscape({ ...newLandscape, yearEnacted: e.target.value })} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Gap Analysis Summary</Label>
+                            <Textarea placeholder="Brief assessment of current gaps..." onChange={e => setNewLandscape({ ...newLandscape, gapAnalysis: e.target.value })} />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowAddLandscape(false)}>Cancel</Button>
+                        <Button onClick={handleAddLandscape}>Save Landscape</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* 2. Framework Wizard */}
+            <Dialog open={showFrameworkWizard} onOpenChange={setShowFrameworkWizard}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>Draft New Policy Framework</DialogTitle>
+                        <DialogDescription>Step {frameworkStep} of 4</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 min-h-[300px]">
+                        {frameworkStep === 1 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                                <h3 className="font-semibold text-lg">Landscape & Goals</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Target Region</Label>
+                                        <Input placeholder="e.g. National" onChange={e => setFrameworkData({ ...frameworkData, region: e.target.value })} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Policy Type</Label>
+                                        <Select onValueChange={v => setFrameworkData({ ...frameworkData, type: v })}>
+                                            <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="mandate">Mandatory Standard</SelectItem>
+                                                <SelectItem value="incentive">Fiscal Incentive</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Framework Title</Label>
+                                    <Input placeholder="Official Title" onChange={e => setFrameworkData({ ...frameworkData, title: e.target.value })} />
+                                </div>
+                                <div
+                                    className={`space-y-2 border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${frameworkData.documentName ? 'bg-green-50 border-green-200' : 'hover:bg-slate-50'}`}
+                                    onClick={handleFrameworkUpload}
+                                >
+                                    {frameworkData.documentName ? (
+                                        <>
+                                            <FileText className="w-8 h-8 text-green-500 mb-2" />
+                                            <span className="text-sm font-medium text-green-700">{frameworkData.documentName}</span>
+                                            <span className="text-xs text-green-600">Click to replace</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <UploadCloud className="w-8 h-8 text-blue-500 mb-2" />
+                                            <span className="text-sm font-medium">Upload Framework Document (PDF/DOCX)</span>
+                                            <span className="text-xs text-muted-foreground">Drag & drop or click to browse</span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        {frameworkStep === 2 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                                <h3 className="font-semibold text-lg">Key Performance Indicators</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Target Coverage (%)</Label>
+                                        <Input type="number" placeholder="80" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Compliance Goal (%)</Label>
+                                        <Input type="number" placeholder="95" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Primary Impact Metric</Label>
+                                    <Select>
+                                        <SelectTrigger><SelectValue placeholder="Select Metric" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="anemia">Anemia Reduction</SelectItem>
+                                            <SelectItem value="goiter">Goiter Rate</SelectItem>
+                                            <SelectItem value="ntd">NTD Prevention</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        )}
+                        {frameworkStep === 3 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                                <h3 className="font-semibold text-lg">Localization</h3>
+                                <p className="text-sm text-muted-foreground mb-4">Select regions for phased rollout:</p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {['North (Arid)', 'Central (Urban)', 'Coastal', 'West (Agrarian)'].map(r => (
+                                        <div key={r} className="flex items-center space-x-2 border p-3 rounded">
+                                            <Checkbox id={r} />
+                                            <label htmlFor={r} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{r}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {frameworkStep === 4 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 text-center">
+                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <CheckCircle2 className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <h3 className="font-bold text-xl">Ready to Submit</h3>
+                                <p className="text-muted-foreground">The framework "{frameworkData.title || 'New Policy'}" will be added to the roadmap as a Draft.</p>
+                                <Card className="text-left mt-4 max-w-sm mx-auto bg-slate-50">
+                                    <CardContent className="p-4 space-y-2 text-sm">
+                                        <div className="flex justify-between"><span>Type:</span> <span className="font-medium">{frameworkData.type}</span></div>
+                                        <div className="flex justify-between"><span>Region:</span> <span className="font-medium">{frameworkData.region}</span></div>
+                                        <div className="flex justify-between text-blue-600"><span>Document:</span> <span className="font-medium underline cursor-pointer">framework_v1.pdf</span></div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        {frameworkStep > 1 && <Button variant="outline" onClick={() => setFrameworkStep(frameworkStep - 1)}>Back</Button>}
+                        {frameworkStep < 4 ? (
+                            <Button onClick={() => setFrameworkStep(frameworkStep + 1)}>Next</Button>
+                        ) : (
+                            <Button className="bg-green-600" onClick={handleFrameworkFinish}>Finish & Add</Button>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* 3. Implementation Details Dialog */}
+            <Dialog open={showImplementationDialog} onOpenChange={setShowImplementationDialog}>
+                <DialogContent className="max-w-3xl">
+                    <DialogHeader>
+                        <div className="flex justify-between items-start pr-4">
+                            <div>
+                                <DialogTitle className="text-xl">{selectedPolicy?.title}</DialogTitle>
+                                <DialogDescription className="mt-1">Implementation Report & Audit History</DialogDescription>
+                            </div>
+                            <Badge className="text-lg px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200">{selectedPolicy?.complianceRate}% Compliant</Badge>
+                        </div>
+                    </DialogHeader>
+                    <div className="py-2 space-y-6">
+                        <div className="grid grid-cols-3 gap-4">
+                            <Card>
+                                <CardContent className="pt-6 text-center">
+                                    <div className="text-2xl font-bold">142</div>
+                                    <div className="text-xs text-muted-foreground mt-1">Active Mills</div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardContent className="pt-6 text-center">
+                                    <div className="text-2xl font-bold text-red-600">12</div>
+                                    <div className="text-xs text-muted-foreground mt-1">Critical Failures</div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardContent className="pt-6 text-center">
+                                    <div className="text-2xl font-bold text-blue-600">98%</div>
+                                    <div className="text-xs text-muted-foreground mt-1">Premix Retention</div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <Card className="bg-slate-50">
+                            <CardHeader className="pb-2"><CardTitle className="text-sm">Recent Audit Timeline</CardTitle></CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="flex gap-4 items-start">
+                                            <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                                            <div className="flex-1">
+                                                <div className="flex justify-between">
+                                                    <span className="font-semibold text-sm">Zone B Inspection Sweep</span>
+                                                    <span className="text-xs text-muted-foreground">2 days ago</span>
                                                 </div>
+                                                <p className="text-xs text-slate-600">Checking 15 facilities. avg score 88%.</p>
                                             </div>
                                         </div>
                                     ))}
@@ -670,239 +624,202 @@ export function PolicyAdvocacy() {
                             </CardContent>
                         </Card>
                     </div>
-                </TabsContent>
-
-                {/* IMPACT REPORTING TAB */}
-                <TabsContent value="impact">
-                    <div className="space-y-6">
-                        <Card className="border-none shadow-md overflow-hidden bg-white">
-                            <CardHeader className="border-b py-3 px-6 bg-white">
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <BarChart3 className="w-4 h-4 text-pink-600" />
-                                        National Impact Synthesis
-                                    </CardTitle>
-                                    <Button variant="outline" size="sm" className="h-8">
-                                        <Download className="w-3.5 h-3.5 mr-2" />
-                                        Impact Brief
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-6">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    {/* Impact by Policy Type */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest">Core Impact Drivers</h4>
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex items-center gap-1">
-                                                    <div className="w-2 h-2 rounded-full bg-red-500" />
-                                                    <span className="text-[9px] font-bold text-zinc-500 uppercase">Mandatory</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <div className="w-2 h-2 rounded-full bg-green-500" />
-                                                    <span className="text-[9px] font-bold text-zinc-500 uppercase">Voluntary</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <ResponsiveContainer width="100%" height={250}>
-                                            <PieChart>
-                                                <Pie
-                                                    data={[
-                                                        { name: 'Mandatory', value: 45, color: '#ef4444' },
-                                                        { name: 'Voluntary', value: 30, color: '#10b981' },
-                                                        { name: 'Pilot', value: 15, color: '#3b82f6' },
-                                                        { name: 'Regulatory', value: 10, color: '#8b5cf6' },
-                                                    ]}
-                                                    dataKey="value"
-                                                    nameKey="name"
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    innerRadius={60}
-                                                    outerRadius={90}
-                                                    paddingAngle={5}
-                                                    stroke="none"
-                                                >
-                                                    {[
-                                                        { name: 'Mandatory', value: 45, color: '#ef4444' },
-                                                        { name: 'Voluntary', value: 30, color: '#10b981' },
-                                                        { name: 'Pilot', value: 15, color: '#3b82f6' },
-                                                        { name: 'Regulatory', value: 10, color: '#8b5cf6' },
-                                                    ].map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                                    ))}
-                                                </Pie>
-                                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                    </div>
-
-                                    {/* Compliance Improvement */}
-                                    <div className="space-y-4">
-                                        <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest">Longitudinal Performance Shift</h4>
-                                        <ResponsiveContainer width="100%" height={250}>
-                                            <LineChart data={[
-                                                { month: 'Jan', baseline: 65, withPolicy: 68 },
-                                                { month: 'Mar', baseline: 66, withPolicy: 72 },
-                                                { month: 'May', baseline: 67, withPolicy: 76 },
-                                                { month: 'Jul', baseline: 68, withPolicy: 80 },
-                                                { month: 'Sep', baseline: 69, withPolicy: 84 },
-                                                { month: 'Nov', baseline: 70, withPolicy: 88 },
-                                            ]}>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                                <XAxis dataKey="month" axisLine={false} tickLine={false} fontSize={10} />
-                                                <YAxis domain={[60, 95]} axisLine={false} tickLine={false} fontSize={10} />
-                                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                                                <Legend iconType="circle" wrapperStyle={{ fontSize: '9px', fontWeight: 700, paddingTop: '10px' }} />
-                                                <Line type="monotone" dataKey="baseline" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" name="PROJECTION (NO POLICY)" />
-                                                <Line type="monotone" dataKey="withPolicy" stroke="#10b981" strokeWidth={4} dot={{ fill: '#10b981', r: 4 }} activeDot={{ r: 6 }} name="ACTUAL (WITH POLICY)" />
-                                            </LineChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
-
-                                {/* SDG Alignment */}
-                                <div className="mt-8 p-6 bg-zinc-900 rounded-3xl text-white overflow-hidden relative">
-                                    <div className="absolute -bottom-10 -right-10 opacity-10">
-                                        <Award className="w-48 h-48" />
-                                    </div>
-                                    <div className="relative z-10 space-y-6">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-pink-500/20 rounded-xl">
-                                                <Award className="w-5 h-5 text-pink-400" />
-                                            </div>
-                                            <h4 className="font-black text-sm uppercase tracking-widest text-pink-400">Biological Target Matrix (SDG)</h4>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-black text-white">SDG 2: Zero Hunger</p>
-                                                <p className="text-[11px] text-zinc-400 leading-relaxed">
-                                                    <span className="text-green-400 font-bold">12.5M individuals</span> secured via biofortified delivery networks.
-                                                </p>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-black text-white">SDG 3: Good Health</p>
-                                                <p className="text-[11px] text-zinc-400 leading-relaxed">
-                                                    <span className="text-blue-400 font-bold">18% reduction</span> in regional micronutrient deficiency markers.
-                                                </p>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-black text-white">SDG 17: Partnerships</p>
-                                                <p className="text-[11px] text-zinc-400 leading-relaxed">
-                                                    <span className="text-purple-400 font-bold">97 entities</span> integrated into the national quality protocol.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </TabsContent>
-            </Tabs>
-
-            {/* Policy Dialog */}
-            <Dialog open={showPolicyDialog} onOpenChange={setShowPolicyDialog}>
-                <DialogContent className="max-w-2xl bg-white border-none shadow-2xl rounded-3xl p-0 overflow-hidden">
-                    <DialogHeader className="p-8 bg-zinc-900 text-white">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-blue-500/20 rounded-xl">
-                                <FileText className="w-5 h-5 text-blue-400" />
-                            </div>
-                            <DialogTitle className="text-2xl font-black">
-                                {selectedPolicy ? `FRAMEWORK: ${selectedPolicy.id}` : 'DRAFT NEW POLICY'}
-                            </DialogTitle>
-                        </div>
-                        <p className="text-zinc-400 text-xs font-bold tracking-widest uppercase">Legislative Authority & Regulatory Protocol</p>
-                    </DialogHeader>
-                    <div className="p-8 space-y-6">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Protocol Designation</Label>
-                            <Input
-                                className="h-12 bg-zinc-50 border-zinc-200 focus:ring-zinc-900 font-bold text-zinc-900 rounded-xl px-4"
-                                placeholder="e.g., Mandatory Maize Fortification Act"
-                                defaultValue={selectedPolicy?.title}
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Structural Type</Label>
-                                <Input
-                                    className="h-12 bg-zinc-50 border-zinc-200 focus:ring-zinc-900 font-bold text-zinc-900 rounded-xl px-4"
-                                    placeholder="Mandatory / Pilot"
-                                    defaultValue={selectedPolicy?.type}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Jurisdiction</Label>
-                                <Input
-                                    className="h-12 bg-zinc-50 border-zinc-200 focus:ring-zinc-900 font-bold text-zinc-900 rounded-xl px-4"
-                                    placeholder="Country / State"
-                                    defaultValue={selectedPolicy?.country}
-                                />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Strategic Scope</Label>
-                            <Textarea
-                                className="bg-zinc-50 border-zinc-200 focus:ring-zinc-900 font-medium text-zinc-600 rounded-xl p-4 min-h-[120px]"
-                                placeholder="Define legislative objectives, industrial requirements, and expected population outcomes..."
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter className="p-8 bg-zinc-50 border-t flex gap-4">
-                        <Button variant="ghost" className="font-bold text-zinc-500 hover:text-zinc-900" onClick={() => setShowPolicyDialog(false)}>REQUISITION CANCEL</Button>
-                        <Button className="bg-zinc-900 hover:bg-zinc-800 text-white font-black px-8 rounded-xl h-12">
-                            <Send className="w-4 h-4 mr-2" />
-                            {selectedPolicy ? 'EXECUTE UPDATE' : 'PROPOSE FRAMEWORK'}
-                        </Button>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowImplementationDialog(false)}>Close</Button>
+                        <Button><FileText className="w-4 h-4 mr-2" /> Download Full Report</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Advocacy Campaign Dialog */}
-            <Dialog open={showAdvocacyDialog} onOpenChange={setShowAdvocacyDialog}>
-                <DialogContent className="max-w-medium bg-white border-none shadow-2xl rounded-3xl p-0 overflow-hidden">
-                    <DialogHeader className="p-8 bg-zinc-900 text-white">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-orange-500/20 rounded-xl">
-                                <Megaphone className="w-5 h-5 text-orange-400" />
-                            </div>
-                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Deploy Social Campaign</DialogTitle>
-                        </div>
-                        <p className="text-zinc-400 text-xs font-bold tracking-widest uppercase">Awareness & Mobilization Protocol</p>
+            {/* 4. Manifest Adjustment Dialog */}
+            <Dialog open={showManifestDialog} onOpenChange={setShowManifestDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Adjust Monitoring Manifest</DialogTitle>
+                        <DialogDescription>Modify sampling frequency and targets.</DialogDescription>
                     </DialogHeader>
-                    <div className="p-8 space-y-6">
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Campaign Designation</Label>
-                                <Input className="h-12 bg-zinc-50 border-zinc-200 font-bold rounded-xl px-4" placeholder="e.g., National Fortification Awareness" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Policy Integration</Label>
-                                <Input className="h-12 bg-zinc-50 border-zinc-200 font-mono text-[10px] font-bold rounded-xl px-4" placeholder="ENTER POLICY ID (e.g., POL-001)" />
-                            </div>
+                    <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>Sampling Frequency</Label>
+                            <Select defaultValue="monthly">
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="weekly">Weekly</SelectItem>
+                                    <SelectItem value="monthly">Monthly</SelectItem>
+                                    <SelectItem value="quarterly">Quarterly</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Reach Target (Population)</Label>
-                                <Input type="number" className="h-12 bg-zinc-50 border-zinc-200 font-bold rounded-xl px-4" placeholder="Number of individuals" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Budget Allocation (USD)</Label>
-                                <Input type="number" className="h-12 bg-zinc-50 border-zinc-200 font-bold rounded-xl px-4" placeholder="Campaign budget" />
-                            </div>
+                        <div className="space-y-2">
+                            <Label>Required Sample Size (n)</Label>
+                            <Input type="number" defaultValue="50" />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="alerts" defaultChecked />
+                            <Label htmlFor="alerts">Auto-trigger alerts on failure &gt; 5%</Label>
                         </div>
                     </div>
-                    <DialogFooter className="p-8 bg-zinc-50 border-t flex gap-4">
-                        <Button variant="ghost" className="font-bold text-zinc-500 hover:text-zinc-900" onClick={() => setShowAdvocacyDialog(false)}>ABORT DEPLOYMENT</Button>
-                        <Button className="bg-zinc-900 hover:bg-zinc-800 text-white font-black px-8 rounded-xl h-12">
-                            <Megaphone className="w-4 h-4 mr-2" />
-                            EXECUTE DEPLOYMENT
-                        </Button>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowManifestDialog(false)}>Cancel</Button>
+                        <Button onClick={() => { toast.success("Manifest Updated"); setShowManifestDialog(false) }}>Save Changes</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* 5. Campaign Deployment Wizard */}
+            <Dialog open={showCampaignWizard} onOpenChange={setShowCampaignWizard}>
+                <DialogContent className="max-w-xl">
+                    <DialogHeader>
+                        <DialogTitle>Deploy Advocacy Campaign</DialogTitle>
+                        <DialogDescription>Step {campaignStep} of 5</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 min-h-[250px]">
+                        {campaignStep === 1 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                                <Label>Campaign Basics</Label>
+                                <Input placeholder="Campaign Name" onChange={e => setCampaignData({ ...campaignData, name: e.target.value })} />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Input placeholder="Total Budget ($)" type="number" onChange={e => setCampaignData({ ...campaignData, budget: e.target.value })} />
+                                    <Input placeholder="Target Audience" onChange={e => setCampaignData({ ...campaignData, target: e.target.value })} />
+                                </div>
+                            </div>
+                        )}
+                        {campaignStep === 2 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                                <Label>Select Channels</Label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {['Social Media', 'Radio/TV', 'Print', 'Direct Mail', 'Events'].map(c => (
+                                        <div key={c} className="border p-3 rounded flex items-center gap-2 cursor-pointer hover:bg-slate-50">
+                                            <Checkbox id={c} />
+                                            <Label htmlFor={c} className="cursor-pointer">{c}</Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {campaignStep === 3 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                                <Label>Key Messages & Strategy</Label>
+                                <Textarea placeholder="Core message for this campaign..." className="min-h-[100px]" onChange={e => setCampaignData({ ...campaignData, message: e.target.value })} />
+                                <div className="space-y-2">
+                                    <Label>Partner Organizations</Label>
+                                    <Select>
+                                        <SelectTrigger><SelectValue placeholder="Select Lead Partner" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="moh">Ministry of Health</SelectItem>
+                                            <SelectItem value="unicef">UNICEF</SelectItem>
+                                            <SelectItem value="gain">GAIN</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        )}
+                        {campaignStep === 4 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                                <Label>Timeline & Milestones</Label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Start Date</Label>
+                                        <Input type="date" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>End Date</Label>
+                                        <Input type="date" />
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2 mt-4">
+                                    <Checkbox id="milestone1" />
+                                    <Label htmlFor="milestone1">Launch Event</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox id="milestone2" />
+                                    <Label htmlFor="milestone2">Mid-term Review</Label>
+                                </div>
+                            </div>
+                        )}
+                        {campaignStep === 5 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 text-center">
+                                <div className="p-6 border-2 border-dashed rounded-xl bg-slate-50 space-y-2">
+                                    <h3 className="font-bold text-lg">{campaignData.name || 'Campaign Draft'}</h3>
+                                    <p className="text-sm text-muted-foreground">Targeting: {campaignData.target || 'General Public'}</p>
+                                    <p className="text-lg font-bold text-green-600">Budget: ${campaignData.budget || '0'}</p>
+                                    <p className="text-xs text-slate-400">Ready to launch across 3 channels.</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        {campaignStep > 1 && <Button variant="outline" onClick={() => setCampaignStep(campaignStep - 1)}>Back</Button>}
+                        {campaignStep < 5 ? (
+                            <Button onClick={() => setCampaignStep(campaignStep + 1)}>Next</Button>
+                        ) : (
+                            <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleCampaignLaunch}>
+                                <Zap className="w-4 h-4 mr-2" /> Launch Campaign
+                            </Button>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* 6. Impact Brief Modal */}
+            <Dialog open={showImpactBrief} onOpenChange={setShowImpactBrief}>
+                <DialogContent className="max-w-4xl h-[90vh] overflow-auto">
+                    <div className="p-8 bg-white" id="impact-brief">
+                        <div className="flex justify-between items-center border-b-4 border-black pb-6 mb-8">
+                            <div>
+                                <h1 className="text-4xl font-black uppercase tracking-tighter">Impact Brief</h1>
+                                <p className="text-xl text-slate-500 font-light">Fortification Program Q4 2024</p>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-black text-purple-600">FGWA</div>
+                                <div className="text-sm font-bold tracking-widest text-slate-400">OFFICIAL REPORT</div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-12 mb-12">
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold uppercase border-b pb-2">Outcome Summary</h3>
+                                <p className="text-lg leading-relaxed text-slate-700">
+                                    Initial monitoring indicates a <span className="font-bold bg-green-100 px-1">15% reduction</span> in prevalence of neural tube defects in the pilot regions. Compliance among large-scale millers remains steady at 98%, securing nutritional intake for over 12 million citizens.
+                                </p>
+                            </div>
+                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 flex flex-col items-center justify-center text-center">
+                                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Total Lives Impacted</h4>
+                                <div className="text-6xl font-black text-blue-600">12.5M</div>
+                                <div className="flex items-center gap-2 text-green-600 mt-2 font-bold"><TrendingUp className="w-4 h-4" /> +2.3M YoY</div>
+                            </div>
+                        </div>
+
+                        <div className="bg-black text-white p-8 rounded-2xl mb-12">
+                            <div className="grid grid-cols-3 gap-8 text-center divide-x divide-slate-800">
+                                <div>
+                                    <div className="text-4xl font-bold text-yellow-400">450k</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-400">DALYs Averted</div>
+                                </div>
+                                <div>
+                                    <div className="text-4xl font-bold text-green-400">$1 : $8</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-400">Economic ROI</div>
+                                </div>
+                                <div>
+                                    <div className="text-4xl font-bold text-blue-400">92%</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-400">School Attendance</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="text-center text-sm text-slate-400">
+                            Generated by FGWA Manager Dashboard • {new Date().toLocaleDateString()}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowImpactBrief(false)}>Close</Button>
+                        <Button onClick={() => { toast.success("Brief Downloaded"); setShowImpactBrief(false) }}><Download className="w-4 h-4 mr-2" /> Download PDF</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>
     )
 }
+
+// Missing Icon Import Fix
+import { Download } from 'lucide-react'

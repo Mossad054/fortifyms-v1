@@ -3,7 +3,9 @@ import { Evidence } from './evidence';
 export type FortificationMethod = 'Continuous Dosing' | 'Batch Blending' | 'FRK Blending';
 export type Criticality = 'Critical' | 'Major' | 'Minor';
 export type ResponseType = 'YesNo' | 'Numeric' | 'Dropdown' | 'Text' | 'Photo' | 'Document' | 'MultipleChoice';
-export type AuditStatus = 'Pending' | 'In Progress' | 'Submitted' | 'Reviewing' | 'Approved' | 'Rejected' | 'CAPA Required';
+export type AuditStatus = 'Pending' | 'In Progress' | 'Submitted' | 'Reviewing' | 'Approved' | 'Rejected' | 'CAPA Required' | 'Follow-Up Scheduled';
+export type ReviewAction = 'Approve' | 'ApproveWithConditions' | 'RequestRevision' | 'ScheduleSiteVisit' | 'Reject';
+export type EvidenceStatus = 'Pending' | 'Verified' | 'Insufficient' | 'RetakeRequired';
 
 export interface ConditionalLogic {
     triggerItemId: string;
@@ -60,6 +62,10 @@ export interface AuditResponse {
     value: string | number | boolean;
     notes?: string;
     evidence?: Evidence[];
+    reviewerComment?: string;
+    reviewStatus?: 'Ok' | 'Flagged' | 'ActionRequired';
+    scoreOverride?: number;
+    scoreOverrideJustification?: string;
     isNonCompliant?: boolean;
     flagLevel?: 'Red' | 'Yellow' | 'None'; // Auto-calculated based on logic
     score?: number; // Points earned
@@ -109,4 +115,23 @@ export interface AuditSession {
     isFinalized?: boolean; // Audit complete and score locked
     calculatedAt?: string;
     calculationHash?: string; // Integrity check
+
+    // Review Workflow
+    reviewStatus?: 'Pending' | 'InReview' | 'Completed';
+    reviewerId?: string;
+    reviewDecision?: ReviewAction;
+    reviewNotes?: string;
+    reviewCompletedAt?: string;
+
+    // For Follow-up
+    parentAuditId?: string; // If this is a follow-up
+}
+
+export interface Mill {
+    id: string;
+    name: string;
+    region: string;
+    complianceScore: number;
+    riskLevel: 'Low' | 'Medium' | 'High';
+    lastAuditDate: string;
 }

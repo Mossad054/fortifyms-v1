@@ -8,11 +8,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
     Truck, Map, Package, LayoutDashboard, Settings, MapPin, Search
 } from 'lucide-react'
-import { FleetStatusView, DeliveriesListView, FleetListView } from './views'
+import { FleetStatusView, DeliveriesListView, FleetListView, LogisticsAnalyticsView } from './views'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Loader2, BarChart } from 'lucide-react'
+
+import { NotificationCenter } from '@/components/ui/notification-center'
 
 export default function LogisticsDashboard() {
     const router = useRouter()
     const [activeTab, setActiveTab] = React.useState('overview')
+    const [isOptimizing, setIsOptimizing] = React.useState(false)
+
+    const handleOptimizeRoutes = () => {
+        setIsOptimizing(true)
+        setTimeout(() => {
+            setIsOptimizing(false)
+        }, 3000)
+    }
 
     return (
         <div className="p-6 space-y-8 max-w-[1600px] mx-auto min-h-screen bg-[#F0EFEA]/30">
@@ -26,34 +38,57 @@ export default function LogisticsDashboard() {
                     </h1>
                     <p className="text-gray-600 mt-2">Manage fleet, optimize routes, and track deliveries</p>
                 </div>
-                <Button
-                    variant="default"
-                    className="bg-blue-600 hover:bg-blue-700"
-                    onClick={() => router.push('/dashboard/logistics/routes')}
-                >
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Optimize Routes
-                </Button>
+                <div className="flex gap-3 items-center">
+                    <NotificationCenter />
+                    <Button
+                        variant="default"
+                        className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+                        onClick={handleOptimizeRoutes}
+                        disabled={isOptimizing}
+                    >
+                        {isOptimizing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <MapPin className="w-4 h-4 mr-2" />}
+                        {isOptimizing ? 'Optimizing...' : 'Optimize Routes'}
+                    </Button>
+                </div>
             </div>
 
             {/* Main Tabs Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4 md:w-[600px] bg-white/40 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
-                    <TabsTrigger value="overview" className="flex items-center gap-2">
+                <TabsList className="grid w-full grid-cols-5 bg-white/60 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+                    <TabsTrigger
+                        value="overview"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                    >
                         <LayoutDashboard className="h-4 w-4" />
-                        Overview
+                        <span className="hidden lg:inline">Overview</span>
                     </TabsTrigger>
-                    <TabsTrigger value="fleet" className="flex items-center gap-2">
+                    <TabsTrigger
+                        value="fleet"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all"
+                    >
                         <Truck className="h-4 w-4" />
-                        Fleet
+                        <span className="hidden lg:inline">Fleet</span>
                     </TabsTrigger>
-                    <TabsTrigger value="deliveries" className="flex items-center gap-2">
+                    <TabsTrigger
+                        value="deliveries"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-orange-500 data-[state=active]:text-white transition-all"
+                    >
                         <Package className="h-4 w-4" />
-                        Deliveries
+                        <span className="hidden lg:inline">Deliveries</span>
                     </TabsTrigger>
-                    <TabsTrigger value="map" className="flex items-center gap-2">
+                    <TabsTrigger
+                        value="analytics"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all"
+                    >
+                        <BarChart className="h-4 w-4" />
+                        <span className="hidden lg:inline">Analytics</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="map"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all"
+                    >
                         <Map className="h-4 w-4" />
-                        Live Map
+                        <span className="hidden lg:inline">Live Map</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -80,17 +115,37 @@ export default function LogisticsDashboard() {
                     <DeliveriesListView />
                 </TabsContent>
 
+                {/* --- ANALYTICS TAB --- */}
+                <TabsContent value="analytics">
+                    <LogisticsAnalyticsView />
+                </TabsContent>
+
                 {/* --- MAP TAB --- */}
                 <TabsContent value="map">
-                    <Card className="h-[500px] bg-slate-100 flex items-center justify-center">
+                    <Card className="h-[600px] bg-slate-100 flex items-center justify-center border-none shadow-inner">
                         <div className="text-center">
-                            <Map className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                            <p className="text-gray-500 font-medium">Interactive Route Map Integration</p>
+                            <Map className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-slate-600">Live Asset Map</h3>
+                            <p className="text-slate-500">Interactive integration with Google Maps / Leaflet</p>
                         </div>
                     </Card>
                 </TabsContent>
 
             </Tabs>
+
+            {/* Optimization Dialog */}
+            <Dialog open={isOptimizing} onOpenChange={setIsOptimizing}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Optimizing Logistics Routes</DialogTitle>
+                        <DialogDescription>Analyzing traffic patterns, fuel efficiency, and delivery windows...</DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                        <p className="text-sm text-gray-500">Calculating best paths for 12 active vehicles...</p>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

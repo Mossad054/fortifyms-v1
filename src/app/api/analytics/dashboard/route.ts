@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
                 where: { millId: where.millId }
             })
 
-            const overdueMainten ance = maintenanceTasks.filter(
+            const overdueMaintenance = maintenanceTasks.filter(
                 t => t.status !== 'COMPLETED' && new Date(t.dueDate) < new Date()
             ).length
 

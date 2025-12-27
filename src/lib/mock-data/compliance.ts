@@ -258,74 +258,133 @@ export const MOCK_TEMPLATES: ChecklistTemplate[] = [
     }
 ]
 
-export const MOCK_MILLS: Record<string, { name: string, region: string }> = {
-    'M-001': { name: 'Unga Limited (Nairobi)', region: 'Nairobi' },
-    'M-002': { name: 'Mombasa Maize Millers', region: 'Coast' },
-    'M-003': { name: 'Pembe Flour Mills', region: 'Nairobi' },
-    'MILL-042': { name: 'Golden Grain Mills', region: 'Central' },
-    'MILL-018': { name: 'Rift Valley Processors', region: 'Rift Valley' },
-    'MILL-031': { name: 'Coastal Millers Ltd', region: 'Coast' },
-    'MILL-007': { name: 'Maize Masters Co', region: 'Western' },
-    'MILL-023': { name: 'Premium Flour Mills', region: 'Nairobi' }
+export const MOCK_MILLS: Record<string, { name: string, region: string, complianceScore: number, riskLevel: string, lastAuditDate: string }> = {
+    'M-001': { name: 'Unga Limited (Nairobi)', region: 'Nairobi', complianceScore: 95, riskLevel: 'Low', lastAuditDate: '2024-11-15' },
+    'M-002': { name: 'Mombasa Maize Millers', region: 'Coast', complianceScore: 88, riskLevel: 'Medium', lastAuditDate: '2024-10-20' },
+    'M-003': { name: 'Pembe Flour Mills', region: 'Nairobi', complianceScore: 76, riskLevel: 'Medium', lastAuditDate: '2024-12-01' },
+    'MILL-042': { name: 'Golden Grain Mills', region: 'Central', complianceScore: 92, riskLevel: 'Low', lastAuditDate: '2024-09-10' },
+    'MILL-018': { name: 'Rift Valley Processors', region: 'Rift Valley', complianceScore: 65, riskLevel: 'High', lastAuditDate: '2024-08-05' },
+    'MILL-031': { name: 'Coastal Millers Ltd', region: 'Coast', complianceScore: 81, riskLevel: 'Medium', lastAuditDate: '2024-11-22' },
+    'MILL-007': { name: 'Maize Masters Co', region: 'Western', complianceScore: 70, riskLevel: 'High', lastAuditDate: '2024-07-30' },
+    'MILL-023': { name: 'Premium Flour Mills', region: 'Nairobi', complianceScore: 98, riskLevel: 'Low', lastAuditDate: '2024-12-10' }
 }
 
+// Helper to create detailed responses
+const createResponse = (id: string, val: any, notes = '', evidenceCount = 0): any => ({
+    itemId: id,
+    value: val,
+    notes,
+    evidence: evidenceCount > 0 ? Array(evidenceCount).fill(0).map((_, i) => ({
+        id: `EV-${Math.random().toString(36).substr(2, 9)}`,
+        type: 'Photo',
+        url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=200',
+        uploadedAt: new Date().toISOString(),
+        notes: 'Evidence photo'
+    })) : []
+})
+
 export const MOCK_AUDIT_LOGS: AuditSession[] = [
+    // 1. Pending Review (Self-Audit) - Needs Verification
     {
-        id: 'AUD-2024-001',
+        id: 'REV-001',
+        templateId: 'T-MAIZE-EXT',
+        millId: 'MILL-018', // Rift Valley Processors (High Risk)
+        operatorId: 'OP-RVP-01',
+        type: 'Self-Audit',
+        status: 'Reviewing',
+        reviewStatus: 'Pending',
+        startDate: '2024-12-26T08:00:00',
+        completedDate: '2024-12-26T10:30:00',
+        score: 92, // Surprisingly high for high risk mill
+        criticalFailures: [],
+        overallResult: 'Certified',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
+        responses: {
+            '1.1': createResponse('1.1', 'Yes', 'Storage conditions improved', 2),
+            '2.1': createResponse('2.1', 'Yes', 'New doser installed', 1),
+            '2.4': createResponse('2.4', 152, 'Spot check within range'),
+            '4.1': createResponse('4.1', 'Yes', 'Logs updated'),
+            '4.2': createResponse('4.2', 'Strong Positive (Deep Red)', 'Test conducted at 9am', 1)
+        }
+    },
+    // 2. Pending Review (Self-Audit) - Good Mill
+    {
+        id: 'REV-002',
+        templateId: 'T-MAIZE-EXT',
+        millId: 'M-001', // Unga Limited
+        operatorId: 'OP-UNGA-05',
+        type: 'Self-Audit',
+        status: 'Reviewing',
+        reviewStatus: 'Pending',
+        startDate: '2024-12-27T09:15:00',
+        completedDate: '2024-12-27T11:00:00',
+        score: 98,
+        criticalFailures: [],
+        overallResult: 'Certified',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
+        responses: {
+            '1.1': createResponse('1.1', 'Yes', '', 1),
+            '2.1': createResponse('2.1', 'Yes', '', 1),
+            '2.4': createResponse('2.4', 150),
+            '4.1': createResponse('4.1', 'Yes'),
+            '4.2': createResponse('4.2', 'Strong Positive (Deep Red)', '', 1)
+        }
+    },
+    // 3. In Progress Review - Inspector mid-way
+    {
+        id: 'REV-003',
+        templateId: 'T-MAIZE-EXT',
+        millId: 'MILL-031', // Coastal Millers
+        operatorId: 'OP-CML-03',
+        type: 'Self-Audit',
+        status: 'Reviewing',
+        reviewStatus: 'InReview',
+        reviewerId: 'INS-005',
+        startDate: '2024-12-25T14:00:00',
+        completedDate: '2024-12-25T16:00:00',
+        score: 78,
+        criticalFailures: [],
+        overallResult: 'Conditionally Approved',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
+        responses: {
+            '1.1': { ...createResponse('1.1', 'Yes', '', 1), reviewStatus: 'Ok' },
+            '2.1': { ...createResponse('2.1', 'Yes', '', 1), reviewStatus: 'Ok' },
+            '2.4': { ...createResponse('2.4', 110, 'Low end of tolerance'), reviewStatus: 'Flagged', reviewerComment: 'This is dangerously close to the limit.' },
+            '4.2': { ...createResponse('4.2', 'Weak Positive (Light Pink)', 'Reagent might be old', 1), reviewStatus: 'ActionRequired', reviewerComment: 'Please check reagent expiry.' }
+        }
+    },
+    // 4. Completed Review - Follow-up Scheduled
+    {
+        id: 'REV-004',
+        templateId: 'T-MAIZE-EXT',
+        millId: 'MILL-007', // Maize Masters
+        operatorId: 'OP-MM-02',
+        type: 'Self-Audit',
+        status: 'Follow-Up Scheduled',
+        reviewStatus: 'Completed',
+        reviewerId: 'INS-005',
+        reviewDecision: 'ScheduleSiteVisit',
+        reviewNotes: 'Discrepancy in doser calibration data vs productivity.',
+        reviewCompletedAt: '2024-12-24T10:00:00',
+        startDate: '2024-12-23T08:00:00',
+        completedDate: '2024-12-23T09:30:00',
+        score: 85,
+        criticalFailures: [],
+        overallResult: 'Certified',
+        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
+        responses: {}
+    },
+    // 5. Historical On-Site Audit
+    {
+        id: 'AUD-2024-101',
         templateId: 'T-MAIZE-EXT',
         millId: 'M-001',
         inspectorId: 'INS-005',
         type: 'Official Inspection',
         status: 'Approved',
-        startDate: '2024-12-20T09:00:00',
-        completedDate: '2024-12-20T11:30:00',
-        score: 95,
-        criticalFailures: [],
-        overallResult: 'Certified',
-        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
-        responses: {}
-    },
-    {
-        id: 'AUD-2024-002',
-        templateId: 'T-MAIZE-EXT',
-        millId: 'M-003',
-        inspectorId: 'INS-005',
-        type: 'Spot Check',
-        status: 'CAPA Required',
-        startDate: '2024-12-22T14:00:00',
-        completedDate: '2024-12-22T15:45:00',
-        score: 65,
-        criticalFailures: ['3.3'], // Doser calibration fail
-        overallResult: 'Non-Compliant',
-        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
-        responses: {}
-    },
-    {
-        id: 'AUD-2024-003',
-        templateId: 'T-MAIZE-EXT',
-        millId: 'M-002',
-        operatorId: 'OP-112',
-        type: 'Self-Audit',
-        status: 'Submitted',
-        startDate: '2024-12-25T08:00:00',
-        completedDate: '2024-12-25T08:45:00',
-        score: 88,
-        criticalFailures: [],
-        overallResult: 'Certified',
-        templateVersion: 'KS-EAS-768:2019 (Rev 2)',
-        responses: {}
-    },
-    // Adding mocks for Pending Reviews
-    {
-        id: 'REV-001',
-        templateId: 'T-MAIZE-EXT',
-        millId: 'MILL-042',
-        inspectorId: 'INS-005',
-        type: 'Official Inspection',
-        status: 'Submitted',
-        startDate: '2024-12-20T09:00:00',
-        completedDate: '2024-12-20T11:30:00',
-        score: 87,
+        startDate: '2024-11-15T09:00:00',
+        completedDate: '2024-11-15T13:00:00',
+        score: 96,
         criticalFailures: [],
         overallResult: 'Certified',
         templateVersion: 'KS-EAS-768:2019 (Rev 2)',

@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Food Fortification Portal Design System
+   Dark green/teal professional health-focused theme
+   All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* FortifyEdu exact color palette */
+    --background: 0 0% 100%;
+    --foreground: 165 72% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 165 72% 14%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 165 72% 14%;
+
+    /* Deep Forest Green #0A3D30 */
+    --primary: 165 72% 14%;
+    --primary-foreground: 44 22% 90%;
+
+    /* Light sage secondary */
+    --secondary: 44 22% 95%;
+    --secondary-foreground: 165 72% 14%;
+
+    --muted: 44 15% 92%;
+    --muted-foreground: 165 40% 35%;
+
+    /* Mint Green #C8F5B1 */
+    --accent: 100 78% 83%;
+    --accent-foreground: 165 72% 14%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 44 15% 88%;
+    --input: 44 15% 88%;
+    --ring: 165 72% 14%;
+
+    --radius: 0.75rem;
+
+    /* Hero section - Deep Forest Green #0A3D30 */
+    --hero: 165 72% 14%;
+    /* Off-White/Cream #EBE8E0 */
+    --hero-foreground: 44 22% 90%;
+    /* Mint Green for accents */
+    --hero-muted: 100 78% 83%;
+
+    /* Success green for highlights */
+    --success: 150 55% 42%;
+    --success-foreground: 0 0% 100%;
+
+    /* Stats section */
+    --stats-bg: 44 20% 97%;
+
+    /* Section-specific accent colors for variety */
+    --section-amber: 38 92% 50%;
+    --section-amber-foreground: 0 0% 100%;
+    --section-teal: 180 70% 35%;
+    --section-teal-foreground: 0 0% 100%;
+    --section-coral: 16 85% 65%;
+    --section-coral-foreground: 0 0% 100%;
+    --section-purple: 270 50% 55%;
+    --section-purple-foreground: 0 0% 100%;
+    --section-sky: 200 80% 55%;
+    --section-sky-foreground: 0 0% 100%;
+
+    --sidebar-background: 44 20% 98%;
+    --sidebar-foreground: 165 72% 14%;
+    --sidebar-primary: 165 72% 14%;
+    --sidebar-primary-foreground: 44 22% 90%;
+    --sidebar-accent: 44 20% 94%;
+    --sidebar-accent-foreground: 165 72% 14%;
+    --sidebar-border: 44 15% 90%;
+    --sidebar-ring: 165 72% 20%;
+  }
+
+  .dark {
+    --background: 122 40% 8%;
+    --foreground: 140 20% 95%;
+
+    --card: 122 35% 12%;
+    --card-foreground: 140 20% 95%;
+
+    --popover: 122 35% 10%;
+    --popover-foreground: 140 20% 95%;
+
+    --primary: 75 70% 66%;
+    --primary-foreground: 122 40% 8%;
+
+    --secondary: 122 30% 18%;
+    --secondary-foreground: 140 20% 95%;
+
+    --muted: 122 25% 15%;
+    --muted-foreground: 140 20% 70%;
+
+    --accent: 75 70% 66%;
+    --accent-foreground: 122 40% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 122 25% 22%;
+    --input: 122 25% 22%;
+    --ring: 75 70% 66%;
+
+    --hero: 122 42% 12%;
+    --hero-foreground: 0 0% 100%;
+    --hero-muted: 140 20% 70%;
+
+    --success: 140 50% 38%;
+    --success-foreground: 0 0% 100%;
+
+    --stats-bg: 122 35% 12%;
+
+    --sidebar-background: 122 35% 10%;
+    --sidebar-foreground: 140 20% 90%;
+    --sidebar-primary: 75 70% 66%;
+    --sidebar-primary-foreground: 122 40% 8%;
+    --sidebar-accent: 122 30% 18%;
+    --sidebar-accent-foreground: 140 20% 90%;
+    --sidebar-border: 122 25% 20%;
+    --sidebar-ring: 75 70% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

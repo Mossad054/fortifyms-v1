@@ -20,6 +20,8 @@ import { ComplianceTemplates } from './components/compliance-templates'
 import { ShieldCheck } from 'lucide-react'
 
 import { ComplianceView } from './components/compliance-view'
+import { NotificationCenter } from '@/components/ui/notification-center'
+
 export default function ProgramManagerDashboard() {
     const router = useRouter()
     const [activeTab, setActiveTab] = React.useState('overview')
@@ -37,7 +39,8 @@ export default function ProgramManagerDashboard() {
                         National-level strategic oversight and program analytics
                     </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-center">
+                    <NotificationCenter />
                     <Button variant="outline" className="bg-white">
                         <TrendingUp className="w-4 h-4 mr-2" />
                         Data Explorer
@@ -113,6 +116,30 @@ export default function ProgramManagerDashboard() {
                 {/* --- OVERVIEW TAB (PHASE 1) --- */}
                 <TabsContent value="overview">
                     <HeroMetrics />
+
+                    {/* Quick Actions Card */}
+                    <Card className="border-sky-200 mt-6 shadow-sm">
+                        <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div>
+                                <h2 className="text-xl font-bold mb-1 text-sky-900">Program Command Center</h2>
+                                <p className="text-sky-600 text-sm">Access key program workflows and analytics.</p>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                <Button onClick={() => setActiveTab('trends')} variant="outline" className="border-sky-200 hover:bg-sky-50 text-sky-700">
+                                    <TrendingUp className="mr-2 h-4 w-4" /> Data Explorer
+                                </Button>
+                                <Button onClick={() => setActiveTab('mills')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                                    <Building2 className="mr-2 h-4 w-4" /> Mill Performance
+                                </Button>
+                                <Button onClick={() => setActiveTab('supply')} variant="outline" className="border-indigo-200 hover:bg-indigo-50 text-indigo-700">
+                                    <Package className="mr-2 h-4 w-4" /> Regional Supply
+                                </Button>
+                                <Button onClick={() => setActiveTab('compliance')} variant="outline" className="border-teal-200 hover:bg-teal-50 text-teal-700">
+                                    <ShieldCheck className="mr-2 h-4 w-4" /> Compliance Review
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
 
                 {/* --- GEOGRAPHIC TAB (PHASE 2) --- */}

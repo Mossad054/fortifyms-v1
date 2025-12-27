@@ -57,43 +57,26 @@ export async function middleware(request: NextRequest) {
     const { data: { session } } = await supabase.auth.getSession()
 
     // Protected routes pattern
-    const protectedRoutes = ['/dashboard', '/analytics', '/compliance', '/procurement']
+    const protectedRoutes = ['/dashboard', '/analytics', '/compliance', '/procurement', '/equipment', '/maintenance', '/production', '/profile', '/settings']
     const isProtectedRoute = protectedRoutes.some(path => request.nextUrl.pathname.startsWith(path))
 
-    // 1. Redirect unauthenticated users to login
+    // Public auth routes
+    const authRoutes = ['/auth', '/login', '/register']
+    const isAuthRoute = authRoutes.some(path => request.nextUrl.pathname.startsWith(path))
+
+    // 1. Redirect unauthenticated users trying to access protected routes to /auth
     if (isProtectedRoute && !session) {
-        return NextResponse.redirect(new URL('/login', request.url))
+        return NextResponse.redirect(new URL('/auth', request.url))
     }
 
-    // 2. Redirect authenticated users from root/login to their specific dashboard
-    // Only redirect if they are actively visiting root or login, to avoid loops
-    if (session && (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/login')) {
-        const role = session.user.user_metadata?.role as string | undefined
-
-        // Role-Based Routing Logic
-        switch (role) {
-            case 'MILL_OPERATOR':
-                return NextResponse.redirect(new URL('/dashboard/operator', request.url))
-            case 'MILL_MANAGER':
-                return NextResponse.redirect(new URL('/dashboard/manager', request.url))
-            case 'INSTITUTIONAL_BUYER':
-                return NextResponse.redirect(new URL('/procurement/buyer', request.url))
-            case 'FWGA_INSPECTOR': // Changed from INSPECTOR to match valid roles
-                return NextResponse.redirect(new URL('/compliance/inspector', request.url))
-            case 'SYSTEM_ADMIN': // Changed from ADMIN to match valid roles
-                return NextResponse.redirect(new URL('/analytics', request.url))
-            case 'LOGISTICS_PLANNER':
-                return NextResponse.redirect(new URL('/dashboard/logistics', request.url))
-            case 'FWGA_PROGRAM_MANAGER':
-                return NextResponse.redirect(new URL('/dashboard/program-manager', request.url))
-            default:
-                // Fallback for new users or undefined roles
-                // Don't redirect if already on a dashboard to prevent loops
-                if (!request.nextUrl.pathname.startsWith('/dashboard')) {
-                    return NextResponse.redirect(new URL('/dashboard', request.url))
-                }
-        }
+    // 2. Redirect authenticated users from auth pages to landing page
+    // Let them navigate to their dashboards from there
+    if (session && isAuthRoute) {
+        return NextResponse.redirect(new URL('/', request.url))
     }
+
+    // 3. Allow authenticated users to stay on landing page (/)
+    // They will see auth-aware navigation with dashboard links
 
     return response
 }

@@ -14,6 +14,13 @@ datasource db {
 }
 
 // User Roles and Authentication
+enum UserRole {
+  MILL_OPERATOR
+  PROGRAM_MANAGER
+  INSPECTOR
+  ADMIN
+}
+
 model User {
   id                String   @id @default(cuid())
   email             String?  @unique

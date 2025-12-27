@@ -137,7 +137,12 @@ const BENCHMARKING_DATA = {
 
 export function MillPerformanceAnalysis() {
     const [selectedMill, setSelectedMill] = React.useState<MillPerformance | null>(null)
+
     const [showDrillDown, setShowDrillDown] = React.useState(false)
+    const [showCaseStudy, setShowCaseStudy] = React.useState(false)
+    const [showAssistance, setShowAssistance] = React.useState(false)
+    const [showProfile, setShowProfile] = React.useState(false)
+    const [generating, setGenerating] = React.useState(false)
 
     const getSeverityColor = (severity: string) => {
         switch (severity) {
@@ -158,12 +163,43 @@ export function MillPerformanceAnalysis() {
         }
     }
 
+
     const radarData = [
-        { metric: 'Compliance', ...BENCHMARKING_DATA },
-        { metric: 'Production', ...BENCHMARKING_DATA },
-        { metric: 'Quality', ...BENCHMARKING_DATA },
-        { metric: 'Efficiency', ...BENCHMARKING_DATA },
-        { metric: 'Training', ...BENCHMARKING_DATA },
+        {
+            metric: 'Compliance',
+            mill: BENCHMARKING_DATA.mill.compliance,
+            regionalAvg: BENCHMARKING_DATA.regionalAvg.compliance,
+            nationalAvg: BENCHMARKING_DATA.nationalAvg.compliance,
+            top10: BENCHMARKING_DATA.top10.compliance
+        },
+        {
+            metric: 'Production',
+            mill: BENCHMARKING_DATA.mill.production,
+            regionalAvg: BENCHMARKING_DATA.regionalAvg.production,
+            nationalAvg: BENCHMARKING_DATA.nationalAvg.production,
+            top10: BENCHMARKING_DATA.top10.production
+        },
+        {
+            metric: 'Quality',
+            mill: BENCHMARKING_DATA.mill.quality,
+            regionalAvg: BENCHMARKING_DATA.regionalAvg.quality,
+            nationalAvg: BENCHMARKING_DATA.nationalAvg.quality,
+            top10: BENCHMARKING_DATA.top10.quality
+        },
+        {
+            metric: 'Efficiency',
+            mill: BENCHMARKING_DATA.mill.efficiency,
+            regionalAvg: BENCHMARKING_DATA.regionalAvg.efficiency,
+            nationalAvg: BENCHMARKING_DATA.nationalAvg.efficiency,
+            top10: BENCHMARKING_DATA.top10.efficiency
+        },
+        {
+            metric: 'Training',
+            mill: BENCHMARKING_DATA.mill.training,
+            regionalAvg: BENCHMARKING_DATA.regionalAvg.training,
+            nationalAvg: BENCHMARKING_DATA.nationalAvg.training,
+            top10: BENCHMARKING_DATA.top10.training
+        },
     ]
 
     return (
@@ -202,7 +238,8 @@ export function MillPerformanceAnalysis() {
                                     <Building2 className="w-4 h-4 text-zinc-400" />
                                     Performance Leaderboard
                                 </CardTitle>
-                                <Button variant="outline" size="sm" className="h-8">
+
+                                <Button variant="outline" size="sm" className="h-8" onClick={() => setShowCaseStudy(true)}>
                                     <Download className="w-3.5 h-3.5 mr-2" />
                                     Generate Case Studies
                                 </Button>
@@ -377,11 +414,20 @@ export function MillPerformanceAnalysis() {
                                                 </div>
                                             </div>
 
+
                                             <div className="flex gap-2 pt-2">
-                                                <Button size="sm" className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] h-9">
+                                                <Button size="sm" className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] h-9"
+                                                    onClick={() => {
+                                                        setSelectedMill(mill)
+                                                        setShowAssistance(true)
+                                                    }}>
                                                     Deploy Assistance
                                                 </Button>
-                                                <Button size="sm" variant="outline" className="flex-1 font-bold text-[11px] h-9 border-zinc-200">
+                                                <Button size="sm" variant="outline" className="flex-1 font-bold text-[11px] h-9 border-zinc-200"
+                                                    onClick={() => {
+                                                        setSelectedMill(mill)
+                                                        setShowProfile(true)
+                                                    }}>
                                                     Active Profile
                                                 </Button>
                                             </div>
@@ -567,6 +613,156 @@ export function MillPerformanceAnalysis() {
                                         </Button>
                                     </CardContent>
                                 </Card>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Case Study Dialog */}
+            <Dialog open={showCaseStudy} onOpenChange={setShowCaseStudy}>
+                <DialogContent className="max-w-2xl bg-white">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Lightbulb className="w-5 h-5 text-yellow-500" />
+                            Generate Success Case Study
+                        </DialogTitle>
+                    </DialogHeader>
+                    {generating ? (
+                        <div className="py-12 flex flex-col items-center justify-center space-y-4">
+                            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                            <p className="text-sm font-bold text-zinc-500">Processing performance data...</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100">
+                                <h4 className="font-bold text-sm text-zinc-900 mb-2">Select Focus Area</h4>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Button variant="outline" className="justify-start h-12 hover:border-blue-200 hover:bg-blue-50">
+                                        <div className="text-left">
+                                            <div className="font-bold text-xs">QC Automation</div>
+                                            <div className="text-[10px] text-zinc-500">Impact on result consistency</div>
+                                        </div>
+                                    </Button>
+                                    <Button variant="outline" className="justify-start h-12 hover:border-green-200 hover:bg-green-50">
+                                        <div className="text-left">
+                                            <div className="font-bold text-xs">Efficiency Drives</div>
+                                            <div className="text-[10px] text-zinc-500">Output vs. Resource correlation</div>
+                                        </div>
+                                    </Button>
+                                </div>
+                            </div>
+                            <Button className="w-full bg-black text-white" onClick={() => {
+                                setGenerating(true)
+                                setTimeout(() => {
+                                    setGenerating(false)
+                                    setShowCaseStudy(false)
+                                }, 2000)
+                            }}>
+                                <Download className="w-4 h-4 mr-2" />
+                                Generate & Download PDF
+                            </Button>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Deploy Assistance Dialog */}
+            <Dialog open={showAssistance} onOpenChange={setShowAssistance}>
+                <DialogContent className="max-w-md bg-white">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Building2 className="w-5 h-5 text-red-600" />
+                            Deploy Support Team
+                        </DialogTitle>
+                    </DialogHeader>
+                    {selectedMill && (
+                        <div className="space-y-4">
+                            <div className="p-3 bg-red-50 rounded-lg border border-red-100 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-sm text-red-600 border border-red-200">
+                                    {selectedMill.millName.charAt(0)}
+                                </div>
+                                <div>
+                                    <p className="font-bold text-sm text-zinc-900">{selectedMill.millName}</p>
+                                    <p className="text-xs text-red-600 font-medium">Critical Intervention Required</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label className="text-xs font-bold uppercase text-zinc-500">Assign Specialist</Label>
+                                <div className="space-y-2">
+                                    {['Dr. Sarah K. (Quality Systems)', 'Eng. John M. (Machinery)', 'Tech Team Alpha (General Audit)'].map((expert, i) => (
+                                        <div key={i} className="flex items-center gap-3 p-3 rounded-lg border hover:border-blue-500 cursor-pointer transition-all group">
+                                            <div className="w-4 h-4 rounded-full border border-zinc-300 group-hover:border-blue-500" />
+                                            <span className="text-sm font-medium text-zinc-700">{expert}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => setShowAssistance(false)}>
+                                Confirm Deployment
+                            </Button>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Active Profile Dialog */}
+            <Dialog open={showProfile} onOpenChange={setShowProfile}>
+                <DialogContent className="max-w-xl bg-white">
+                    <DialogHeader>
+                        <DialogTitle>Miller Profile</DialogTitle>
+                    </DialogHeader>
+                    {selectedMill && (
+                        <div className="space-y-6">
+                            <div className="flex items-start gap-4">
+                                <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center">
+                                    <Building2 className="w-8 h-8 text-zinc-400" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-xl font-bold text-zinc-900">{selectedMill.millName}</h3>
+                                    <div className="flex gap-2 mt-1">
+                                        <Badge variant="outline">{selectedMill.millId}</Badge>
+                                        <Badge variant="outline">{selectedMill.country}</Badge>
+                                        <Badge className={selectedMill.riskLevel === 'critical' ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700'}>
+                                            {selectedMill.riskLevel.toUpperCase()} RISK
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-zinc-50 rounded-xl space-y-1">
+                                    <p className="text-xs text-zinc-500 font-bold uppercase">Primary Contact</p>
+                                    <p className="text-sm font-bold text-zinc-900">James Omondi</p>
+                                    <p className="text-xs text-zinc-600">Plant Manager</p>
+                                    <p className="text-xs text-blue-600 mt-1">+254 712 345 678</p>
+                                </div>
+                                <div className="p-4 bg-zinc-50 rounded-xl space-y-1">
+                                    <p className="text-xs text-zinc-500 font-bold uppercase">Facility Details</p>
+                                    <p className="text-sm font-bold text-zinc-900">Type A Processor</p>
+                                    <p className="text-xs text-zinc-600">Capacity: 450MT/Day</p>
+                                    <p className="text-xs text-zinc-600">Lines: 3 (Maize, Wheat)</p>
+                                </div>
+                            </div>
+
+                            <div className="border-t pt-4">
+                                <h4 className="text-xs font-bold uppercase text-zinc-500 mb-3">Compliance History (Last 3 Audits)</h4>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between text-sm p-2 bg-red-50 rounded text-red-700">
+                                        <span>Oct 2024</span>
+                                        <strong>68% (Critical Fail)</strong>
+                                    </div>
+                                    <div className="flex justify-between text-sm p-2 bg-yellow-50 rounded text-yellow-700">
+                                        <span>Sep 2024</span>
+                                        <strong>72% (Marginal)</strong>
+                                    </div>
+                                    <div className="flex justify-between text-sm p-2 bg-green-50 rounded text-green-700">
+                                        <span>Aug 2024</span>
+                                        <strong>81% (Pass)</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

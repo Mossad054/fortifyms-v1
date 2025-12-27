@@ -45,11 +45,11 @@ export default function Navbar() {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
-        router.push('/login')
+        router.push('/')
     }
 
-    // Don't show navbar on login or register pages
-    if (pathname === '/login' || pathname === '/register') return null
+    // Don't show navbar on login, register, or auth pages, or on landing page
+    if (pathname === '/login' || pathname === '/register' || pathname === '/auth' || pathname === '/') return null
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/60 backdrop-blur-xl">
@@ -109,7 +109,7 @@ export default function Navbar() {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             ) : (
-                                <Link href="/login">
+                                <Link href="/auth">
                                     <Button variant="premium" size="sm" className="shadow-lg shadow-green-900/10">
                                         Sign In
                                     </Button>
@@ -159,7 +159,7 @@ export default function Navbar() {
                             </div>
                         ) : (
                             <div className="px-5">
-                                <Link href="/login" className="block w-full">
+                                <Link href="/auth" className="block w-full">
                                     <Button className="w-full" variant="premium">Sign In</Button>
                                 </Link>
                             </div>

@@ -19,7 +19,7 @@ import {
     CheckCircle, XCircle, Download, FileText, Beaker, Wrench,
     Calendar, Flag, Eye
 } from 'lucide-react'
-import { MillComplianceProfile, NonConformance, MOCK_ASSIGNED_MILLS } from '../types'
+import { MillComplianceProfile, NonConformance, MOCK_ASSIGNED_MILLS } from '../../types'
 
 export default function MillComplianceProfilePage() {
     const router = useRouter()
@@ -217,8 +217,8 @@ export default function MillComplianceProfilePage() {
                             <div key={idx} className="flex-1 flex flex-col items-center">
                                 <div
                                     className={`w-full rounded-t ${score >= 90 ? 'bg-green-500' :
-                                            score >= 70 ? 'bg-yellow-500' :
-                                                'bg-red-500'
+                                        score >= 70 ? 'bg-yellow-500' :
+                                            'bg-red-500'
                                         }`}
                                     style={{ height: `${score}%` }}
                                 />
