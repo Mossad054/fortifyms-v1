@@ -1,13 +1,9 @@
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log('Start seeding...')
-
-  // Create sample users
-  const hashedPassword = await bcrypt.hash('password123', 12)
 
   // Create system admin
   const admin = await prisma.user.upsert({
