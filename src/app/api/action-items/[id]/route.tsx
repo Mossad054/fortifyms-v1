@@ -71,10 +71,12 @@ export async function PUT(
     const body = await request.json();
     const validatedData = UpdateActionItemRequestSchema.parse(body);
 
+    const { notes, ...updateData } = validatedData;
+
     const actionItem = await db.actionItem.update({
       where: { id: params.id },
       data: {
-        ...validatedData,
+        ...updateData,
         tags: validatedData.tags ? JSON.stringify(validatedData.tags) : undefined,
         updatedAt: new Date()
       },
@@ -99,7 +101,7 @@ export async function PUT(
     console.error('Error updating action item:', error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.issues },
         { status: 400 }
       );
     }

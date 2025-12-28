@@ -153,7 +153,7 @@ export async function POST(
     console.error('Error creating alert action:', error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.issues },
         { status: 400 }
       );
     }

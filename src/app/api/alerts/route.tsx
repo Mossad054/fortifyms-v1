@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
-import { 
-  AlertType, 
-  AlertCategory, 
-  AlertSeverity, 
+import {
+  AlertType,
+  AlertCategory,
+  AlertSeverity,
   AlertStatus,
   NotificationChannel,
-  UserRole 
+  UserRole
 } from '@prisma/client';
 
 // Create alert schema
@@ -45,12 +45,12 @@ export async function GET(request: NextRequest) {
 
     // Build where clause
     const where: any = {};
-    
+
     if (status) where.status = status;
     if (severity) where.severity = severity;
     if (category) where.category = category;
     if (millId) where.millId = millId;
-    
+
     // Filter by user's alerts (either directly assigned or through their mill)
     if (userId) {
       const user = await db.user.findUnique({
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
     console.error('Error creating alert:', error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       );
     }
@@ -294,16 +294,16 @@ async function determineAlertRecipients(
         // Add operator, mill manager, QC supervisor
         const operator = mill.users.find(u => u.role === 'MILL_OPERATOR');
         const manager = mill.users.find(u => u.role === 'MILL_MANAGER');
-        
+
         if (operator) recipients.push(operator);
         if (manager) recipients.push(manager);
       }
-      
+
       // Add  QA Officer
       const Officers = await db.user.findMany({
-        where: { 
+        where: {
           role: { in: ['INSPECTOR', 'PROGRAM_MANAGER'] },
-          isActive: true 
+          isActive: true
         }
       });
       recipients.push(...Officers);
@@ -317,11 +317,11 @@ async function determineAlertRecipients(
         const manager = mill.users.find(u => u.role === 'MILL_MANAGER');
         if (manager) recipients.push(manager);
       }
-      
+
       const inspectors = await db.user.findMany({
-        where: { 
+        where: {
           role: { in: ['INSPECTOR', 'PROGRAM_MANAGER'] },
-          isActive: true 
+          isActive: true
         }
       });
       recipients.push(...inspectors);
@@ -332,7 +332,7 @@ async function determineAlertRecipients(
     case 'EQUIPMENT_DRIFT':
       // Maintenance Alerts
       if (mill) {
-        const maintenanceStaff = mill.users.filter(u => 
+        const maintenanceStaff = mill.users.filter(u =>
           u.role === 'MILL_OPERATOR' || u.role === 'MILL_MANAGER'
         );
         recipients.push(...maintenanceStaff);
@@ -344,7 +344,7 @@ async function determineAlertRecipients(
     case 'PRODUCTION_TARGET_MISS':
       // Production Alerts
       if (mill) {
-        const productionStaff = mill.users.filter(u => 
+        const productionStaff = mill.users.filter(u =>
           u.role === 'MILL_OPERATOR' || u.role === 'MILL_MANAGER'
         );
         recipients.push(...productionStaff);
@@ -366,7 +366,7 @@ async function determineAlertRecipients(
       break;
   }
 
-  return recipients.filter((recipient, index, self) => 
+  return recipients.filter((recipient, index, self) =>
     index === self.findIndex(r => r.id === recipient.id)
   );
 }
@@ -394,7 +394,7 @@ function determineNotificationChannels(severity: AlertSeverity, userRole: UserRo
 
 function generateResponseUrl(alert: any): string {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  
+
   switch (alert.type) {
     case 'QC_FAILURE':
     case 'CONTAMINATION_RISK':

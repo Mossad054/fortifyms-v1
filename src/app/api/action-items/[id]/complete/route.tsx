@@ -43,7 +43,7 @@ export async function POST(
         status: 'COMPLETED',
         completedAt: new Date(),
         completionNotes: validatedData.completionNotes,
-        completionEvidence: validatedData.completionEvidence ? 
+        completionEvidence: validatedData.completionEvidence ?
           JSON.stringify(validatedData.completionEvidence) : null,
         actualHours: validatedData.actualHours,
         updatedAt: new Date()
@@ -108,7 +108,7 @@ export async function POST(
     console.error('Error completing action item:', error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.issues },
         { status: 400 }
       );
     }

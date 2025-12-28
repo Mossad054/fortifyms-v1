@@ -69,6 +69,20 @@ enum NotificationChannel {
   EMAIL
 }
 
+enum ActionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ActionType {
+  CORRECTIVE_ACTION
+  PREVENTIVE_ACTION
+  ROOT_CAUSE_ANALYSIS
+  FOLLOW_UP
+}
+
 model User {
   id                String   @id @default(cuid())
   email             String?  @unique
@@ -1368,8 +1382,9 @@ model AlertAction {
   id                String   @id @default(cuid())
   alertId           String
   userId            String
-  actionType        String
-  status            String   @default("PENDING")
+  actionType        ActionType
+  description       String
+  status            ActionStatus @default(PENDING)
   dueDate           DateTime?
   completedAt       DateTime?
   notes             String?
