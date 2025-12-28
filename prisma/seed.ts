@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
@@ -16,20 +16,18 @@ async function main() {
     create: {
       email: 'admin@fortifymis.org',
       name: 'System Administrator',
-      password: hashedPassword,
-      role: UserRole.SYSTEM_ADMIN,
+      role: 'ADMIN',
     },
   })
 
-  // Create mill manager
-  const manager = await prisma.user.upsert({
-    where: { email: 'manager@mill1.com' },
+  // Create program manager
+  const programManager = await prisma.user.upsert({
+    where: { email: 'pm@fwga.org' },
     update: {},
     create: {
-      email: 'manager@mill1.com',
-      name: 'John Manager',
-      password: hashedPassword,
-      role: UserRole.MILL_MANAGER,
+      email: 'pm@fwga.org',
+      name: 'Sarah Program Manager',
+      role: 'PROGRAM_MANAGER',
     },
   })
 
@@ -40,56 +38,18 @@ async function main() {
     create: {
       email: 'operator@mill1.com',
       name: 'Jane Operator',
-      password: hashedPassword,
-      role: UserRole.MILL_OPERATOR,
+      role: 'MILL_OPERATOR',
     },
   })
 
-  // Create FWGA inspector
+  // Create inspector
   const inspector = await prisma.user.upsert({
     where: { email: 'inspector@fwga.org' },
     update: {},
     create: {
       email: 'inspector@fwga.org',
       name: 'Robert Inspector',
-      password: hashedPassword,
-      role: UserRole.FWGA_INSPECTOR,
-    },
-  })
-
-  // Create FWGA program manager
-  const programManager = await prisma.user.upsert({
-    where: { email: 'pm@fwga.org' },
-    update: {},
-    create: {
-      email: 'pm@fwga.org',
-      name: 'Sarah Program Manager',
-      password: hashedPassword,
-      role: UserRole.FWGA_PROGRAM_MANAGER,
-    },
-  })
-
-  // Create institutional buyer
-  const buyer = await prisma.user.upsert({
-    where: { email: 'buyer@school.edu' },
-    update: {},
-    create: {
-      email: 'buyer@school.edu',
-      name: 'Michael Buyer',
-      password: hashedPassword,
-      role: UserRole.INSTITUTIONAL_BUYER,
-    },
-  })
-
-  // Create logistics planner
-  const logistics = await prisma.user.upsert({
-    where: { email: 'logistics@transport.com' },
-    update: {},
-    create: {
-      email: 'logistics@transport.com',
-      name: 'David Logistics',
-      password: hashedPassword,
-      role: UserRole.LOGISTICS_PLANNER,
+      role: 'INSPECTOR',
     },
   })
 
@@ -107,14 +67,14 @@ async function main() {
   })
 
   await prisma.userProfile.upsert({
-    where: { userId: manager.id },
+    where: { userId: programManager.id },
     update: {},
     create: {
-      userId: manager.id,
+      userId: programManager.id,
       phone: '+1234567891',
       department: 'Operations',
-      position: 'Mill Manager',
-      employeeId: 'MGR001',
+      position: 'Program Manager',
+      employeeId: 'PM001',
     },
   })
 
@@ -136,9 +96,9 @@ async function main() {
     },
   })
 
-  // Update manager and operator with mill
+  // Update program manager and operator with mill
   await prisma.user.update({
-    where: { id: manager.id },
+    where: { id: programManager.id },
     data: { millId: mill.id },
   })
 
@@ -288,53 +248,7 @@ async function main() {
     })
   }
 
-  // Create sample notifications
-  await prisma.notification.createMany({
-    data: [
-      {
-        userId: operator.id,
-        type: 'MAINTENANCE_DUE',
-        title: 'Equipment Calibration Due',
-        message: 'Doser Unit 1 calibration is due on January 15, 2025',
-        priority: 'MEDIUM',
-      },
-      {
-        userId: manager.id,
-        type: 'QC_PENDING',
-        title: 'QC Test Pending',
-        message: 'Batch KEN001-L1-20250105-0001 requires QC testing',
-        priority: 'HIGH',
-      },
-      {
-        userId: inspector.id,
-        type: 'AUDIT_SUBMITTED',
-        title: 'Audit Submitted for Review',
-        message: 'Mill KEN001 has submitted their monthly audit',
-        priority: 'MEDIUM',
-      },
-    ],
-  })
 
-  // Create sample procurement request
-  await prisma.procurementRequest.create({
-    data: {
-      buyerId: buyer.id,
-      title: 'Q4 2025 School Feeding Program - Maize Flour',
-      commodity: 'Fortified Maize Flour',
-      quantity: 500,
-      unit: 'tons',
-      specifications: JSON.stringify({
-        iron: 30,
-        vitaminA: 750,
-        vitaminB1: 15,
-        packaging: '50kg bags',
-        deliveryLocation: 'Nairobi Schools',
-      }),
-      budget: 250000,
-      deadline: new Date('2025-02-01'),
-      status: 'OPEN',
-    },
-  })
 
   console.log('Seeding finished.')
 }
