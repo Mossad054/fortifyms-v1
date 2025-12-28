@@ -56,7 +56,7 @@ export async function POST(
           data: {
             status: 'RESOLVED',
             resolvedAt: new Date(),
-            resolvedById: validatedData.reviewedBy
+            resolvedBy: validatedData.reviewedBy
           }
         });
       }

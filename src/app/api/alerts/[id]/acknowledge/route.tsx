@@ -240,8 +240,8 @@ async function triggerEscalation(alertId: string, reason: string, notes?: string
           toUserId: recipient.id,
           level: nextLevel,
           reason: reason as any,
-          triggerCondition: JSON.stringify({
-            triggerType,
+          metadata: JSON.stringify({
+            triggerType: 'ACKNOWLEDGMENT',
             currentLevel,
             nextLevel,
             notes

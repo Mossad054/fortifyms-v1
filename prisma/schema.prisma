@@ -21,12 +21,60 @@ enum UserRole {
   ADMIN
 }
 
+enum AlertType {
+  QC_FAILURE
+  CONTAMINATION_RISK
+  CRITICAL_NON_COMPLIANCE
+  COMPLIANCE_SCORE_DROP
+  CERTIFICATION_EXPIRY
+  CALIBRATION_DUE
+  CALIBRATION_OVERDUE
+  EQUIPMENT_DRIFT
+  PREMIX_USAGE_ANOMALY
+  LOW_PREMIX_INVENTORY
+  PRODUCTION_TARGET_MISS
+  NEW_RFP_MATCH
+  BID_DEADLINE_APPROACHING
+  TRAINING_OVERDUE
+  NEW_TRAINING_AVAILABLE
+}
+
+enum AlertCategory {
+  QUALITY_SAFETY
+  COMPLIANCE
+  MAINTENANCE
+  PRODUCTION
+  TRAINING_COMPLIANCE
+}
+
+enum AlertSeverity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+  ESCALATED
+  DISMISSED
+}
+
+enum NotificationChannel {
+  IN_SYSTEM
+  PUSH
+  SMS
+  EMAIL
+}
+
 model User {
   id                String   @id @default(cuid())
   email             String?  @unique
   name              String?
   image             String?
-  role              String   @default("MILL_OPERATOR")
+  role              UserRole @default(MILL_OPERATOR)
   isActive          Boolean  @default(true)
   emailVerified     DateTime?
   millId            String?
@@ -1231,9 +1279,9 @@ model ProcurementBid {
 // Alerts, Notifications & Escalation Engine
 model Alert {
   id                String   @id @default(cuid())
-  type              String
-  category          String
-  severity          String
+  type              AlertType
+  category          AlertCategory
+  severity          AlertSeverity
   title             String
   message           String
   summary           String?
@@ -1243,7 +1291,7 @@ model Alert {
   sourceType        String   // QC_TEST, BATCH_LOG, COMPLIANCE_AUDIT, MAINTENANCE, etc.
   sourceId          String?  // ID of the source record
   millId            String?
-  status            String   @default("ACTIVE")
+  status            AlertStatus @default(ACTIVE)
   isAcknowledged    Boolean  @default(false)
   acknowledgedAt    DateTime?
   acknowledgedBy    String?
@@ -1272,7 +1320,7 @@ model AlertNotification {
   id                String   @id @default(cuid())
   alertId           String
   userId            String
-  channel           String
+  channel           NotificationChannel
   status            String   @default("PENDING")
   sentAt            DateTime?
   deliveredAt       DateTime?

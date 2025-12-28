@@ -1,6 +1,3 @@
+import { prisma } from './prisma';
 
-// Placeholder db.ts to fix build errors
-export const db = {
-    query: async () => [],
-    execute: async () => { }
-}
+export const db = prisma;
