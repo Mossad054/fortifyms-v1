@@ -14,6 +14,7 @@ import { Features } from "@/components/landing/Features";
 import { Statistics } from "@/components/landing/Statistics";
 import { WhoWeServe } from "@/components/landing/WhoWeServe";
 import { Footer } from "@/components/landing/Footer";
+import { ScrollToTop } from "@/components/landing/ScrollToTop";
 
 // We import the fonts globally in the layout usually, but for now we rely on the project fonts.
 // If needed, we can import font classes.
@@ -30,6 +31,7 @@ export default function LandingPage() {
                 <WhoWeServe />
             </main>
             <Footer />
+            <ScrollToTop />
         </div>
     );
 }

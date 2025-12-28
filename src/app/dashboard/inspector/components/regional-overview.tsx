@@ -84,7 +84,7 @@ export function RegionalOverviewView() {
     ]
 
     const getCategoryColor = (index: number) => {
-        const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-gray-500']
+        const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-[#0A3225]/50', 'bg-gray-500']
         return colors[index] || 'bg-gray-500'
     }
 
@@ -139,7 +139,7 @@ export function RegionalOverviewView() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Total Mills</p>
-                                <p className="text-4xl font-bold text-blue-600">{totalMills}</p>
+                                <p className="text-4xl font-bold text-[#0A3225]">{totalMills}</p>
                             </div>
                             <Building2 className="w-10 h-10 text-blue-500" />
                         </div>

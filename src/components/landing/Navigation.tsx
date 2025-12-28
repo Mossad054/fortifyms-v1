@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Leaf, ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
@@ -20,7 +20,11 @@ export const Navigation = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
     const router = useRouter();
+    const pathname = usePathname();
     const supabase = createClient();
+
+    const isHomePage = pathname === "/";
+    const showSolidNav = !isHomePage || isScrolled;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -59,13 +63,13 @@ export const Navigation = () => {
                 return '/dashboard/manager';
             case 'INSTITUTIONAL_BUYER':
                 return '/procurement/buyer';
-            case 'FWGA_INSPECTOR':
+            case 'INSPECTOR':
                 return '/compliance/inspector';
             case 'SYSTEM_ADMIN':
                 return '/analytics';
             case 'LOGISTICS_PLANNER':
                 return '/dashboard/logistics';
-            case 'FWGA_PROGRAM_MANAGER':
+            case 'PROGRAM_MANAGER':
                 return '/dashboard/program-manager';
             default:
                 return '/dashboard';
@@ -73,22 +77,22 @@ export const Navigation = () => {
     };
 
     const navLinks = [
-        { label: "About", href: "#about" },
-        { label: "Resources", href: "#resources" },
-        { label: "Statistics", href: "#statistics" },
-        { label: "Partners", href: "#partners" },
-        { label: "Contact", href: "#contact" },
+        { label: "About", href: "/#about" },
+        { label: "Resources", href: "/#resources" },
+        { label: "Statistics", href: "/#statistics" },
+        { label: "Partners", href: "/#partners" },
+        { label: "Contact", href: "/contact" },
     ];
 
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-primary/95 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showSolidNav ? "bg-primary/95 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
                 }`}
         >
             <div className="container mx-auto px-4 md:px-8 flex items-center justify-between">
                 <a href="/" className="flex items-center gap-2 group">
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
-                        <Leaf className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
+                        <img src="/icon.JPG" alt="Fortify Logo" className="w-full h-full object-cover" />
                     </div>
                     <span className="font-display font-semibold text-lg text-white tracking-tight">
                         Food Fortification Portal
@@ -102,10 +106,10 @@ export const Navigation = () => {
                             <a
                                 key={link.label}
                                 href={link.href}
-                                className="relative group text-sm font-medium text-white/90 hover:text-white transition-colors duration-300"
+                                className="relative group text-sm font-medium text-white/90 hover:text-orange transition-colors duration-300"
                             >
                                 {link.label}
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange transition-all duration-300 group-hover:w-full"></span>
                             </a>
                         ))}
                     </div>
@@ -149,12 +153,12 @@ export const Navigation = () => {
                         </>
                     ) : (
                         <>
-                            <Link href="/auth" className="text-sm font-medium text-white hover:text-white/80 flex items-center gap-1 hover:scale-105 transition-all duration-300">
+                            <Link href="/auth" className="text-sm font-medium text-white hover:text-orange flex items-center gap-1 hover:scale-105 transition-all duration-300">
                                 Sign In
                                 <ChevronDown className="w-4 h-4" />
                             </Link>
-                            <Link href="/auth?tab=signup">
-                                <Button className="bg-white hover:bg-white/90 text-primary font-semibold min-w-[120px] transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg">
+                            <Link href="/auth">
+                                <Button className="bg-white hover:bg-orange hover:text-white text-primary font-semibold min-w-[120px] transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg">
                                     Get a demo
                                 </Button>
                             </Link>
@@ -216,7 +220,7 @@ export const Navigation = () => {
                                             Sign In
                                         </Button>
                                     </Link>
-                                    <Link href="/auth?tab=signup">
+                                    <Link href="/auth">
                                         <Button className="w-full bg-white text-primary hover:bg-white/90">
                                             Get a demo
                                         </Button>

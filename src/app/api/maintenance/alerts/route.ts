@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
                 status: 'ACTIVE'
             }
 
-            if (userProfile?.role !== 'SYSTEM_ADMIN' && userProfile?.role !== 'FWGA_PROGRAM_MANAGER') {
+            if (userProfile?.role !== 'SYSTEM_ADMIN' && userProfile?.role !== 'PROGRAM_MANAGER') {
                 if (userProfile?.millId) {
                     where.millId = userProfile.millId
                 }

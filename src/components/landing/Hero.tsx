@@ -34,13 +34,13 @@ export const Hero = () => {
                 return '/dashboard/manager';
             case 'INSTITUTIONAL_BUYER':
                 return '/procurement/buyer';
-            case 'FWGA_INSPECTOR':
+            case 'INSPECTOR':
                 return '/compliance/inspector';
             case 'SYSTEM_ADMIN':
                 return '/analytics';
             case 'LOGISTICS_PLANNER':
                 return '/dashboard/logistics';
-            case 'FWGA_PROGRAM_MANAGER':
+            case 'PROGRAM_MANAGER':
                 return '/dashboard/program-manager';
             default:
                 return '/dashboard';
@@ -59,33 +59,33 @@ export const Hero = () => {
                 <div className="max-w-2xl">
                     {/* Badge */}
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 text-white/90 text-sm font-medium mb-8 animate-fade-in backdrop-blur-sm">
-                        <ShieldCheck className="w-4 h-4 text-accent" />
-                        Trusted by health organizations worldwide
+                        <ShieldCheck className="w-4 h-4 text-orange" />
+                        Trusted by all stakeholders
                     </div>
 
                     {/* Main Headline */}
                     <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-8 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-                        Strengthening Public Health Through <span className="text-accent">Food Fortification.</span>
+                        <span className="text-orange">Strengthening Public Health Through</span> <span className="text-accent">Food Fortification.</span>
                     </h1>
 
                     {/* Description */}
                     <p className="text-lg md:text-xl text-white/80 mb-6 leading-relaxed max-w-xl animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-                        Your comprehensive resource for food fortification standards, compliance tracking, and data-driven insights to combat micronutrient deficiencies globally.
+                        Your comprehensive resources portal  for food fortification,quality assurance , compliance and policy tracking, and data-driven insights to combat micronutrient deficiencies. .
                     </p>
 
                     {/* CTA Button */}
                     <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
                         {user ? (
                             <Link href={getDashboardUrl(user.user_metadata?.role)}>
-                                <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary font-semibold min-w-[180px] h-14 text-base rounded-xl flex items-center gap-2">
+                                <Button size="lg" className="bg-accent hover:bg-orange text-primary font-semibold min-w-[180px] h-14 text-base rounded-xl flex items-center gap-2 transition-all duration-300">
                                     <LayoutDashboard className="w-5 h-5" />
                                     Go to Dashboard
                                     <ArrowRight className="ml-1 w-4 h-4" />
                                 </Button>
                             </Link>
                         ) : (
-                            <Link href="/auth?tab=signup">
-                                <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary font-semibold min-w-[160px] h-14 text-base rounded-xl">
+                            <Link href="/auth">
+                                <Button size="lg" className="bg-accent hover:bg-orange text-primary font-semibold min-w-[160px] h-14 text-base rounded-xl transition-all duration-300">
                                     Get a demo
                                     <ArrowRight className="ml-2 w-4 h-4" />
                                 </Button>
@@ -113,8 +113,8 @@ export const Hero = () => {
 
                     {/* Floating Card: Lives Impacted (Top Right) */}
                     <div className="absolute top-10 -right-10 bg-accent text-primary p-4 px-6 rounded-2xl shadow-xl shadow-accent/20 animate-float z-20" style={{ animationDelay: "2s" }}>
-                        <p className="text-2xl font-bold mb-0">+2.5B</p>
-                        <p className="text-xs font-semibold uppercase tracking-wider opacity-80">Lives Impacted</p>
+                        <p className="text-2xl font-bold mb-0">Up to 500 million</p>
+                        <p className="text-xs font-semibold uppercase tracking-wider opacity-80">People Impacted</p>
                     </div>
                 </div>
             </div>

@@ -69,7 +69,7 @@ export function QuizEngine({ questions, onComplete }: { questions: any[], onComp
                             className={`w-full text-left p-4 rounded-xl border-2 transition-all flex justify-between items-center
                                 ${isSubmitted && i === question.correct ? 'border-green-500 bg-green-50 text-green-700' :
                                     isSubmitted && selectedOption === i && i !== question.correct ? 'border-red-500 bg-red-50 text-red-700' :
-                                        selectedOption === i ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-200'
+                                        selectedOption === i ? 'border-blue-500 bg-[#0A3225]/5' : 'border-gray-200 hover:border-[#0A3225]/20'
                                 }`}
                             disabled={isSubmitted}
                         >
@@ -81,7 +81,7 @@ export function QuizEngine({ questions, onComplete }: { questions: any[], onComp
                 </div>
 
                 {isSubmitted && (
-                    <div className="p-4 bg-blue-50 text-blue-800 rounded-lg text-sm">
+                    <div className="p-4 bg-[#0A3225]/5 text-[#0A3225] rounded-lg text-sm">
                         <strong>Explanation:</strong> {question.feedback || (selectedOption === question.correct ? "Correct! Well done." : "Incorrect. Review the material.")}
                     </div>
                 )}

@@ -4,41 +4,47 @@
 
 @layer base {
   :root {
-    /* Base Colors - Warm & Premium */
-    --background: 40 14% 93%;
-    /* #F0EFEA */
-    --foreground: 220 13% 10%;
-    /* #1a1b1e - Very dark grey/black */
+    /* Base Colors - Unified with Landing Page */
+    --background: 0 0% 100%;
+    /* Pure White - matches "Who We Serve" section */
+    --foreground: 0 0% 10%;
+    /* Very Dark Gray for maximum readability */
 
-    /* Card & Surfaces - Glassmorphism ready */
+    /* Card & Surfaces - Clean white */
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 10%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 10%;
+    --popover-foreground: 0 0% 10%;
 
-    /* Brand Colors - Nature/Food Inspired */
-    --primary: 142 76% 36%;
-    /* #16a34a - Fresh Green */
-    --primary-foreground: 355.7 100% 97.3%;
+    /* Brand Colors - Deep Forest Green from Landing Page */
+    --primary: 165 72% 14%;
+    /* #0A3225 - Deep Forest Green */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 14% 88%;
-    /* Slightly darker than bg */
-    --secondary-foreground: 220 13% 10%;
+    --secondary: 44 22% 95%;
+    /* Light sage - from landing page */
+    --secondary-foreground: 0 0% 10%;
 
-    --muted: 40 14% 85%;
-    --muted-foreground: 220 8% 46%;
+    --muted: 44 15% 92%;
+    --muted-foreground: 0 0% 35%;
+    /* Darker for better readability */
 
-    --accent: 142 76% 96%;
-    /* Very light green hint */
-    --accent-foreground: 142 76% 36%;
+    --accent: 100 78% 83%;
+    /* Mint Green #C8F5B1 - from landing page */
+    --accent-foreground: 165 72% 14%;
+
+    /* Orange Accent - For visual variety and warmth */
+    --orange: 38 100% 50%;
+    /* #FFA500 - Vibrant Orange */
+    --orange-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 142 76% 36%;
+    --border: 44 15% 88%;
+    --input: 44 15% 88%;
+    --ring: 165 72% 14%;
 
     --radius: 0.75rem;
   }
@@ -146,10 +152,68 @@
 
   body {
     @apply bg-background text-foreground;
-    background-color: #F0EFEA;
-    /* Strict enforcement */
+    background-color: #FFFFFF;
+    /* Pure white to match landing page */
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Enhanced Typography for Better Readability */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+    color: hsl(0 0% 10%);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  p {
+    line-height: 1.6;
+    color: hsl(0 0% 20%);
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+    color: hsl(0 0% 10%);
+  }
+
+  /* Enhanced text classes */
+  .text-premium-dark {
+    color: hsl(0 0% 10%) !important;
+    font-weight: 700;
+  }
+
+  .text-heading {
+    color: hsl(0 0% 10%);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .text-orange-accent {
+    color: #FFA500;
+    font-weight: 700;
   }
 }
 
@@ -186,21 +250,21 @@
   }
 }
 
-/* Scrollbar Polish */
+/* Scrollbar Polish - Green to match landing page */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: hsl(44 15% 92%);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  background: hsl(165 72% 14%);
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: hsl(165 72% 18%);
 }

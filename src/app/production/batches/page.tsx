@@ -42,9 +42,9 @@ export default function ProductionBatchesPage() {
     function getStatusBadge(status: string) {
         const variants: Record<string, any> = {
             ACTIVE: { className: 'bg-green-500', label: 'Active' },
-            COMPLETED: { className: 'bg-blue-500', label: 'Completed' },
+            COMPLETED: { className: 'bg-[#0A3225]/50', label: 'Completed' },
             QUARANTINED: { className: 'bg-red-500', label: 'Quarantined' },
-            RELEASED: { className: 'bg-purple-500', label: 'Released' },
+            RELEASED: { className: 'bg-orange', label: 'Released' },
         }
         const config = variants[status] || variants.ACTIVE
         return <Badge className={config.className}>{config.label}</Badge>

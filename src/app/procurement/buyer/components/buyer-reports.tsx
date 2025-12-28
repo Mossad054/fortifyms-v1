@@ -22,7 +22,7 @@ export function BuyerReports() {
             <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <div>
                     <h2 className="text-xl font-bold flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-blue-600" /> Procurement Reports
+                        <FileText className="w-5 h-5 text-[#0A3225]" /> Procurement Reports
                     </h2>
                     <p className="text-xs text-gray-500">Generate, view, and share strategic sourcing insights</p>
                 </div>
@@ -39,7 +39,7 @@ export function BuyerReports() {
                     <CardHeader>
                         <CardTitle className="text-base flex justify-between items-start">
                             Supplier Performance
-                            <Badge variant="secondary" className="bg-purple-100 text-purple-700">Monthly</Badge>
+                            <Badge variant="secondary" className="bg-purple-100 text-orange">Monthly</Badge>
                         </CardTitle>
                         <CardDescription>Aggregate scoring of all active suppliers based on delivery, quality, and cost.</CardDescription>
                     </CardHeader>
@@ -105,7 +105,7 @@ export function BuyerReports() {
                     <CardHeader>
                         <CardTitle className="text-base flex justify-between items-start">
                             Traceability Audit Log
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-700">Audit</Badge>
+                            <Badge variant="secondary" className="bg-[#0A3225]/10 text-[#0A3225]">Audit</Badge>
                         </CardTitle>
                         <CardDescription>Full history of batch movements and chain of custody for audit purposes.</CardDescription>
                     </CardHeader>

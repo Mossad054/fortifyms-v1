@@ -139,8 +139,8 @@ export default function RegisterPage() {
                             >
                                 <option value="MILL_OPERATOR">Mill Operator</option>
                                 <option value="MILL_MANAGER">Mill Manager</option>
-                                <option value="FWGA_INSPECTOR">FWGA Inspector</option>
-                                <option value="FWGA_PROGRAM_MANAGER">FWGA Program Manager</option>
+                                <option value="INSPECTOR">Inspector</option>
+                                <option value="PROGRAM_MANAGER">Program Manager</option>
                                 <option value="INSTITUTIONAL_BUYER">Institutional Buyer</option>
                                 <option value="LOGISTICS_PLANNER">Logistics Planner</option>
                                 <option value="SYSTEM_ADMIN">System Admin</option>

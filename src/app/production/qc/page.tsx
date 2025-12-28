@@ -94,7 +94,7 @@ export default function QCTestEntryPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Beaker className="h-6 w-6 text-blue-600" />
+                        <Beaker className="h-6 w-6 text-[#0A3225]" />
                         QC Test Entry
                     </CardTitle>
                     <CardDescription>

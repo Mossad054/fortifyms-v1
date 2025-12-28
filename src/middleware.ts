@@ -61,18 +61,63 @@ export async function middleware(request: NextRequest) {
     const isProtectedRoute = protectedRoutes.some(path => request.nextUrl.pathname.startsWith(path))
 
     // Public auth routes
-    const authRoutes = ['/auth', '/login', '/register']
-    const isAuthRoute = authRoutes.some(path => request.nextUrl.pathname.startsWith(path))
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/auth')
 
-    // 1. Redirect unauthenticated users trying to access protected routes to /auth
+    // 1. Redirect /login and /register to /auth to ensure role selection is used
+    const legacyAuthRoutes = ['/login', '/register']
+    if (legacyAuthRoutes.some(path => request.nextUrl.pathname.startsWith(path))) {
+        return NextResponse.redirect(new URL('/auth', request.url))
+    }
+
+    // 2. Redirect unauthenticated users trying to access protected routes to /auth
     if (isProtectedRoute && !session) {
         return NextResponse.redirect(new URL('/auth', request.url))
     }
 
-    // 2. Redirect authenticated users from auth pages to landing page
-    // Let them navigate to their dashboards from there
+    // 3. Roll-based access enforcement for dashboards
+    if (session && isProtectedRoute) {
+        const userRole = session.user.user_metadata?.role;
+        const path = request.nextUrl.pathname;
+
+        // Map paths to required roles
+        const rolePaths: Record<string, string[]> = {
+            '/dashboard/operator': ['MILL_OPERATOR'],
+            '/dashboard/manager': ['MILL_MANAGER'],
+            '/dashboard/logistics': ['LOGISTICS_PLANNER'],
+            '/dashboard/program-manager': ['PROGRAM_MANAGER'],
+            '/compliance/inspector': ['INSPECTOR'],
+            '/analytics': ['SYSTEM_ADMIN'],
+            '/procurement/buyer': ['INSTITUTIONAL_BUYER'],
+        }
+
+        // Check if current path is a restricted role path
+        for (const [restrictedPath, allowedRoles] of Object.entries(rolePaths)) {
+            if (path.startsWith(restrictedPath)) {
+                if (!allowedRoles.includes(userRole)) {
+                    // Unauthorized access for this role - redirect back to landing or their dashboard
+                    return NextResponse.redirect(new URL('/', request.url))
+                }
+            }
+        }
+    }
+
+    // 4. Redirect authenticated users from auth pages to their dashboard
     if (session && isAuthRoute) {
-        return NextResponse.redirect(new URL('/', request.url))
+        const userRole = session.user.user_metadata?.role;
+        const getDashboardUrl = (role: string) => {
+            switch (role) {
+                case 'MILL_OPERATOR': return '/dashboard/operator';
+                case 'MILL_MANAGER': return '/dashboard/manager';
+                case 'LOGISTICS_PLANNER': return '/dashboard/logistics';
+                case 'PROGRAM_MANAGER': return '/dashboard/program-manager';
+                case 'INSPECTOR': return '/compliance/inspector';
+                case 'SYSTEM_ADMIN': return '/analytics';
+                case 'INSTITUTIONAL_BUYER': return '/procurement/buyer';
+                default: return '/';
+            }
+        };
+        const dashboardUrl = getDashboardUrl(userRole);
+        return NextResponse.redirect(new URL(dashboardUrl, request.url))
     }
 
     // 3. Allow authenticated users to stay on landing page (/)

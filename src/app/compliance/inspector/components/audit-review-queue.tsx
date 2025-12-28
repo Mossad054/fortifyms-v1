@@ -89,7 +89,7 @@ function AuditCard({ audit, onClick }: { audit: AuditSession, onClick: () => voi
     const getStatusColor = (status?: string) => {
         switch (status) {
             case 'Pending': return 'bg-amber-100 text-amber-700 border-amber-200'
-            case 'InReview': return 'bg-blue-100 text-blue-700 border-blue-200'
+            case 'InReview': return 'bg-[#0A3225]/10 text-[#0A3225] border-[#0A3225]/20'
             case 'Completed': return 'bg-green-100 text-green-700 border-green-200'
             default: return 'bg-gray-100 text-gray-700'
         }

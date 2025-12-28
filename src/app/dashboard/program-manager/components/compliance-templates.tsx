@@ -143,7 +143,7 @@ export function ComplianceTemplates() {
                                     </Button>
                                     <Button
                                         size="sm"
-                                        className="bg-blue-600 hover:bg-blue-700"
+                                        className="bg-[#0A3225] hover:bg-[#0A3225]"
                                         onClick={() => handleRollOut(template)}
                                     >
                                         <Send className="w-4 h-4 mr-1" /> Roll Out
@@ -329,7 +329,7 @@ function TemplateEditor({ template, updateTemplate, onSave, onCancel }: { templa
                                         <div className="text-left">
                                             <div className="font-semibold text-lg flex items-center gap-2">
                                                 {section.title}
-                                                <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700">{section.items.length} Items</Badge>
+                                                <Badge variant="outline" className="ml-2 bg-[#0A3225]/5 text-[#0A3225]">{section.items.length} Items</Badge>
                                             </div>
                                             <p className="text-sm text-zinc-500 font-normal">Section ID: {section.id}</p>
                                         </div>

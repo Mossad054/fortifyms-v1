@@ -152,8 +152,8 @@ export async function GET(request: NextRequest) {
     const forecastPeriods = parseInt(searchParams.get('forecastPeriods') || '12');
 
     // Check permissions based on user role
-    if (session.user.role !== 'FWGA_PROGRAM_MANAGER' && 
-        session.user.role !== 'FWGA_INSPECTOR' && 
+    if (session.user.role !== 'PROGRAM_MANAGER' && 
+        session.user.role !== 'INSPECTOR' && 
         session.user.role !== 'SYSTEM_ADMIN' &&
         millId && session.user.millId !== millId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

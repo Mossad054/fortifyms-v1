@@ -120,7 +120,7 @@ export function AssignedMillsView() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Total Mills</p>
-                                <p className="text-3xl font-bold text-blue-600">{mills.length}</p>
+                                <p className="text-3xl font-bold text-[#0A3225]">{mills.length}</p>
                             </div>
                             <Building2 className="w-10 h-10 text-blue-500" />
                         </div>

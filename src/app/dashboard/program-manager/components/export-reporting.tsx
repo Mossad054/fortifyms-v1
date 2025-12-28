@@ -59,8 +59,8 @@ const getFormatIcon = (format: string) => {
 
 const getCategoryColor = (category: string) => {
     switch (category) {
-        case 'executive': return 'bg-purple-100 text-purple-700'
-        case 'operational': return 'bg-blue-100 text-blue-700'
+        case 'executive': return 'bg-purple-100 text-orange'
+        case 'operational': return 'bg-[#0A3225]/10 text-[#0A3225]'
         case 'compliance': return 'bg-red-100 text-red-700'
         case 'donor': return 'bg-green-100 text-green-700'
         default: return 'bg-gray-100 text-gray-700'
@@ -182,7 +182,7 @@ export function ExportReporting() {
                                 <p className="text-zinc-500 font-medium">Generated: {new Date().toLocaleDateString()}</p>
                             </div>
                             <div className="text-right">
-                                <div className="font-bold text-xl text-blue-600">FORTYMIS</div>
+                                <div className="font-bold text-xl text-[#0A3225]">FORTYMIS</div>
                                 <div className="text-xs text-zinc-400">OFFICIAL REPORT</div>
                             </div>
                         </div>
@@ -259,7 +259,7 @@ export function ExportReporting() {
                             <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {templates.map((template) => (
-                                        <Card key={template.id} className="border-2 hover:border-blue-300 transition-colors">
+                                        <Card key={template.id} className="border-2 hover:border-[#0A3225]/30 transition-colors">
                                             <CardContent className="p-4">
                                                 <div className="flex items-start justify-between mb-3">
                                                     <div className="flex items-center gap-2">
@@ -330,7 +330,7 @@ export function ExportReporting() {
                         </Card>
 
                         {/* Quick Generate Panel */}
-                        <Card className="border-2 border-blue-200 bg-blue-50/30">
+                        <Card className="border-2 border-[#0A3225]/20 bg-[#0A3225]/5/30">
                             <CardHeader>
                                 <CardTitle className="text-lg">Quick Generate</CardTitle>
                             </CardHeader>
@@ -467,12 +467,12 @@ export function ExportReporting() {
                                 </TableBody>
                             </Table>
 
-                            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                            <div className="mt-4 p-4 bg-[#0A3225]/5 rounded-lg">
                                 <div className="flex items-start gap-2">
-                                    <Calendar className="w-5 h-5 text-blue-600 mt-0.5" />
+                                    <Calendar className="w-5 h-5 text-[#0A3225] mt-0.5" />
                                     <div>
-                                        <h4 className="font-semibold text-sm text-blue-900">Automated Distribution</h4>
-                                        <p className="text-xs text-blue-700 mt-1">
+                                        <h4 className="font-semibold text-sm text-[#0A3225]">Automated Distribution</h4>
+                                        <p className="text-xs text-[#0A3225] mt-1">
                                             Scheduled reports are automatically generated and emailed to recipients.
                                             All reports are also archived in the History tab for 90 days.
                                         </p>
@@ -626,7 +626,7 @@ export function ExportReporting() {
                                     ].map((section) => (
                                         <div
                                             key={section}
-                                            className={`flex items-center space-x-2 p-3 border rounded-lg cursor-pointer transition-colors ${newTemplate.sections?.includes(section) ? 'bg-blue-50 border-blue-200' : 'hover:bg-gray-50'}`}
+                                            className={`flex items-center space-x-2 p-3 border rounded-lg cursor-pointer transition-colors ${newTemplate.sections?.includes(section) ? 'bg-[#0A3225]/5 border-[#0A3225]/20' : 'hover:bg-gray-50'}`}
                                             onClick={() => toggleSection(section)}
                                         >
                                             <Checkbox checked={newTemplate.sections?.includes(section)} />

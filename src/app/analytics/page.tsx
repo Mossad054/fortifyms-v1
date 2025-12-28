@@ -93,8 +93,8 @@ export default function AnalyticsPage() {
           <Card className="glass-card border-none shadow-sm hover:shadow-md transition-all">
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <BarChart3 className="h-6 w-6 text-blue-600" />
+                <div className="p-2 bg-[#0A3225]/10 rounded-lg">
+                  <BarChart3 className="h-6 w-6 text-[#0A3225]" />
                 </div>
                 <div>
                   <div className="text-2xl font-bold">24/7</div>
@@ -122,7 +122,7 @@ export default function AnalyticsPage() {
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
                 <div className="p-2 bg-purple-100 rounded-lg">
-                  <Globe className="h-6 w-6 text-purple-600" />
+                  <Globe className="h-6 w-6 text-orange" />
                 </div>
                 <div>
                   <div className="text-2xl font-bold">3</div>

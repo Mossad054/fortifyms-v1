@@ -103,7 +103,7 @@ export function BatchProductionModule() {
                         <CardHeader className="pb-2">
                             <div className="flex justify-between items-center">
                                 <CardTitle className="flex items-center gap-2">
-                                    <Factory className="w-5 h-5 text-blue-600" />
+                                    <Factory className="w-5 h-5 text-[#0A3225]" />
                                     Active Batches
                                 </CardTitle>
                                 <Button size="sm" onClick={() => setView('wizard')}>
@@ -118,7 +118,7 @@ export function BatchProductionModule() {
                                 <div className="text-center py-12 border-2 border-dashed rounded-xl bg-slate-50/50">
                                     <Factory className="w-12 h-12 mx-auto text-zinc-300 mb-2" />
                                     <p className="text-zinc-500 font-medium">No active batches</p>
-                                    <button onClick={() => setView('wizard')} className="text-blue-600 text-sm hover:underline mt-1">Start daily production</button>
+                                    <button onClick={() => setView('wizard')} className="text-[#0A3225] text-sm hover:underline mt-1">Start daily production</button>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
@@ -126,7 +126,7 @@ export function BatchProductionModule() {
                                         <div key={batch.id} onClick={() => { setSelectedBatch(batch); setView('detail') }} className="border rounded-lg p-4 hover:bg-slate-50 cursor-pointer shadow-sm">
                                             <div className="flex justify-between items-start mb-2">
                                                 <Badge variant="outline" className="font-mono text-xs bg-white">{batch.id}</Badge>
-                                                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">{batch.status}</Badge>
+                                                <Badge className="bg-[#0A3225]/10 text-[#0A3225] hover:bg-blue-200">{batch.status}</Badge>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 text-sm mt-3">
                                                 <div>
@@ -157,7 +157,7 @@ export function BatchProductionModule() {
                             {/* Stepper */}
                             <div className="flex justify-center gap-1 mt-4">
                                 {STEPS.map((s, i) => (
-                                    <div key={s.id} className={`h-1 w-8 rounded-full transition-all ${i <= step ? 'bg-blue-600' : 'bg-slate-200'}`} />
+                                    <div key={s.id} className={`h-1 w-8 rounded-full transition-all ${i <= step ? 'bg-[#0A3225]' : 'bg-slate-200'}`} />
                                 ))}
                             </div>
                         </CardHeader>
@@ -245,9 +245,9 @@ export function BatchProductionModule() {
                                         </div>
                                     </div>
                                     {formData.fortification?.expectedUsage ? (
-                                        <div className="bg-blue-50 border border-blue-100 p-3 rounded-md text-sm text-blue-800">
+                                        <div className="bg-[#0A3225]/5 border border-blue-100 p-3 rounded-md text-sm text-[#0A3225]">
                                             Expected Premix Usage: <span className="font-bold">{formData.fortification.expectedUsage} kg</span>
-                                            <div className="text-xs text-blue-600 mt-1">Based on {formData.rawMaterial?.inputWeight}kg input. Ensure hopper is filled.</div>
+                                            <div className="text-xs text-[#0A3225] mt-1">Based on {formData.rawMaterial?.inputWeight}kg input. Ensure hopper is filled.</div>
                                         </div>
                                     ) : null}
                                 </div>
@@ -413,7 +413,7 @@ export function QCControlModule() {
                                     Quality Control
                                 </CardTitle>
                                 <div className="flex gap-2">
-                                    <Button size="sm" variant="outline" onClick={() => setShowSelfAudit(true)} className="border-blue-200 text-blue-700 hover:bg-blue-50">
+                                    <Button size="sm" variant="outline" onClick={() => setShowSelfAudit(true)} className="border-[#0A3225]/20 text-[#0A3225] hover:bg-[#0A3225]/5">
                                         <ShieldCheck className="w-4 h-4 mr-2" /> Self Audit
                                     </Button>
                                     <Button size="sm" onClick={() => setView('record')} className="bg-green-600 hover:bg-green-700">
@@ -653,7 +653,7 @@ export function TraceabilityModule() {
                         <CardHeader className="pb-2">
                             <div className="flex justify-between items-center">
                                 <CardTitle className="flex items-center gap-2">
-                                    <QrCode className="w-5 h-5 text-purple-600" />
+                                    <QrCode className="w-5 h-5 text-orange" />
                                     Traceability & Certs
                                 </CardTitle>
                                 <Button size="sm" variant="outline">
@@ -680,7 +680,7 @@ export function TraceabilityModule() {
                                                     <Button size="sm" variant="outline" className="h-8" onClick={() => setShowQR(batch.id)}>
                                                         <QrCode className="w-3 h-3 mr-1" /> QR
                                                     </Button>
-                                                    <Button size="sm" className="h-8 bg-purple-600 hover:bg-purple-700" onClick={() => { setSelectedBatch(batch.id); setView('certificate') }}>
+                                                    <Button size="sm" className="h-8 bg-orange hover:bg-purple-700" onClick={() => { setSelectedBatch(batch.id); setView('certificate') }}>
                                                         <ClipboardCheck className="w-3 h-3 mr-1" /> CoA
                                                     </Button>
                                                 </>

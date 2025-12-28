@@ -61,7 +61,7 @@ export function AnalyticsView() {
             {/* Filters & Controls */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/50 p-4 rounded-xl border shadow-sm">
                 <div className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-blue-600" />
+                    <BarChart3 className="w-5 h-5 text-[#0A3225]" />
                     <h3 className="font-semibold text-gray-900">Performance Analytics</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -223,15 +223,15 @@ export function AnalyticsView() {
             </div>
 
             {/* AI Interpretation Card (Moved to Bottom) */}
-            <Card className="border-blue-200 bg-blue-50/30 shadow-sm">
+            <Card className="border-[#0A3225]/20 bg-[#0A3225]/5/30 shadow-sm">
                 <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                        <div className="p-3 bg-blue-100 rounded-xl text-blue-600 shrink-0">
+                        <div className="p-3 bg-[#0A3225]/10 rounded-xl text-[#0A3225] shrink-0">
                             <Lightbulb className="w-6 h-6" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="font-bold text-lg text-blue-900">Performance Insights & Recommendations</h3>
-                            <p className="text-sm text-blue-800">
+                            <h3 className="font-bold text-lg text-[#0A3225]">Performance Insights & Recommendations</h3>
+                            <p className="text-sm text-[#0A3225]">
                                 Based on {period} data for <span className="font-semibold">{product === 'all' ? 'all products' : product}</span>:
                             </p>
                             <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-700 list-disc pl-4">
@@ -293,8 +293,8 @@ export function ReportsView() {
 
     const getCategoryBadgeColor = (category: string) => {
         switch (category) {
-            case 'operational': return 'bg-blue-100 text-blue-700'
-            case 'management': return 'bg-purple-100 text-purple-700'
+            case 'operational': return 'bg-[#0A3225]/10 text-[#0A3225]'
+            case 'management': return 'bg-purple-100 text-orange'
             case 'regulatory': return 'bg-green-100 text-green-700'
             default: return 'bg-gray-100 text-gray-700'
         }
@@ -316,21 +316,21 @@ export function ReportsView() {
             {/* Tab Navigation */}
             <div className="flex gap-2 border-b">
                 <button
-                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'generate' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'
+                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'generate' ? 'border-b-2 border-blue-600 text-[#0A3225]' : 'text-gray-600 hover:text-gray-900'
                         }`}
                     onClick={() => setActiveTab('generate')}
                 >
                     Generate Reports
                 </button>
                 <button
-                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'scheduled' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'
+                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'scheduled' ? 'border-b-2 border-blue-600 text-[#0A3225]' : 'text-gray-600 hover:text-gray-900'
                         }`}
                     onClick={() => setActiveTab('scheduled')}
                 >
                     Scheduled Reports
                 </button>
                 <button
-                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'history' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'
+                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'history' ? 'border-b-2 border-blue-600 text-[#0A3225]' : 'text-gray-600 hover:text-gray-900'
                         }`}
                     onClick={() => setActiveTab('history')}
                 >
@@ -379,8 +379,8 @@ export function ReportsView() {
                             <Card key={template.id} className="glass-card border-none shadow-sm hover:shadow-md transition-all">
                                 <CardHeader>
                                     <div className="flex justify-between items-start mb-2">
-                                        <div className="p-3 bg-blue-50 rounded-xl">
-                                            <FileText className="w-6 h-6 text-blue-600" />
+                                        <div className="p-3 bg-[#0A3225]/5 rounded-xl">
+                                            <FileText className="w-6 h-6 text-[#0A3225]" />
                                         </div>
                                         <Badge className={getCategoryBadgeColor(template.category)}>
                                             {template.category}
@@ -444,8 +444,8 @@ export function ReportsView() {
                 <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
                     <DialogHeader>
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-blue-50 rounded-lg">
-                                <FileText className="w-5 h-5 text-blue-600" />
+                            <div className="p-2 bg-[#0A3225]/5 rounded-lg">
+                                <FileText className="w-5 h-5 text-[#0A3225]" />
                             </div>
                             <div>
                                 <DialogTitle>{selectedTemplate?.name}</DialogTitle>

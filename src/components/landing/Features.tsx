@@ -1,5 +1,7 @@
-import { BookOpen, ClipboardCheck, BarChart3, Award, ArrowRight } from "lucide-react";
+"use client";
+import { BookOpen, ClipboardCheck, BarChart3, Award, ArrowRight, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import millingPlant from "@/assets/milling-plant.jpg";
 
 const features = [
@@ -8,37 +10,50 @@ const features = [
     title: "Information Hub",
     description: "Access comprehensive guidelines, standards, and best practices for food fortification programs worldwide.",
     highlights: ["WHO Guidelines", "Regional Standards", "Research Library"],
-    accentColor: "text-sky-500",
+    accentColor: "text-orange",
+    path: "/features/information-hub",
   },
   {
     icon: ClipboardCheck,
     title: "Compliance & Reporting",
     description: "Track and manage fortification requirements with our streamlined compliance monitoring system.",
     highlights: ["Real-time Tracking", "Automated Reports", "Audit Trails"],
-    accentColor: "text-teal-600",
+    accentColor: "text-green-600",
+    path: "/features/compliance-reporting",
   },
   {
     icon: BarChart3,
     title: "Data Analytics",
     description: "Gain insights from comprehensive dashboards showing fortification trends and impact metrics.",
     highlights: ["Interactive Charts", "Custom Dashboards", "Export Options"],
-    accentColor: "text-green-600", // Changed from purple to green as requested
+    accentColor: "text-green-600",
+    path: "/features/data-analytics",
   },
   {
     icon: Award,
     title: "Certification & Registration",
     description: "Streamlined process for product certification and registration to meet fortification standards.",
     highlights: ["Digital Applications", "Status Tracking", "Certificate Management"],
-    accentColor: "text-orange-500",
+    accentColor: "text-orange",
+    path: "/features/certification-registration",
+  },
+  {
+    icon: Code2,
+    title: "APIs & Integration",
+    description: "Connect your existing systems directly to our fortification portal for automated data exchange.",
+    highlights: ["Partner System Sync", "Automatic Data Links", "Integrate with your current system"],
+    accentColor: "text-green-600",
+    path: "#",
+    isComingSoon: true,
   },
 ];
 
 export const Features = () => {
   return (
-    <section id="services" className="py-24 bg-background relative overflow-hidden">
+    <section id="resources" className="py-24 bg-background relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <span className="inline-block text-sky-500 font-bold text-sm uppercase tracking-wider mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+          <span className="inline-block text-orange font-bold text-2xl uppercase tracking-wider mb-6 opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
             Our Services
           </span>
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-[#0A3225] mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
@@ -58,21 +73,20 @@ export const Features = () => {
             className="w-full h-80 object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0A3225]/90 via-[#0A3225]/40 to-transparent flex items-center">
-            <div className="p-8 lg:p-12 max-w-xl">
-              <h3 className="font-display text-2xl lg:text-3xl font-bold text-white mb-3 shadow-sm">Modern Milling Production</h3>
-              <p className="text-white/90 text-base lg:text-lg leading-relaxed shadow-sm font-medium">
-                Supporting food manufacturers with cutting-edge compliance and tracking tools to ensure quality and safety standards.
+            <div className="p-8 lg:p-12 max-w-2xl">
+              <p className="text-white text-xl lg:text-3xl leading-relaxed shadow-sm font-bold">
+                Empowering mills, regulators, buyers, and program partners with shared tools for compliance, quality assurance, and transparent coordination.
               </p>
             </div>
           </div>
         </div>
 
         {/* Clean, Vertical Cards Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="group bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-start h-full"
+              className="group bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-start h-full"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="mb-4 flex items-center gap-4 w-full">
@@ -99,10 +113,16 @@ export const Features = () => {
               </ul>
 
               <div className="w-full mt-2 pt-4 border-t border-gray-100/50">
-                <div className="flex items-center text-sm font-bold text-sky-500 group-hover:gap-2 transition-all cursor-pointer">
-                  Learn more
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </div>
+                {feature.isComingSoon ? (
+                  <span className="flex items-center text-sm font-bold text-gray-400 cursor-not-allowed">
+                    Coming soon
+                  </span>
+                ) : (
+                  <Link href={feature.path} className={`flex items-center text-sm font-bold ${feature.accentColor} group-hover:gap-2 transition-all cursor-pointer`}>
+                    Learn more
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+                )}
               </div>
             </div>
           ))}

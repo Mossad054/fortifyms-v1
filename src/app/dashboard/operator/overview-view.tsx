@@ -19,9 +19,9 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 
 // --- MOCK DATA ---
 const KPI_DATA = [
-    { label: "Today's Output", value: '1,350 kg', change: '-0.5%', trend: 'down', icon: Factory, color: 'text-blue-600', bg: 'bg-blue-100' },
+    { label: "Today's Output", value: '1,350 kg', change: '-0.5%', trend: 'down', icon: Factory, color: 'text-[#0A3225]', bg: 'bg-[#0A3225]/10' },
     { label: 'QC Pass Rate', value: '98.5%', change: '+2.0%', trend: 'up', icon: ShieldCheck, color: 'text-green-600', bg: 'bg-green-100' },
-    { label: 'Efficiency', value: '94.2%', change: '+1.5%', trend: 'up', icon: Activity, color: 'text-purple-600', bg: 'bg-purple-100' },
+    { label: 'Efficiency', value: '94.2%', change: '+1.5%', trend: 'up', icon: Activity, color: 'text-orange', bg: 'bg-purple-100' },
     { label: 'Active Alerts', value: '2', change: '', trend: 'neutral', icon: AlertOctagon, color: 'text-red-600', bg: 'bg-red-100' },
 ]
 
@@ -95,7 +95,7 @@ export function OverviewCommandCenter({ setActiveTab }: OverviewProps) {
                         <p className="text-zinc-500 text-sm">Select a workflow to begin operations.</p>
                     </div>
                     <div className="flex flex-wrap gap-3">
-                        <Button onClick={() => setActiveTab('production')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                        <Button onClick={() => setActiveTab('production')} variant="outline" className="border-[#0A3225]/20 hover:bg-[#0A3225]/5 text-[#0A3225]">
                             <Factory className="mr-2 h-4 w-4" /> Start Batch
                         </Button>
                         <Button onClick={() => setActiveTab('production')} variant="outline" className="border-green-200 hover:bg-green-50 text-green-700">
@@ -107,7 +107,7 @@ export function OverviewCommandCenter({ setActiveTab }: OverviewProps) {
                         <Button onClick={() => setActiveTab('diagnostics')} variant="outline" className="border-red-200 hover:bg-red-50 text-red-700">
                             <Activity className="mr-2 h-4 w-4" /> Diagnostics
                         </Button>
-                        <Button onClick={() => setActiveTab('training')} variant="outline" className="border-purple-200 hover:bg-purple-50 text-purple-700">
+                        <Button onClick={() => setActiveTab('training')} variant="outline" className="border-orange/20 hover:bg-orange/5 text-orange">
                             <GraduationCap className="mr-2 h-4 w-4" /> Learn
                         </Button>
                     </div>
@@ -121,7 +121,7 @@ export function OverviewCommandCenter({ setActiveTab }: OverviewProps) {
                 <Card className="flex flex-col">
                     <CardHeader>
                         <CardTitle className="text-base flex items-center gap-2">
-                            <Activity className="w-4 h-4 text-blue-600" /> Output vs. Yield Trends
+                            <Activity className="w-4 h-4 text-[#0A3225]" /> Output vs. Yield Trends
                         </CardTitle>
                         <CardDescription>7-Day Performance Analysis</CardDescription>
                     </CardHeader>
@@ -151,7 +151,7 @@ export function OverviewCommandCenter({ setActiveTab }: OverviewProps) {
                 <Card className="flex flex-col">
                     <CardHeader>
                         <CardTitle className="text-base flex items-center gap-2">
-                            <Factory className="w-4 h-4 text-purple-600" /> Recent Production
+                            <Factory className="w-4 h-4 text-orange" /> Recent Production
                         </CardTitle>
                         <CardDescription>Latest batch logs and status</CardDescription>
                     </CardHeader>
@@ -170,7 +170,7 @@ export function OverviewCommandCenter({ setActiveTab }: OverviewProps) {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <Badge className={`mb-1 ${batch.status === 'Completed' ? 'bg-green-100 text-green-700 hover:bg-green-100' : batch.status === 'Flagged' ? 'bg-red-100 text-red-700 hover:bg-red-100' : 'bg-blue-100 text-blue-700 hover:bg-blue-100'}`}>
+                                            <Badge className={`mb-1 ${batch.status === 'Completed' ? 'bg-green-100 text-green-700 hover:bg-green-100' : batch.status === 'Flagged' ? 'bg-red-100 text-red-700 hover:bg-red-100' : 'bg-[#0A3225]/10 text-[#0A3225] hover:bg-[#0A3225]/10'}`}>
                                                 {batch.status}
                                             </Badge>
                                             <p className="text-xs font-medium text-zinc-600">{batch.output}</p>
@@ -207,7 +207,7 @@ export function OverviewCommandCenter({ setActiveTab }: OverviewProps) {
                         ) : (
                             tasks.filter(t => !t.done).map(task => (
                                 <div key={task.id} className="bg-white border rounded-lg p-4 shadow-sm flex items-start gap-4">
-                                    <div className={`mt-1 p-2 rounded-full ${task.priority === 'critical' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                                    <div className={`mt-1 p-2 rounded-full ${task.priority === 'critical' ? 'bg-red-100 text-red-600' : 'bg-[#0A3225]/10 text-[#0A3225]'}`}>
                                         {task.type === 'qc' ? <Microscope className="w-4 h-4" /> : task.type === 'maintenance' ? <Wrench className="w-4 h-4" /> : <ClipboardCheck className="w-4 h-4" />}
                                     </div>
                                     <div className="flex-1">

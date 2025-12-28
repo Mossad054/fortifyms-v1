@@ -130,7 +130,7 @@ export function ComplianceMonitoring() {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="opacity-100 transition-opacity text-blue-600 hover:text-blue-800 hover:bg-blue-50 z-10 relative"
+                                        className="opacity-100 transition-opacity text-[#0A3225] hover:text-[#0A3225] hover:bg-[#0A3225]/5 z-10 relative"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             openAuditDetails(log)
@@ -210,7 +210,7 @@ export function ComplianceMonitoring() {
                                             </CardHeader>
                                             <CardContent>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">JD</div>
+                                                    <div className="w-10 h-10 rounded-full bg-[#0A3225]/10 flex items-center justify-center text-[#0A3225] font-bold">JD</div>
                                                     <div>
                                                         <div className="font-semibold">Jane Doe</div>
                                                         <div className="text-xs text-muted-foreground">Lead Inspector, KEBS</div>
@@ -269,7 +269,7 @@ export function ComplianceMonitoring() {
                                                     </div>
                                                     <p className="text-slate-600">Install additional ventilation and temperature monitoring system by end of month.</p>
                                                     <div className="flex justify-between items-center text-xs mt-2">
-                                                        <span className="text-blue-600 font-medium">Status: In Progress</span>
+                                                        <span className="text-[#0A3225] font-medium">Status: In Progress</span>
                                                         <span className="text-slate-400">Due: Jan 15, 2025</span>
                                                     </div>
                                                 </div>

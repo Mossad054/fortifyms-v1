@@ -75,7 +75,7 @@ export function PendingReviewsQueue() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'awaiting_review': return 'bg-blue-100 text-blue-700'
+            case 'awaiting_review': return 'bg-[#0A3225]/10 text-[#0A3225]'
             case 'clarification_requested': return 'bg-yellow-100 text-yellow-700'
             case 'escalated': return 'bg-orange-100 text-orange-700'
             default: return 'bg-gray-100 text-gray-700'
@@ -140,7 +140,7 @@ export function PendingReviewsQueue() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Total Pending</p>
-                                <p className="text-3xl font-bold text-blue-600">{reviews.length}</p>
+                                <p className="text-3xl font-bold text-[#0A3225]">{reviews.length}</p>
                             </div>
                             <FileText className="w-10 h-10 text-blue-500" />
                         </div>

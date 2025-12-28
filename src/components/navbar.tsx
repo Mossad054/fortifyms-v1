@@ -57,8 +57,8 @@ export default function Navbar() {
                 <div className="flex h-16 items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Link href="/" className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-700 flex items-center justify-center text-white font-bold shadow-lg shadow-green-900/20">
-                                F
+                            <div className="h-8 w-8 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center">
+                                <img src="/icon.JPG" alt="Fortify Logo" className="w-full h-full object-cover" />
                             </div>
                             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 hidden sm:block">
                                 Fortifymis
@@ -77,8 +77,8 @@ export default function Navbar() {
                             {user ? (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-white/50">
-                                            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 border border-green-200">
+                                        <Button variant="ghost" className="relative h-12 w-12 rounded-full hover:bg-white/50">
+                                            <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 border-2 border-green-200 text-lg font-bold">
                                                 {user.email?.charAt(0).toUpperCase()}
                                             </div>
                                         </Button>
@@ -97,7 +97,7 @@ export default function Navbar() {
                                             <User className="mr-2 h-4 w-4" />
                                             <span>Profile</span>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => router.push('/settings')}>
                                             <Settings className="mr-2 h-4 w-4" />
                                             <span>Settings</span>
                                         </DropdownMenuItem>

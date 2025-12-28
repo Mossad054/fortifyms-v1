@@ -111,7 +111,7 @@ export function DriverView() {
             <div className="bg-slate-900 text-white p-4 shadow-md shrink-0 z-10">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold">
+                        <div className="w-10 h-10 rounded-full bg-[#0A3225] flex items-center justify-center font-bold">
                             {user.name.charAt(0)}
                         </div>
                         <div>
@@ -141,7 +141,7 @@ export function DriverView() {
                             >
                                 <CardContent className="p-4">
                                     <div className="flex justify-between items-start mb-2">
-                                        <Badge variant={task.status === 'delivered' ? 'secondary' : task.status === 'transit' ? 'default' : 'outline'} className={task.status === 'transit' ? 'bg-blue-600 animate-pulse' : ''}>
+                                        <Badge variant={task.status === 'delivered' ? 'secondary' : task.status === 'transit' ? 'default' : 'outline'} className={task.status === 'transit' ? 'bg-[#0A3225] animate-pulse' : ''}>
                                             {task.status === 'transit' ? 'In Transit' : task.status}
                                         </Badge>
                                         <span className="text-xs font-mono text-slate-500">{task.eta}</span>
@@ -173,7 +173,7 @@ export function DriverView() {
                         </Button>
 
                         <div>
-                            <Badge variant={activeTask.status === 'transit' ? 'default' : 'outline'} className="mb-2 bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">
+                            <Badge variant={activeTask.status === 'transit' ? 'default' : 'outline'} className="mb-2 bg-[#0A3225]/10 text-[#0A3225] hover:bg-[#0A3225]/10 border-none">
                                 {activeTask.status === 'transit' ? '● Live Trip' : 'Pending'}
                             </Badge>
                             <h2 className="text-2xl font-bold text-slate-900 leading-tight">{activeTask.customer}</h2>
@@ -184,7 +184,7 @@ export function DriverView() {
                         <div className="aspect-video bg-slate-200 rounded-xl relative overflow-hidden flex items-center justify-center border-2 border-white shadow-sm">
                             <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/36.8219,-1.2921,13,0/600x400?access_token=pk.mock')] opacity-20 bg-center bg-cover" />
                             <div className="text-center relative z-10">
-                                <Navigation className="w-10 h-10 text-blue-600 mx-auto mb-2" />
+                                <Navigation className="w-10 h-10 text-[#0A3225] mx-auto mb-2" />
                                 <p className="text-xs font-semibold text-slate-600">Turn-by-turn Navigation</p>
                             </div>
                         </div>
@@ -194,7 +194,7 @@ export function DriverView() {
                             <h3 className="font-semibold text-slate-900 border-b pb-2">Order Items</h3>
                             {activeTask.items.map((item: string, i: number) => (
                                 <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-lg border shadow-sm">
-                                    <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-xs">{i + 1}</div>
+                                    <div className="w-8 h-8 rounded bg-[#0A3225]/5 flex items-center justify-center text-[#0A3225] font-bold text-xs">{i + 1}</div>
                                     <span className="text-sm font-medium">{item}</span>
                                 </div>
                             ))}
@@ -205,7 +205,7 @@ export function DriverView() {
                             <Button variant="outline" className="flex-1 h-12 text-slate-700 border-slate-300">
                                 <Phone className="w-4 h-4 mr-2" /> Call
                             </Button>
-                            <Button variant="outline" className="flex-1 h-12 text-blue-700 border-blue-200 bg-blue-50" onClick={() => window.alert("Maps app would open here")}>
+                            <Button variant="outline" className="flex-1 h-12 text-[#0A3225] border-[#0A3225]/20 bg-[#0A3225]/5" onClick={() => window.alert("Maps app would open here")}>
                                 <Navigation className="w-4 h-4 mr-2" /> Map
                             </Button>
                         </div>
@@ -218,7 +218,7 @@ export function DriverView() {
                                 <Navigation className="w-5 h-5 ml-2" />
                             </Button>
                         ) : activeTask.status === 'transit' ? (
-                            <Button className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200" onClick={completeTrip}>
+                            <Button className="w-full h-14 text-lg bg-[#0A3225] hover:bg-[#0A3225] shadow-lg shadow-blue-200" onClick={completeTrip}>
                                 COMPLETE DELIVERY
                                 <CheckCircle2 className="w-5 h-5 ml-2" />
                             </Button>
@@ -240,11 +240,11 @@ export function DriverView() {
 
                     <div className="space-y-6 flex-1">
                         <div
-                            className={`h-48 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-colors ${podData.sig ? 'bg-blue-50 border-blue-300' : 'bg-slate-50 border-slate-300'}`}
+                            className={`h-48 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-colors ${podData.sig ? 'bg-[#0A3225]/5 border-[#0A3225]/30' : 'bg-slate-50 border-slate-300'}`}
                             onClick={() => setPodData({ ...podData, sig: true })}
                         >
                             {podData.sig ? (
-                                <div className="text-blue-600 font-handwriting text-4xl rotate-[-10deg]">John Doe</div>
+                                <div className="text-[#0A3225] font-handwriting text-4xl rotate-[-10deg]">John Doe</div>
                             ) : (
                                 <>
                                     <PenTool className="w-8 h-8 text-slate-400 mb-2" />

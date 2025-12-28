@@ -8,28 +8,28 @@ const audiences = [
     title: "Food Manufacturers",
     description: "Access guidelines, standards, and certification processes.",
     list: ["Product certification", "Quality standards", "Technical guidance"],
-    accentColor: "text-amber-500",
+    accentColor: "text-orange",
   },
   {
     icon: Building2,
     title: "Government & Regulators",
     description: "Tools for policy development and compliance monitoring.",
     list: ["Policy frameworks", "Compliance monitoring", "Impact assessment"],
-    accentColor: "text-teal-600",
+    accentColor: "text-green-600",
   },
   {
     icon: HeartHandshake,
     title: "NGOs & Health Organizations",
     description: "Resources to support advocacy and implementation.",
     list: ["Research access", "Program support", "Collaboration tools"],
-    accentColor: "text-rose-500",
+    accentColor: "text-orange",
   },
   {
     icon: Users,
     title: "General Public",
     description: "Learn about the importance of food fortification.",
     list: ["Educational content", "Health information", "Product lookup"],
-    accentColor: "text-emerald-600",
+    accentColor: "text-green-600",
   },
 ];
 
@@ -90,7 +90,7 @@ export const WhoWeServe = () => {
                 {audience.description}
               </p>
 
-              <ul className="space-y-3 w-full mt-auto mb-6">
+              <ul className="space-y-3 w-full mt-auto">
                 {audience.list?.map((item, i) => (
                   <li
                     key={item}
@@ -101,13 +101,6 @@ export const WhoWeServe = () => {
                   </li>
                 ))}
               </ul>
-
-              <div className="w-full mt-2 pt-4 border-t border-gray-100/50">
-                <div className="flex items-center text-sm font-bold text-sky-500 group-hover:gap-2 transition-all cursor-pointer">
-                  Learn more
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </div>
-              </div>
             </div>
           ))}
         </div>

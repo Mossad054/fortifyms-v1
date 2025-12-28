@@ -52,37 +52,37 @@ export default function InspectorDashboard() {
                 <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent flex flex-wrap lg:flex-nowrap gap-2">
                     <TabsTrigger
                         value="overview"
-                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
+                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
                     >
                         Overview
                     </TabsTrigger>
                     <TabsTrigger
                         value="audits"
-                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
+                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
                     >
                         Audits
                     </TabsTrigger>
                     <TabsTrigger
                         value="schedule"
-                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
+                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
                     >
                         Schedule
                     </TabsTrigger>
                     <TabsTrigger
                         value="reports"
-                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
+                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
                     >
                         Reports
                     </TabsTrigger>
                     <TabsTrigger
                         value="policy"
-                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
+                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
                     >
                         Policy
                     </TabsTrigger>
                     <TabsTrigger
                         value="training"
-                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
+                        className="flex-1 rounded-t-lg rounded-b-none border-t border-x border-b-0 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-600 py-3"
                     >
                         Training
                     </TabsTrigger>
@@ -98,7 +98,7 @@ export default function InspectorDashboard() {
                                     <p className="text-sm text-muted-foreground">Assigned Mills</p>
                                     <p className="text-2xl font-bold">12</p>
                                 </div>
-                                <Building2 className="w-8 h-8 text-blue-600" />
+                                <Building2 className="w-8 h-8 text-[#0A3225]" />
                             </CardContent>
                         </Card>
                         <Card className="glass-card border-none shadow-sm">
@@ -179,7 +179,7 @@ export default function InspectorDashboard() {
                                     ].map((audit, i) => (
                                         <div key={i} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                                             <div className="flex items-center gap-4">
-                                                <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
+                                                <div className="bg-[#0A3225]/10 p-2 rounded-lg text-[#0A3225]">
                                                     <Calendar className="w-5 h-5" />
                                                 </div>
                                                 <div>
@@ -234,7 +234,7 @@ export default function InspectorDashboard() {
                                 <h2 className="text-2xl font-bold">Audit Management</h2>
                                 <p className="text-muted-foreground">Manage ongoing and past audits</p>
                             </div>
-                            <Button onClick={() => setShowInspectionWizard(true)} className="bg-black text-white hover:bg-zinc-800">
+                            <Button onClick={() => setShowInspectionWizard(true)} className="bg-[#0A3225] text-white hover:bg-[#0A3225]/90">
                                 <Plus className="w-4 h-4 mr-2" />
                                 New Audit Draft
                             </Button>

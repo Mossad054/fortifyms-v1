@@ -59,7 +59,7 @@ export default function BuyerDashboard() {
                     </TabsTrigger>
                     <TabsTrigger
                         value="procurements"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <ShoppingCart className="h-4 w-4" />
                         <span className="hidden lg:inline">Procurements</span>
@@ -80,7 +80,7 @@ export default function BuyerDashboard() {
                     </TabsTrigger>
                     <TabsTrigger
                         value="qa"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-orange data-[state=active]:text-white transition-all"
                     >
                         <FileCheck className="h-4 w-4" />
                         <span className="hidden lg:inline">Quality</span>
@@ -129,7 +129,7 @@ export default function BuyerDashboard() {
                                 <p className="text-green-600 text-sm">Quick access to orders and suppliers.</p>
                             </div>
                             <div className="flex flex-wrap gap-3">
-                                <Button onClick={() => setActiveTab('procurements')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                                <Button onClick={() => setActiveTab('procurements')} variant="outline" className="border-[#0A3225]/20 hover:bg-[#0A3225]/5 text-[#0A3225]">
                                     <ShoppingCart className="mr-2 h-4 w-4" /> My Procurements
                                 </Button>
                                 <Button onClick={() => setActiveTab('suppliers')} variant="outline" className="border-orange-200 hover:bg-orange-50 text-orange-700">
@@ -138,7 +138,7 @@ export default function BuyerDashboard() {
                                 <Button onClick={() => setActiveTab('spend')} variant="outline" className="border-green-200 hover:bg-green-50 text-green-700">
                                     <BarChart className="mr-2 h-4 w-4" /> Make Decision
                                 </Button>
-                                <Button onClick={() => setActiveTab('qa')} variant="outline" className="border-purple-200 hover:bg-purple-50 text-purple-700">
+                                <Button onClick={() => setActiveTab('qa')} variant="outline" className="border-orange/20 hover:bg-orange/5 text-orange">
                                     <FileCheck className="mr-2 h-4 w-4" /> Check Quality
                                 </Button>
                             </div>
@@ -188,7 +188,7 @@ export default function BuyerDashboard() {
 
 function KPICard({ title, value, icon: Icon, trend, color }: any) {
     const colorMap = {
-        blue: 'bg-blue-50 text-blue-600',
+        blue: 'bg-[#0A3225]/5 text-[#0A3225]',
         orange: 'bg-orange-50 text-orange-600',
         green: 'bg-green-50 text-green-600'
     }

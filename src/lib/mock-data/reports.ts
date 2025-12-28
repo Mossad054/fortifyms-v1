@@ -81,7 +81,7 @@ export const SCHEDULED_REPORTS: ScheduledReport[] = [
         templateId: 'TPL-001',
         templateName: 'Executive Summary Dashboard',
         frequency: 'weekly',
-        recipients: ['director@fwga.org', 'pm@fwga.org'],
+        recipients: ['director@fortify.org', 'pm@fortify.org'],
         nextRun: '2024-12-27',
         status: 'active',
         lastRun: '2024-12-20'
@@ -91,7 +91,7 @@ export const SCHEDULED_REPORTS: ScheduledReport[] = [
         templateId: 'TPL-003',
         templateName: 'Donor Impact Presentation',
         frequency: 'monthly',
-        recipients: ['donors@fwga.org', 'communications@fwga.org'],
+        recipients: ['donors@fortify.org', 'communications@fortify.org'],
         nextRun: '2025-01-01',
         status: 'active',
         lastRun: '2024-12-01'
@@ -101,7 +101,7 @@ export const SCHEDULED_REPORTS: ScheduledReport[] = [
         templateId: 'TPL-004',
         templateName: 'Compliance Audit Report',
         frequency: 'quarterly',
-        recipients: ['compliance@fwga.org', 'legal@fwga.org'],
+        recipients: ['compliance@fortify.org', 'legal@fortify.org'],
         nextRun: '2025-01-15',
         status: 'paused',
         lastRun: '2024-10-15'

@@ -18,10 +18,10 @@ export function FleetStatusView() {
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="bg-blue-50/50 border-none">
+                <Card className="bg-[#0A3225]/5/50 border-none">
                     <CardContent className="p-4 flex items-center gap-4">
-                        <div className="p-2 bg-blue-100 rounded-full text-blue-600"><Truck className="w-5 h-5" /></div>
-                        <div><p className="text-xs text-blue-700 font-bold uppercase">On Road</p><h3 className="text-xl font-bold">8 Vehicles</h3></div>
+                        <div className="p-2 bg-[#0A3225]/10 rounded-full text-[#0A3225]"><Truck className="w-5 h-5" /></div>
+                        <div><p className="text-xs text-[#0A3225] font-bold uppercase">On Road</p><h3 className="text-xl font-bold">8 Vehicles</h3></div>
                     </CardContent>
                 </Card>
                 <Card className="bg-green-50/50 border-none">
@@ -47,7 +47,7 @@ export function LogisticsAnalyticsView() {
                     <div className="text-2xl font-bold">87%</div>
                     <p className="text-xs text-green-600 mt-1">+2.5% from last month</p>
                     <div className="h-2 bg-gray-100 rounded-full mt-3 w-full overflow-hidden">
-                        <div className="h-full bg-blue-600 w-[87%]" />
+                        <div className="h-full bg-[#0A3225] w-[87%]" />
                     </div>
                 </CardContent>
             </Card>
@@ -83,8 +83,8 @@ export function LogisticsAnalyticsView() {
                 <CardContent>
                     <div className="h-64 flex items-end gap-4 px-4">
                         {[45, 60, 55, 70, 65, 80, 75, 85, 90, 88, 92, 95].map((h, i) => (
-                            <div key={i} className="flex-1 bg-blue-50 hover:bg-blue-100 rounded-t-sm relative group h-full flex items-end transition-colors">
-                                <div style={{ height: `${h}%` }} className="w-full bg-blue-600 rounded-t-sm relative">
+                            <div key={i} className="flex-1 bg-[#0A3225]/5 hover:bg-[#0A3225]/10 rounded-t-sm relative group h-full flex items-end transition-colors">
+                                <div style={{ height: `${h}%` }} className="w-full bg-[#0A3225] rounded-t-sm relative">
                                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                         Week {i + 1}: {h} Deliveries
                                     </div>
@@ -133,7 +133,7 @@ export function DeliveriesListView() {
                                 </div>
                                 <div className="flex items-center gap-4 mt-2 sm:mt-0">
                                     <div className="flex items-center text-xs text-gray-500 font-medium"><Clock className="w-3 h-3 mr-1" /> ETA: {d.eta}</div>
-                                    <Badge variant={d.status === 'In Transit' ? 'default' : 'secondary'} className={d.status === 'In Transit' ? 'bg-blue-600' : ''}>{d.status}</Badge>
+                                    <Badge variant={d.status === 'In Transit' ? 'default' : 'secondary'} className={d.status === 'In Transit' ? 'bg-[#0A3225]' : ''}>{d.status}</Badge>
                                 </div>
                             </div>
                         ))}
@@ -234,7 +234,7 @@ export function FleetListView() {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant={vehicle.status === 'On Road' ? 'default' : vehicle.status === 'Available' ? 'secondary' : 'destructive'} className={vehicle.status === 'On Road' ? 'bg-blue-600' : ''}>
+                                        <Badge variant={vehicle.status === 'On Road' ? 'default' : vehicle.status === 'Available' ? 'secondary' : 'destructive'} className={vehicle.status === 'On Road' ? 'bg-[#0A3225]' : ''}>
                                             {vehicle.status}
                                         </Badge>
                                     </TableCell>

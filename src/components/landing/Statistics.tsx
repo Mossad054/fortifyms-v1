@@ -4,31 +4,31 @@ import { LandingDashboardButton } from "./DashboardButton";
 const stats = [
   {
     icon: Globe,
-    value: "140+",
-    label: "Countries Participating",
-    description: "Active fortification programs worldwide",
-    accentColor: "text-sky-400",
+    value: "40",
+    label: "Countries Covered",
+    description: "Potential reach across African nations",
+    accentColor: "text-orange",
   },
   {
     icon: Package,
-    value: "50K+",
-    label: "Products Certified",
-    description: "Fortified products meeting standards",
-    accentColor: "text-amber-400",
+    value: "1,200+",
+    label: "Products Managed",
+    description: "Fortified staple foods tracked for quality and compliance",
+    accentColor: "text-green-500",
   },
   {
     icon: Users,
-    value: "2.5B",
-    label: "Lives Impacted",
-    description: "People benefiting from fortification",
-    accentColor: "text-rose-400",
+    value: "500M+",
+    label: "People Reached",
+    description: "Individuals across Africa who could benefit from improved nutrition",
+    accentColor: "text-orange",
   },
   {
     icon: TrendingUp,
-    value: "30%",
+    value: "15%",
     label: "Deficiency Reduction",
-    description: "Average improvement in nutrient intake",
-    accentColor: "text-emerald-400",
+    description: "Estimated improvement in key micronutrient intake",
+    accentColor: "text-green-500",
   },
 ];
 
@@ -44,12 +44,11 @@ export const Statistics = () => {
           <span className="inline-block text-accent font-semibold text-sm uppercase tracking-wider mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
             Global Impact
           </span>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-hero-foreground mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-orange mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             Making a Measurable Difference
           </h2>
           <p className="text-lg text-hero-muted opacity-0 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-            Our collaborative efforts with governments, manufacturers, and health organizations
-            are creating lasting change in public health outcomes worldwide.
+            Uniting all players in the fortification ecosystem to deliver reliable, impactful nutrition outcomes.
           </p>
         </div>
 

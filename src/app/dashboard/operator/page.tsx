@@ -95,7 +95,7 @@ export default function OperatorDashboard() {
     }
 
     return (
-        <div className="p-6 space-y-6 max-w-[1600px] mx-auto min-h-screen bg-[#F0EFEA]/30">
+        <div className="p-6 space-y-6 max-w-[1600px] mx-auto min-h-screen bg-white">
             {/* Header Section */}
             <div className="flex justify-between items-center mb-2">
                 <div>
@@ -116,42 +116,42 @@ export default function OperatorDashboard() {
                 <TabsList className="grid w-full grid-cols-6 lg:grid-cols-6 bg-white/60 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
                     <TabsTrigger
                         value="overview"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <Activity className="h-4 w-4" />
                         <span className="hidden lg:inline">Overview</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="production"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <Factory className="h-4 w-4" />
                         <span className="hidden lg:inline">Production</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="traceability"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <QrCode className="h-4 w-4" />
                         <span className="hidden lg:inline">Traceability</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="diagnostics"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <ArrowUpRight className="h-4 w-4" />
                         <span className="hidden lg:inline">Diagnostics</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="maintenance"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <AlertTriangle className="h-4 w-4" />
                         <span className="hidden lg:inline">Maintenance</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="training"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <CheckCircle2 className="h-4 w-4" />
                         <span className="hidden lg:inline">Training</span>

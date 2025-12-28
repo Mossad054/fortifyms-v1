@@ -81,13 +81,13 @@ export function MyProcurements() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'processing': return 'bg-blue-100 text-blue-700'
-            case 'shipped': return 'bg-purple-100 text-purple-700'
+            case 'processing': return 'bg-[#0A3225]/10 text-[#0A3225]'
+            case 'shipped': return 'bg-purple-100 text-orange'
             case 'delivered': return 'bg-green-100 text-green-700'
             case 'cancelled': return 'bg-red-100 text-red-700'
             case 'open': return 'bg-green-100 text-green-700'
             case 'closed': return 'bg-gray-100 text-gray-700'
-            case 'evaluating': return 'bg-blue-100 text-blue-700'
+            case 'evaluating': return 'bg-[#0A3225]/10 text-[#0A3225]'
             case 'draft': return 'bg-yellow-100 text-yellow-700'
             default: return 'bg-gray-100 text-gray-700'
         }
@@ -173,7 +173,7 @@ export function MyProcurements() {
                                             <TableCell>{order.items}</TableCell>
                                             <TableCell>${order.amount.toLocaleString()}</TableCell>
                                             <TableCell>{order.date}</TableCell>
-                                            <TableCell className="text-blue-600 font-medium">{order.deliveryEta}</TableCell>
+                                            <TableCell className="text-[#0A3225] font-medium">{order.deliveryEta}</TableCell>
                                             <TableCell>
                                                 <Badge className={getStatusColor(order.status)} variant="secondary">
                                                     {order.status.toUpperCase()}
@@ -353,7 +353,7 @@ export function MyProcurements() {
                             <div className="flex gap-2">
                                 <Badge variant="outline">Nairobi Millers</Badge>
                                 <Badge variant="outline">Mombasa Grains</Badge>
-                                <Button size="sm" variant="ghost" className="h-5 text-blue-600">+ Invite More</Button>
+                                <Button size="sm" variant="ghost" className="h-5 text-[#0A3225]">+ Invite More</Button>
                             </div>
                         </div>
                     </div>

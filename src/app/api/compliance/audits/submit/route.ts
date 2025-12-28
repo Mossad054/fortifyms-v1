@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create notification for FWGA inspectors
+    // Create notification for inspectors
     if (audit.auditType === 'SELF_AUDIT') {
       await db.notification.create({
         data: {

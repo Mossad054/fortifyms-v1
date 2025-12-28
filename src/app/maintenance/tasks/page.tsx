@@ -50,7 +50,7 @@ export default function MaintenanceTasksPage() {
     function getStatusBadge(status: string) {
         const variants: Record<string, any> = {
             PENDING: { className: 'bg-yellow-500', icon: Clock, label: 'Pending' },
-            IN_PROGRESS: { className: 'bg-blue-500', icon: Clock, label: 'In Progress' },
+            IN_PROGRESS: { className: 'bg-[#0A3225]/50', icon: Clock, label: 'In Progress' },
             COMPLETED: { className: 'bg-green-500', icon: CheckCircle, label: 'Completed' },
             OVERDUE: { className: 'bg-red-500', icon: AlertTriangle, label: 'Overdue' },
         }
@@ -68,7 +68,7 @@ export default function MaintenanceTasksPage() {
         const colors: Record<string, string> = {
             HIGH: 'bg-red-100 text-red-700',
             MEDIUM: 'bg-yellow-100 text-yellow-700',
-            LOW: 'bg-blue-100 text-blue-700',
+            LOW: 'bg-[#0A3225]/10 text-[#0A3225]',
         }
         return <Badge variant="outline" className={colors[priority] || ''}>{priority}</Badge>
     }
@@ -89,7 +89,7 @@ export default function MaintenanceTasksPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-2">
-                        <Calendar className="h-8 w-8 text-purple-600" />
+                        <Calendar className="h-8 w-8 text-orange" />
                         Maintenance Tasks
                     </h1>
                     <p className="text-gray-600 mt-1">Schedule and track equipment maintenance</p>

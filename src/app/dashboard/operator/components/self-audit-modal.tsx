@@ -104,7 +104,7 @@ export function SelfAuditModal({ open, onOpenChange }: SelfAuditModalProps) {
                                 <div>
                                     <h3 className="text-2xl font-bold text-zinc-900 mb-2">Ready to Start Self-Audit?</h3>
                                     <p className="text-zinc-500 max-w-md mx-auto">
-                                        This internal audit checks your readiness for official FWGA inspection.
+                                        This internal audit checks your readiness for official inspection.
                                         Critical failures will trigger required corrective actions (CAPA).
                                     </p>
                                 </div>
@@ -180,7 +180,7 @@ export function SelfAuditModal({ open, onOpenChange }: SelfAuditModalProps) {
                                             {/* Evidence Section */}
                                             {item.requiredEvidence && (
                                                 <div className="pt-2 border-t">
-                                                    <Button variant="outline" size="sm" className="w-full border-dashed text-zinc-500 gap-2 h-10 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200">
+                                                    <Button variant="outline" size="sm" className="w-full border-dashed text-zinc-500 gap-2 h-10 hover:bg-[#0A3225]/5 hover:text-[#0A3225] hover:border-[#0A3225]/20">
                                                         <Camera className="w-4 h-4" />
                                                         {responses[item.id]?.evidenceUrls ? 'Evidence Attached' : 'Capture Required Evidence'}
                                                     </Button>

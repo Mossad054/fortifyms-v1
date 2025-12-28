@@ -6,7 +6,7 @@ import { AlertType, AlertCategory, AlertSeverity } from '@prisma/client';
 const triggerAlertSchema = z.object({
   triggerType: z.enum([
     'QC_FAILURE',
-    'CONTAMINATION_RISK', 
+    'CONTAMINATION_RISK',
     'PREMIX_EXPIRY',
     'COMPLIANCE_FAILURE',
     'CALIBRATION_DUE',
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Get alert template or create alert based on trigger type
     const alertConfig = getAlertConfig(triggerType, data);
-    
+
     // Create the alert
     const alert = await db.alert.create({
       data: {
@@ -56,11 +56,11 @@ export async function POST(request: NextRequest) {
 
     // Determine recipients and create notifications
     const recipients = await determineRecipients(alertConfig.type, alertConfig.severity, millId, sourceType, sourceId);
-    
+
     await Promise.all(
       recipients.map(async (recipient) => {
         const channels = determineNotificationChannels(alertConfig.severity, recipient.role);
-        
+
         return Promise.all(
           channels.map(channel =>
             db.alertNotification.create({
@@ -265,9 +265,9 @@ async function determineRecipients(type: AlertType, severity: AlertSeverity, mil
         if (manager) recipients.push(manager);
       }
       const fWGAOfficers = await db.user.findMany({
-        where: { 
-          role: { in: ['FWGA_INSPECTOR', 'FWGA_PROGRAM_MANAGER'] },
-          isActive: true 
+        where: {
+          role: { in: ['INSPECTOR', 'PROGRAM_MANAGER'] },
+          isActive: true
         }
       });
       recipients.push(...fWGAOfficers);
@@ -281,9 +281,9 @@ async function determineRecipients(type: AlertType, severity: AlertSeverity, mil
         if (manager) recipients.push(manager);
       }
       const inspectors = await db.user.findMany({
-        where: { 
-          role: { in: ['FWGA_INSPECTOR', 'FWGA_PROGRAM_MANAGER'] },
-          isActive: true 
+        where: {
+          role: { in: ['INSPECTOR', 'PROGRAM_MANAGER'] },
+          isActive: true
         }
       });
       recipients.push(...inspectors);
@@ -293,7 +293,7 @@ async function determineRecipients(type: AlertType, severity: AlertSeverity, mil
     case AlertType.CALIBRATION_OVERDUE:
     case AlertType.EQUIPMENT_DRIFT:
       if (mill) {
-        const maintenanceStaff = mill.users.filter(u => 
+        const maintenanceStaff = mill.users.filter(u =>
           u.role === 'MILL_OPERATOR' || u.role === 'MILL_MANAGER'
         );
         recipients.push(...maintenanceStaff);
@@ -304,7 +304,7 @@ async function determineRecipients(type: AlertType, severity: AlertSeverity, mil
     case AlertType.LOW_PREMIX_INVENTORY:
     case AlertType.PRODUCTION_TARGET_MISS:
       if (mill) {
-        const productionStaff = mill.users.filter(u => 
+        const productionStaff = mill.users.filter(u =>
           u.role === 'MILL_OPERATOR' || u.role === 'MILL_MANAGER'
         );
         recipients.push(...productionStaff);
@@ -325,7 +325,7 @@ async function determineRecipients(type: AlertType, severity: AlertSeverity, mil
       break;
   }
 
-  return recipients.filter((recipient, index, self) => 
+  return recipients.filter((recipient, index, self) =>
     index === self.findIndex(r => r.id === recipient.id)
   );
 }
@@ -353,7 +353,7 @@ function determineNotificationChannels(severity: AlertSeverity, userRole: string
 
 function generateResponseUrl(alert: any, sourceType: string, sourceId: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  
+
   switch (sourceType) {
     case 'QC_TEST':
     case 'BATCH_LOG':

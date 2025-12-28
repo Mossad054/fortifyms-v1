@@ -265,7 +265,7 @@ export function BatchesListView() {
                                 <p className="text-sm text-gray-500">{batch.cropType?.replace('_', ' ')} • {new Date(batch.productionDate).toLocaleDateString()}</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <Badge className={batch.status === 'COMPLETED' ? 'bg-blue-500' : 'bg-green-500'}>{batch.status}</Badge>
+                                <Badge className={batch.status === 'COMPLETED' ? 'bg-[#0A3225]/50' : 'bg-green-500'}>{batch.status}</Badge>
                                 <Button variant="ghost" size="sm" onClick={() => window.open(`/api/batches/${batch.id}/qr`, '_blank')}>
                                     <QrCode className="h-4 w-4" />
                                 </Button>

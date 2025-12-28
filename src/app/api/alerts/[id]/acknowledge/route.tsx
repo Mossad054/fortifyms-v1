@@ -132,8 +132,8 @@ export async function POST(
 }
 
 async function checkAcknowledgePermission(user: any, alert: any): Promise<boolean> {
-  // FWGA users can acknowledge any alert
-  if (user.role === 'FWGA_INSPECTOR' || user.role === 'FWGA_PROGRAM_MANAGER') {
+  // Authority users can acknowledge any alert
+  if (user.role === 'INSPECTOR' || user.role === 'PROGRAM_MANAGER') {
     return true;
   }
 
@@ -204,12 +204,12 @@ async function triggerEscalation(alertId: string, reason: string, notes?: string
   const escalationPaths = {
     QC_FAILURE: [
       { role: 'MILL_MANAGER', delay: 2 * 60 * 60 * 1000 }, // 2 hours
-      { role: 'FWGA_INSPECTOR', delay: 24 * 60 * 60 * 1000 }, // 24 hours
-      { role: 'FWGA_PROGRAM_MANAGER', delay: 72 * 60 * 60 * 1000 } // 72 hours
+      { role: 'INSPECTOR', delay: 24 * 60 * 60 * 1000 }, // 24 hours
+      { role: 'PROGRAM_MANAGER', delay: 72 * 60 * 60 * 1000 } // 72 hours
     ],
     CRITICAL_NON_COMPLIANCE: [
-      { role: 'FWGA_INSPECTOR', delay: 24 * 60 * 60 * 1000 }, // 24 hours
-      { role: 'FWGA_PROGRAM_MANAGER', delay: 72 * 60 * 60 * 1000 } // 72 hours
+      { role: 'INSPECTOR', delay: 24 * 60 * 60 * 1000 }, // 24 hours
+      { role: 'PROGRAM_MANAGER', delay: 72 * 60 * 60 * 1000 } // 72 hours
     ],
     // Add other alert types as needed
   };
@@ -224,8 +224,8 @@ async function triggerEscalation(alertId: string, reason: string, notes?: string
     where: {
       role: nextRecipient.role,
       isActive: true,
-      ...(alert.millId && nextRecipient.role !== 'FWGA_INSPECTOR' && nextRecipient.role !== 'FWGA_PROGRAM_MANAGER' 
-        ? { millId: alert.millId } 
+      ...(alert.millId && nextRecipient.role !== 'INSPECTOR' && nextRecipient.role !== 'PROGRAM_MANAGER'
+        ? { millId: alert.millId }
         : {})
     }
   });

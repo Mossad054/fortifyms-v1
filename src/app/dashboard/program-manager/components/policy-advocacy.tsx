@@ -178,7 +178,7 @@ export function PolicyAdvocacy() {
                                     </div>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button variant="ghost" className="w-full text-blue-600 hover:text-blue-700">View Legal Text <ArrowRight className="w-4 h-4 ml-2" /></Button>
+                                    <Button variant="ghost" className="w-full text-[#0A3225] hover:text-[#0A3225]">View Legal Text <ArrowRight className="w-4 h-4 ml-2" /></Button>
                                 </CardFooter>
                             </Card>
                         ))}
@@ -211,7 +211,7 @@ export function PolicyAdvocacy() {
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     {col.items.map(item => (
-                                        <div key={item} className="bg-white p-3 rounded shadow-sm border flex justify-between items-center group cursor-pointer hover:border-blue-300 transition-colors">
+                                        <div key={item} className="bg-white p-3 rounded shadow-sm border flex justify-between items-center group cursor-pointer hover:border-[#0A3225]/30 transition-colors">
                                             <span className="font-medium text-sm">{item}</span>
                                             <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500" />
                                         </div>
@@ -368,8 +368,8 @@ export function PolicyAdvocacy() {
                                 ].map((d, i) => (
                                     <div key={d.year} className="flex flex-col items-center gap-2 group cursor-pointer w-full max-w-[60px]">
                                         <div className="text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity mb-1">{d.val}%</div>
-                                        <div className="w-full bg-blue-100 rounded-t-md relative hover:bg-blue-200 transition-all duration-500" style={{ height: `${d.val * 2}px` }}>
-                                            <div className="absolute bottom-0 w-full bg-blue-500 rounded-t-md transition-all duration-1000" style={{ height: `${d.val * 2 * (d.val / 100)}px` }}></div>
+                                        <div className="w-full bg-[#0A3225]/10 rounded-t-md relative hover:bg-blue-200 transition-all duration-500" style={{ height: `${d.val * 2}px` }}>
+                                            <div className="absolute bottom-0 w-full bg-[#0A3225]/50 rounded-t-md transition-all duration-1000" style={{ height: `${d.val * 2 * (d.val / 100)}px` }}></div>
                                         </div>
                                         <div className="text-xs text-muted-foreground font-medium">{d.year}</div>
                                     </div>
@@ -394,7 +394,7 @@ export function PolicyAdvocacy() {
                                     ))}
                                 </CardContent>
                             </Card>
-                            <Button size="lg" className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => setShowImpactBrief(true)}>
+                            <Button size="lg" className="w-full bg-orange hover:bg-purple-700" onClick={() => setShowImpactBrief(true)}>
                                 <FileText className="w-4 h-4 mr-2" /> Generate Impact Brief
                             </Button>
                         </div>
@@ -544,8 +544,8 @@ export function PolicyAdvocacy() {
                         )}
                         {frameworkStep === 4 && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 text-center">
-                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle2 className="w-8 h-8 text-blue-600" />
+                                <div className="w-16 h-16 bg-[#0A3225]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <CheckCircle2 className="w-8 h-8 text-[#0A3225]" />
                                 </div>
                                 <h3 className="font-bold text-xl">Ready to Submit</h3>
                                 <p className="text-muted-foreground">The framework "{frameworkData.title || 'New Policy'}" will be added to the roadmap as a Draft.</p>
@@ -553,7 +553,7 @@ export function PolicyAdvocacy() {
                                     <CardContent className="p-4 space-y-2 text-sm">
                                         <div className="flex justify-between"><span>Type:</span> <span className="font-medium">{frameworkData.type}</span></div>
                                         <div className="flex justify-between"><span>Region:</span> <span className="font-medium">{frameworkData.region}</span></div>
-                                        <div className="flex justify-between text-blue-600"><span>Document:</span> <span className="font-medium underline cursor-pointer">framework_v1.pdf</span></div>
+                                        <div className="flex justify-between text-[#0A3225]"><span>Document:</span> <span className="font-medium underline cursor-pointer">framework_v1.pdf</span></div>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -598,7 +598,7 @@ export function PolicyAdvocacy() {
                             </Card>
                             <Card>
                                 <CardContent className="pt-6 text-center">
-                                    <div className="text-2xl font-bold text-blue-600">98%</div>
+                                    <div className="text-2xl font-bold text-[#0A3225]">98%</div>
                                     <div className="text-xs text-muted-foreground mt-1">Premix Retention</div>
                                 </CardContent>
                             </Card>
@@ -610,7 +610,7 @@ export function PolicyAdvocacy() {
                                 <div className="space-y-4">
                                     {[1, 2, 3].map(i => (
                                         <div key={i} className="flex gap-4 items-start">
-                                            <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                                            <div className="w-2 h-2 rounded-full bg-[#0A3225]/50 mt-2" />
                                             <div className="flex-1">
                                                 <div className="flex justify-between">
                                                     <span className="font-semibold text-sm">Zone B Inspection Sweep</span>
@@ -753,7 +753,7 @@ export function PolicyAdvocacy() {
                         {campaignStep < 5 ? (
                             <Button onClick={() => setCampaignStep(campaignStep + 1)}>Next</Button>
                         ) : (
-                            <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleCampaignLaunch}>
+                            <Button className="bg-[#0A3225] hover:bg-[#0A3225]" onClick={handleCampaignLaunch}>
                                 <Zap className="w-4 h-4 mr-2" /> Launch Campaign
                             </Button>
                         )}
@@ -771,7 +771,7 @@ export function PolicyAdvocacy() {
                                 <p className="text-xl text-slate-500 font-light">Fortification Program Q4 2024</p>
                             </div>
                             <div className="text-right">
-                                <div className="text-3xl font-black text-purple-600">FGWA</div>
+                                <div className="text-3xl font-black text-orange italic">Fortify</div>
                                 <div className="text-sm font-bold tracking-widest text-slate-400">OFFICIAL REPORT</div>
                             </div>
                         </div>
@@ -785,7 +785,7 @@ export function PolicyAdvocacy() {
                             </div>
                             <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 flex flex-col items-center justify-center text-center">
                                 <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Total Lives Impacted</h4>
-                                <div className="text-6xl font-black text-blue-600">12.5M</div>
+                                <div className="text-6xl font-black text-[#0A3225]">12.5M</div>
                                 <div className="flex items-center gap-2 text-green-600 mt-2 font-bold"><TrendingUp className="w-4 h-4" /> +2.3M YoY</div>
                             </div>
                         </div>
@@ -808,7 +808,7 @@ export function PolicyAdvocacy() {
                         </div>
 
                         <div className="text-center text-sm text-slate-400">
-                            Generated by FGWA Manager Dashboard • {new Date().toLocaleDateString()}
+                            Generated by Program Manager Dashboard • {new Date().toLocaleDateString()}
                         </div>
                     </div>
                     <DialogFooter>

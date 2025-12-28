@@ -94,8 +94,8 @@ export function HeroMetrics() {
                 <Card className="hover:shadow-md transition-shadow">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium text-muted-foreground">Total Output</CardTitle>
-                        <div className="p-2 rounded-full bg-blue-100">
-                            <Package className="h-4 w-4 text-blue-600" />
+                        <div className="p-2 rounded-full bg-[#0A3225]/10">
+                            <Package className="h-4 w-4 text-[#0A3225]" />
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -121,7 +121,7 @@ export function HeroMetrics() {
                     <CardContent>
                         <div className="text-2xl font-bold">{metrics.activeCertifiedMills.total}</div>
                         <div className="flex items-center justify-between mt-1">
-                            <p className="text-xs text-blue-600">
+                            <p className="text-xs text-[#0A3225]">
                                 {metrics.activeCertifiedMills.certified} Certified
                             </p>
                             <Badge variant="outline" className="text-[10px] h-4 text-green-700 bg-green-50 border-green-200">
@@ -136,7 +136,7 @@ export function HeroMetrics() {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium text-muted-foreground">Compliance</CardTitle>
                         <div className="p-2 rounded-full bg-purple-100">
-                            <CheckCircle className="h-4 w-4 text-purple-600" />
+                            <CheckCircle className="h-4 w-4 text-orange" />
                         </div>
                     </CardHeader>
                     <CardContent>

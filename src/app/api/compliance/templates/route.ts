@@ -127,6 +127,6 @@ export async function POST(request: NextRequest) {
       )
     }
   }, {
-    requiredRoles: ['SYSTEM_ADMIN', 'FWGA_PROGRAM_MANAGER', 'FWGA_INSPECTOR']
+    requiredRoles: ['SYSTEM_ADMIN', 'PROGRAM_MANAGER', 'INSPECTOR']
   })
 }

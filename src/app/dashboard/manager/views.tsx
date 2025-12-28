@@ -120,7 +120,7 @@ export function ProductionView() {
         if (qcStatus === 'Fail') return 'bg-red-50 border-l-4 border-l-red-500'
         if (qcStatus === 'Marginal') return 'bg-yellow-50 border-l-4 border-l-yellow-500'
         if (qcStatus === 'Pass' && releaseStatus === 'Released') return 'bg-green-50 border-l-4 border-l-green-500'
-        if (qcStatus === 'Pass' && releaseStatus === 'Pending Approval') return 'bg-blue-50 border-l-4 border-l-blue-500'
+        if (qcStatus === 'Pass' && releaseStatus === 'Pending Approval') return 'bg-[#0A3225]/5 border-l-4 border-l-blue-500'
         return ''
     }
 
@@ -161,13 +161,13 @@ export function ProductionView() {
                 </Card>
 
                 {/* Stock Check & Calculator - Narrower */}
-                <Card className="glass-card border-none shadow-sm bg-blue-50/50">
+                <Card className="glass-card border-none shadow-sm bg-[#0A3225]/5/50">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Calculator className="w-5 h-5 text-blue-600" />
+                            <Calculator className="w-5 h-5 text-[#0A3225]" />
                             Production Planner
                         </CardTitle>
-                        <p className="text-xs text-blue-700/80">Calculate max batches based on current stock.</p>
+                        <p className="text-xs text-[#0A3225]/80">Calculate max batches based on current stock.</p>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-2">
@@ -205,12 +205,12 @@ export function ProductionView() {
                             </div>
                         </div>
 
-                        <div className="pt-4 border-t border-blue-200">
+                        <div className="pt-4 border-t border-[#0A3225]/20">
                             <div className="flex justify-between items-end mb-1">
-                                <span className="font-medium text-blue-900">Max Production Capacity</span>
-                                <span className="text-2xl font-bold text-blue-700">{(maxProduction / 1000).toFixed(1)} MT</span>
+                                <span className="font-medium text-[#0A3225]">Max Production Capacity</span>
+                                <span className="text-2xl font-bold text-[#0A3225]">{(maxProduction / 1000).toFixed(1)} MT</span>
                             </div>
-                            <p className="text-xs text-blue-600">
+                            <p className="text-xs text-[#0A3225]">
                                 Enough for <span className="font-bold">{batchesPossible}</span> batches based on current premix availability.
                             </p>
                         </div>
@@ -327,7 +327,7 @@ export function ProductionView() {
             <Card className="glass-card border-none shadow-sm">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Microscope className="w-5 h-5 text-purple-600" />
+                        <Microscope className="w-5 h-5 text-orange" />
                         Maintenance & Diagnostics
                     </CardTitle>
                     <p className="text-xs text-muted-foreground">Track machinery health, scheduled maintenance, and required parts.</p>
@@ -340,8 +340,8 @@ export function ProductionView() {
                                     <div className="flex justify-between items-start mb-2">
                                         <h4 className="font-bold text-gray-900">{item.machine}</h4>
                                         <Badge variant="outline" className={`${item.status === 'Overdue' ? 'bg-red-100 text-red-700 border-red-200' :
-                                                item.status === 'Due Soon' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                                                    'bg-green-100 text-green-700 border-green-200'
+                                            item.status === 'Due Soon' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                                                'bg-green-100 text-green-700 border-green-200'
                                             }`}>
                                             {item.status}
                                         </Badge>
@@ -356,7 +356,7 @@ export function ProductionView() {
                                             <span className="text-gray-600">{item.last}</span>
                                         </div>
                                         {item.needs !== '-' && (
-                                            <div className="mt-2 pt-2 border-t flex items-start gap-2 text-xs text-blue-700">
+                                            <div className="mt-2 pt-2 border-t flex items-start gap-2 text-xs text-[#0A3225]">
                                                 <Package className="w-3 h-3 mt-0.5" />
                                                 <span>Need: {item.needs}</span>
                                             </div>
@@ -451,7 +451,7 @@ export function ProductionView() {
 
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setBatchDetailsOpen(false)}>Close</Button>
-                        <Button className="bg-blue-600 hover:bg-blue-700">Approve Release</Button>
+                        <Button className="bg-[#0A3225] hover:bg-[#0A3225]">Approve Release</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -561,7 +561,7 @@ export function ComplianceView() {
         {
             id: 'AUD-001',
             date: '2025-01-15',
-            scope: 'Annual FWGA Compliance Audit',
+            scope: 'Annual Compliance Audit',
             readiness: 95,
         },
         {
@@ -665,7 +665,7 @@ export function ComplianceView() {
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
                                     <div className="w-24 bg-gray-200 rounded-full h-1.5">
-                                        <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${prod.score}%` }} />
+                                        <div className="bg-[#0A3225] h-1.5 rounded-full" style={{ width: `${prod.score}%` }} />
                                     </div>
                                     <span className="text-muted-foreground">{prod.score}% Score</span>
                                 </div>
@@ -703,7 +703,7 @@ export function ComplianceView() {
                         {Object.entries(nutrientResults).map(([nutrient, results]) => (
                             <div key={nutrient} className="space-y-3">
                                 <h4 className="font-bold text-gray-900 flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-blue-500" />
+                                    <div className="w-3 h-3 rounded-full bg-[#0A3225]/50" />
                                     {nutrient}
                                 </h4>
                                 <div className="space-y-2">
@@ -756,7 +756,7 @@ export function ComplianceView() {
                                             <Badge className={nc.status === 'Closed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}>
                                                 {nc.status}
                                             </Badge>
-                                            <Button variant="ghost" size="sm" className="h-6 text-xs text-blue-600 ml-2" onClick={() => handleViewNC(nc)}>
+                                            <Button variant="ghost" size="sm" className="h-6 text-xs text-[#0A3225] ml-2" onClick={() => handleViewNC(nc)}>
                                                 View Details
                                             </Button>
                                         </div>
@@ -832,7 +832,7 @@ export function ComplianceView() {
                     <CardHeader>
                         <div className="flex justify-between items-center">
                             <CardTitle>Recent COAs Issued</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-blue-600">View All</Button>
+                            <Button variant="ghost" size="sm" className="text-[#0A3225]">View All</Button>
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -840,7 +840,7 @@ export function ComplianceView() {
                             {coaIssued.map((coa, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50 transition-colors">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                                        <div className="h-10 w-10 bg-[#0A3225]/10 rounded-lg flex items-center justify-center text-[#0A3225]">
                                             <FileText className="w-5 h-5" />
                                         </div>
                                         <div>
@@ -918,7 +918,7 @@ export function ComplianceView() {
                     )}
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setNcDialogOpen(false)}>Close</Button>
-                        <Button className="bg-blue-600 hover:bg-blue-700">Update Status</Button>
+                        <Button className="bg-[#0A3225] hover:bg-[#0A3225]">Update Status</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -929,7 +929,7 @@ export function ComplianceView() {
                     <DialogHeader>
                         <div className="flex justify-between items-start border-b pb-4 mb-4">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 rounded-lg text-blue-700">
+                                <div className="p-2 bg-[#0A3225]/10 rounded-lg text-[#0A3225]">
                                     <FileText className="w-8 h-8" />
                                 </div>
                                 <div className="space-y-1">
@@ -1119,9 +1119,9 @@ export function AlertsView() {
 
     const getSourceColor = (source: string) => {
         switch (source) {
-            case 'QC': return 'bg-purple-100 text-purple-700 border-purple-200'
+            case 'QC': return 'bg-purple-100 text-orange border-orange/20'
             case 'Maintenance': return 'bg-orange-100 text-orange-700 border-orange-200'
-            case 'Compliance': return 'bg-blue-100 text-blue-700 border-blue-200'
+            case 'Compliance': return 'bg-[#0A3225]/10 text-[#0A3225] border-[#0A3225]/20'
             case 'Inventory': return 'bg-green-100 text-green-700 border-green-200'
             default: return 'bg-gray-100 text-gray-700 border-gray-200'
         }
@@ -1192,10 +1192,10 @@ export function AlertsView() {
                                                 {alert.id}
                                             </Badge>
                                             {alert.status === 'acknowledged' && (
-                                                <Badge className="bg-blue-100 text-blue-700">Acknowledged</Badge>
+                                                <Badge className="bg-[#0A3225]/10 text-[#0A3225]">Acknowledged</Badge>
                                             )}
                                             {alert.status === 'assigned' && (
-                                                <Badge className="bg-purple-100 text-purple-700">Assigned</Badge>
+                                                <Badge className="bg-purple-100 text-orange">Assigned</Badge>
                                             )}
                                         </div>
                                         <h4 className="font-bold text-gray-900 mb-1">{alert.title}</h4>
@@ -1275,10 +1275,10 @@ export function AlertsView() {
                                                 {alert.id}
                                             </Badge>
                                             {alert.status === 'acknowledged' && (
-                                                <Badge className="bg-blue-100 text-blue-700">Acknowledged</Badge>
+                                                <Badge className="bg-[#0A3225]/10 text-[#0A3225]">Acknowledged</Badge>
                                             )}
                                             {alert.status === 'assigned' && (
-                                                <Badge className="bg-purple-100 text-purple-700">Assigned</Badge>
+                                                <Badge className="bg-purple-100 text-orange">Assigned</Badge>
                                             )}
                                         </div>
                                         <h4 className="font-bold text-gray-900 mb-1">{alert.title}</h4>
@@ -1349,7 +1349,7 @@ export function AlertsView() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Recommended Action</label>
-                            <div className="text-sm text-muted-foreground bg-blue-50/50 p-3 rounded border border-blue-100">
+                            <div className="text-sm text-muted-foreground bg-[#0A3225]/5/50 p-3 rounded border border-blue-100">
                                 This alert requires immediate attention. Please verify the source issue and log a corrective action plan.
                             </div>
                         </div>
@@ -1358,7 +1358,7 @@ export function AlertsView() {
                     <DialogFooter className="gap-2 sm:gap-0">
                         <div className="flex w-full gap-2">
                             <Button className="flex-1" variant="outline" onClick={() => setDialogOpen(false)}>Close</Button>
-                            <Button className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={() => handleAction(selectedAlert!, 'acknowledge')}>Take Action</Button>
+                            <Button className="flex-1 bg-[#0A3225] hover:bg-[#0A3225]" onClick={() => handleAction(selectedAlert!, 'acknowledge')}>Take Action</Button>
                         </div>
                     </DialogFooter>
                 </DialogContent>

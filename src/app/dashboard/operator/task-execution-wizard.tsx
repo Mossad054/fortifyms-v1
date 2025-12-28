@@ -67,8 +67,8 @@ export function TaskExecutionWizard({ task, onBack, onComplete }: { task: Mainte
                 {/* Phase Stepper */}
                 <div className="flex bg-slate-100 p-1 rounded-lg">
                     {['prep', 'execute', 'evidence'].map((p, i) => (
-                        <div key={p} className={`px-4 py-1.5 rounded-md text-xs font-semibold capitalize flex items-center gap-2 ${phase === p ? 'bg-white shadow-sm text-blue-700' : 'text-zinc-400'}`}>
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${phase === p ? 'bg-blue-100' : 'bg-slate-200'}`}>
+                        <div key={p} className={`px-4 py-1.5 rounded-md text-xs font-semibold capitalize flex items-center gap-2 ${phase === p ? 'bg-white shadow-sm text-[#0A3225]' : 'text-zinc-400'}`}>
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${phase === p ? 'bg-[#0A3225]/10' : 'bg-slate-200'}`}>
                                 {i + 1}
                             </div>
                             {p === 'prep' ? 'Preparation' : p === 'execute' ? 'Execution' : 'Completion'}
@@ -105,7 +105,7 @@ export function TaskExecutionWizard({ task, onBack, onComplete }: { task: Mainte
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <h3 className="font-semibold text-zinc-900 flex items-center gap-2"><Hammer className="w-5 h-5 text-blue-600" /> Required Resources</h3>
+                                        <h3 className="font-semibold text-zinc-900 flex items-center gap-2"><Hammer className="w-5 h-5 text-[#0A3225]" /> Required Resources</h3>
                                         <div className="bg-slate-50 p-4 rounded-lg border space-y-4">
                                             <div>
                                                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block mb-2">Parts</span>
@@ -152,13 +152,13 @@ export function TaskExecutionWizard({ task, onBack, onComplete }: { task: Mainte
                                                     </div>
 
                                                     {step.isCalibration && (
-                                                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 flex flex-wrap items-center gap-6 animate-in fade-in slide-in-from-top-2">
+                                                        <div className="bg-[#0A3225]/5 p-3 rounded-lg border border-blue-100 flex flex-wrap items-center gap-6 animate-in fade-in slide-in-from-top-2">
                                                             <div>
-                                                                <span className="text-xs text-blue-700 block mb-1 font-semibold">Target Value</span>
+                                                                <span className="text-xs text-[#0A3225] block mb-1 font-semibold">Target Value</span>
                                                                 <Badge variant="outline" className="bg-white font-mono text-sm">{step.calibrationTarget} g</Badge>
                                                             </div>
                                                             <div className="flex-1 max-w-xs">
-                                                                <span className="text-xs text-blue-700 block mb-1 font-semibold">Recorded Measurement</span>
+                                                                <span className="text-xs text-[#0A3225] block mb-1 font-semibold">Recorded Measurement</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <Input
                                                                         type="number"
@@ -167,7 +167,7 @@ export function TaskExecutionWizard({ task, onBack, onComplete }: { task: Mainte
                                                                         value={step.calibrationValue || ''}
                                                                         onChange={(e) => updateMeasurement(step.id, parseFloat(e.target.value))}
                                                                     />
-                                                                    <span className="text-sm font-medium text-blue-900">g</span>
+                                                                    <span className="text-sm font-medium text-[#0A3225]">g</span>
                                                                 </div>
                                                             </div>
                                                             {step.calibrationValue && step.calibrationTarget && Math.abs(step.calibrationValue - step.calibrationTarget) > (step.calibrationTarget * 0.05) && (

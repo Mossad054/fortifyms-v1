@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
           },
           // Alerts for user's mill (if they have one)
           user.millId ? { millId: user.millId } : {},
-          // FWGA users see all alerts
-          user.role === 'FWGA_INSPECTOR' || user.role === 'FWGA_PROGRAM_MANAGER' ? {} : null
+          //  users see all alerts
+          user.role === 'INSPECTOR' || user.role === 'PROGRAM_MANAGER' ? {} : null
         ].filter(Boolean);
       }
     }
@@ -299,14 +299,14 @@ async function determineAlertRecipients(
         if (manager) recipients.push(manager);
       }
       
-      // Add FWGA QA Officer
-      const fWGAOfficers = await db.user.findMany({
+      // Add  QA Officer
+      const Officers = await db.user.findMany({
         where: { 
-          role: { in: ['FWGA_INSPECTOR', 'FWGA_PROGRAM_MANAGER'] },
+          role: { in: ['INSPECTOR', 'PROGRAM_MANAGER'] },
           isActive: true 
         }
       });
-      recipients.push(...fWGAOfficers);
+      recipients.push(...Officers);
       break;
 
     case 'CRITICAL_NON_COMPLIANCE':
@@ -320,7 +320,7 @@ async function determineAlertRecipients(
       
       const inspectors = await db.user.findMany({
         where: { 
-          role: { in: ['FWGA_INSPECTOR', 'FWGA_PROGRAM_MANAGER'] },
+          role: { in: ['INSPECTOR', 'PROGRAM_MANAGER'] },
           isActive: true 
         }
       });

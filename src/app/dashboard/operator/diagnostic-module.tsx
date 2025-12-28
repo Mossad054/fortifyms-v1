@@ -146,7 +146,7 @@ export function DiagnosticModule({ onLaunchCalibration }: { onLaunchCalibration?
                     <CardContent className="flex-1 overflow-auto p-4 pt-0">
                         <div className="space-y-3">
                             {HISTORY_DATA.map((item) => (
-                                <div key={item.id} className="p-3 rounded-lg border bg-white hover:border-blue-300 transition-colors group">
+                                <div key={item.id} className="p-3 rounded-lg border bg-white hover:border-[#0A3225]/30 transition-colors group">
                                     <div className="flex justify-between items-start mb-2">
                                         <Badge variant={item.status === 'Resolved' ? 'outline' : 'destructive'} className={item.status === 'Resolved' ? 'text-green-600 bg-green-50' : ''}>
                                             {item.status}
@@ -156,7 +156,7 @@ export function DiagnosticModule({ onLaunchCalibration }: { onLaunchCalibration?
                                     <h4 className="font-semibold text-sm text-gray-900 mb-1">{item.symptom}</h4>
                                     <p className="text-xs text-gray-500 mb-3">{item.equipment}</p>
 
-                                    <Button variant="ghost" size="sm" className="w-full h-8 text-xs justify-between group-hover:bg-blue-50 group-hover:text-blue-600" onClick={() => setSelectedHistory(item)}>
+                                    <Button variant="ghost" size="sm" className="w-full h-8 text-xs justify-between group-hover:bg-[#0A3225]/5 group-hover:text-[#0A3225]" onClick={() => setSelectedHistory(item)}>
                                         View Details <ChevronRight className="w-3 h-3" />
                                     </Button>
                                 </div>
@@ -206,8 +206,8 @@ export function DiagnosticModule({ onLaunchCalibration }: { onLaunchCalibration?
                             </div>
                         </div>
 
-                        <div className="bg-blue-50 p-4 rounded-lg flex gap-3 text-sm text-blue-900">
-                            <Info className="w-4 h-4 mt-0.5 text-blue-600" />
+                        <div className="bg-[#0A3225]/5 p-4 rounded-lg flex gap-3 text-sm text-[#0A3225]">
+                            <Info className="w-4 h-4 mt-0.5 text-[#0A3225]" />
                             <p>
                                 <strong>Outcome:</strong> {selectedHistory?.status === 'Resolved' ? 'Issue was resolved on-site.' : 'Issue escalated to maintenance.'}
                             </p>
@@ -310,10 +310,10 @@ function SymptomSelector({ context, onBack, onSelect }: any) {
 
                 <div
                     onClick={() => onSelect('doser_under')}
-                    className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-blue-300 cursor-pointer transition-all group"
+                    className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-[#0A3225]/30 cursor-pointer transition-all group"
                 >
                     <div className="flex items-start justify-between mb-4">
-                        <div className="p-3 bg-orange-100 text-orange-600 rounded-lg group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                        <div className="p-3 bg-orange-100 text-orange-600 rounded-lg group-hover:bg-[#0A3225]/10 group-hover:text-[#0A3225] transition-colors">
                             <Gauge className="w-6 h-6" />
                         </div>
                         <ChevronRight className="w-5 h-5 text-zinc-300 group-hover:text-blue-500" />
@@ -324,10 +324,10 @@ function SymptomSelector({ context, onBack, onSelect }: any) {
 
                 <div
                     onClick={() => onSelect('doser_fluctuation')}
-                    className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-blue-300 cursor-pointer transition-all group"
+                    className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-[#0A3225]/30 cursor-pointer transition-all group"
                 >
                     <div className="flex items-start justify-between mb-4">
-                        <div className="p-3 bg-red-100 text-red-600 rounded-lg group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                        <div className="p-3 bg-red-100 text-red-600 rounded-lg group-hover:bg-[#0A3225]/10 group-hover:text-[#0A3225] transition-colors">
                             <Activity className="w-6 h-6" />
                         </div>
                         <ChevronRight className="w-5 h-5 text-zinc-300 group-hover:text-blue-500" />
@@ -378,7 +378,7 @@ function DiagnosticWizard({ scenario, findings, setFindings, onBack, onComplete 
             <Card className="flex-1 shadow-lg border-zinc-200 overflow-hidden flex flex-col">
                 <div className="h-2 bg-zinc-100">
                     <motion.div
-                        className="h-full bg-blue-600"
+                        className="h-full bg-[#0A3225]"
                         initial={{ width: 0 }}
                         animate={{ width: `${((stepIndex) / findings.length) * 100}%` }}
                     />
@@ -390,7 +390,7 @@ function DiagnosticWizard({ scenario, findings, setFindings, onBack, onComplete 
                         <h2 className="text-3xl font-bold text-zinc-900 mb-4">{currentStep.q}</h2>
 
                         {/* Educational Context */}
-                        <div className="bg-blue-50 border border-blue-100 text-blue-800 p-4 rounded-lg mb-8 flex gap-3 items-start">
+                        <div className="bg-[#0A3225]/5 border border-blue-100 text-[#0A3225] p-4 rounded-lg mb-8 flex gap-3 items-start">
                             <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
                             <div>
                                 <span className="font-bold block text-sm mb-1">Why check this?</span>
@@ -517,9 +517,9 @@ function ResolutionHub({ findings, context, onRestart, onLaunchCalibration }: an
                                     <p className="text-sm text-orange-700">The deviation in output suggests the doser is out of spec. Please run a full calibration cycle.</p>
                                     <Button size="sm" className="mt-4 bg-orange-600 hover:bg-orange-700" onClick={onLaunchCalibration}>Launch Calibration Task</Button>
                                 </div>
-                                <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                                    <h4 className="font-bold text-blue-800 mb-2">Secondary: Clean Nozzle</h4>
-                                    <p className="text-sm text-blue-700">Ensure no caking is obstructing flow.</p>
+                                <div className="p-4 bg-[#0A3225]/5 border border-blue-100 rounded-lg">
+                                    <h4 className="font-bold text-[#0A3225] mb-2">Secondary: Clean Nozzle</h4>
+                                    <p className="text-sm text-[#0A3225]">Ensure no caking is obstructing flow.</p>
                                 </div>
                             </div>
                         ) : (

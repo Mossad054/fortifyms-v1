@@ -393,7 +393,7 @@ export function BatchApprovalModule() {
 
                                 {/* Justification Form */}
                                 {action && (
-                                    <Card className="border-2 border-blue-200 bg-blue-50/50">
+                                    <Card className="border-2 border-[#0A3225]/20 bg-[#0A3225]/5/50">
                                         <CardHeader>
                                             <CardTitle className="text-lg">
                                                 {action === 'approve' ? 'Approval Notes' : 'Justification Required'}

@@ -148,7 +148,7 @@ function MonthView({ currentDate, tasks, onSelect }: { currentDate: Date, tasks:
 
                     return (
                         <div key={day} className={`bg-white p-1 relative min-h-[80px] hover:bg-slate-50 transition-colors group`}>
-                            <span className={`text-xs font-medium absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-blue-600 text-white' : 'text-zinc-500'}`}>
+                            <span className={`text-xs font-medium absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-[#0A3225] text-white' : 'text-zinc-500'}`}>
                                 {day}
                             </span>
                             <div className="mt-6 flex flex-col gap-1">
@@ -159,7 +159,7 @@ function MonthView({ currentDate, tasks, onSelect }: { currentDate: Date, tasks:
                                         className={`text-[10px] text-left px-1.5 py-1 rounded truncate border-l-2 font-medium transition-all hover:scale-[1.02] active:scale-95
                                             ${task.priority === 'Critical' ? 'bg-red-50 border-red-500 text-red-700' :
                                                 task.status === 'Completed' ? 'bg-green-50 border-green-500 text-green-700 opacity-70' :
-                                                    'bg-blue-50 border-blue-500 text-blue-700'}
+                                                    'bg-[#0A3225]/5 border-blue-500 text-[#0A3225]'}
                                         `}
                                     >
                                         {task.title}
@@ -194,7 +194,7 @@ function WeekView({ currentDate, tasks, onSelect }: { currentDate: Date, tasks: 
                         </div>
                         <div className="p-2 flex-1 space-y-2 overflow-y-auto">
                             {dayTasks.map(task => (
-                                <div key={task.id} onClick={() => onSelect(task)} className="p-2 rounded border shadow-sm bg-white hover:border-blue-300 cursor-pointer text-xs">
+                                <div key={task.id} onClick={() => onSelect(task)} className="p-2 rounded border shadow-sm bg-white hover:border-[#0A3225]/30 cursor-pointer text-xs">
                                     <div className="font-semibold truncate">{task.title}</div>
                                     <div className="text-zinc-500 truncate">{task.equipment}</div>
                                     {task.priority === 'Critical' && <Badge variant="destructive" className="mt-1 text-[8px] h-4">Critical</Badge>}
@@ -220,10 +220,10 @@ function ListView({ tasks, onSelect }: { tasks: MaintenanceTask[], onSelect: (t:
                         <div key={task.id} onClick={() => onSelect(task)} className="flex items-center justify-between p-4 hover:bg-slate-50 cursor-pointer group">
                             <div className="flex items-center gap-4">
                                 <div className={`w-2 h-12 rounded-full ${task.status === 'Overdue' ? 'bg-red-500' :
-                                        task.status === 'Completed' ? 'bg-green-500' : 'bg-blue-500'
+                                        task.status === 'Completed' ? 'bg-green-500' : 'bg-[#0A3225]/50'
                                     }`} />
                                 <div>
-                                    <div className="font-semibold text-zinc-900 group-hover:text-blue-700">{task.title}</div>
+                                    <div className="font-semibold text-zinc-900 group-hover:text-[#0A3225]">{task.title}</div>
                                     <div className="text-sm text-zinc-500 flex items-center gap-2">
                                         <CalendarIcon className="w-3 h-3" /> {task.dueDate}
                                         <span>•</span>

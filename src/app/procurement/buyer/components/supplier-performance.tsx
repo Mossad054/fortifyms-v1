@@ -144,11 +144,11 @@ export function SupplierPerformance() {
                                     <TableCell>
                                         <div className="w-[120px]">
                                             <div className="flex justify-between text-xs mb-1">
-                                                <span className={supplier.qualityScore < 95 ? 'text-orange-600' : 'text-blue-600 font-medium'}>
+                                                <span className={supplier.qualityScore < 95 ? 'text-orange-600' : 'text-[#0A3225] font-medium'}>
                                                     {supplier.qualityScore}%
                                                 </span>
                                             </div>
-                                            <Progress value={supplier.qualityScore} className="h-2 bg-blue-100" />
+                                            <Progress value={supplier.qualityScore} className="h-2 bg-[#0A3225]/10" />
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -194,8 +194,8 @@ export function SupplierPerformance() {
                             <CardContent>
                                 <div className="h-40 flex items-end gap-2">
                                     {[65, 78, 82, 85, 90, 88, 92, 95, 94, 96, 95, 98].map((val, i) => (
-                                        <div key={i} className="flex-1 bg-blue-100 hover:bg-blue-200 rounded-t transition-all relative group h-full flex items-end">
-                                            <div style={{ height: `${val}%` }} className={`w-full ${val > 90 ? 'bg-green-500' : 'bg-blue-500'} rounded-t`}></div>
+                                        <div key={i} className="flex-1 bg-[#0A3225]/10 hover:bg-blue-200 rounded-t transition-all relative group h-full flex items-end">
+                                            <div style={{ height: `${val}%` }} className={`w-full ${val > 90 ? 'bg-green-500' : 'bg-[#0A3225]/50'} rounded-t`}></div>
                                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10">{val}%</div>
                                         </div>
                                     ))}

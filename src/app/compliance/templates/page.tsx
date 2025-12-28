@@ -106,7 +106,7 @@ export default function ComplianceTemplatesPage() {
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1">
                                         <CardTitle className="text-lg flex items-center gap-2">
-                                            <FileText className="h-5 w-5 text-blue-600" />
+                                            <FileText className="h-5 w-5 text-[#0A3225]" />
                                             {template.name}
                                         </CardTitle>
                                         <CardDescription className="mt-1">

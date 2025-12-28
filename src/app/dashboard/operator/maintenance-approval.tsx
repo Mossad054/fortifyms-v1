@@ -36,7 +36,7 @@ export function MaintenanceApproval({ tasks, onApprove, onReject }: { tasks: Mai
             <Card className="w-1/3 flex flex-col border-none shadow-sm">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
-                        <CheckSquare className="w-5 h-5 text-blue-600" /> Pending Review
+                        <CheckSquare className="w-5 h-5 text-[#0A3225]" /> Pending Review
                         <Badge variant="secondary" className="ml-auto">{pendingTasks.length}</Badge>
                     </CardTitle>
                     <CardDescription>Tasks awaiting sign-off</CardDescription>
@@ -54,7 +54,7 @@ export function MaintenanceApproval({ tasks, onApprove, onReject }: { tasks: Mai
                                 <div
                                     key={task.id}
                                     onClick={() => setSelectedTask(task)}
-                                    className={`p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm ${selectedTask?.id === task.id ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-200' : 'bg-white hover:border-blue-300'}`}
+                                    className={`p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm ${selectedTask?.id === task.id ? 'bg-[#0A3225]/5 border-[#0A3225]/20 ring-1 ring-blue-200' : 'bg-white hover:border-[#0A3225]/30'}`}
                                 >
                                     <div className="flex justify-between items-start mb-1">
                                         <Badge variant="outline" className="text-[10px] h-5 bg-white">{task.equipment}</Badge>
@@ -127,10 +127,10 @@ export function MaintenanceApproval({ tasks, onApprove, onReject }: { tasks: Mai
                                         {selectedTask.notes || <span className="text-zinc-400 italic">No notes provided.</span>}
                                     </div>
                                     <div className="flex gap-2">
-                                        <div className="border border-dashed rounded p-2 flex items-center gap-2 text-xs text-blue-600 bg-blue-50 cursor-pointer hover:bg-blue-100 transition-colors">
+                                        <div className="border border-dashed rounded p-2 flex items-center gap-2 text-xs text-[#0A3225] bg-[#0A3225]/5 cursor-pointer hover:bg-[#0A3225]/10 transition-colors">
                                             <FileText className="w-4 h-4" /> View Compliance Cert
                                         </div>
-                                        <div className="border border-dashed rounded p-2 flex items-center gap-2 text-xs text-blue-600 bg-blue-50 cursor-pointer hover:bg-blue-100 transition-colors">
+                                        <div className="border border-dashed rounded p-2 flex items-center gap-2 text-xs text-[#0A3225] bg-[#0A3225]/5 cursor-pointer hover:bg-[#0A3225]/10 transition-colors">
                                             <Eye className="w-4 h-4" /> View Photos (2)
                                         </div>
                                     </div>

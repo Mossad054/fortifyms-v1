@@ -228,9 +228,9 @@ function EquipmentForm({ initialData, isEditing, onCancel, onSave }: { initialDa
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
                         <div className="px-6 pt-4 border-b">
                             <TabsList className="bg-transparent border-b-0 p-0 h-auto space-x-6">
-                                <TabsTrigger value="details" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-0 pb-2 text-zinc-500 data-[state=active]:text-blue-700">Detailed Specs</TabsTrigger>
-                                <TabsTrigger value="schedules" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-0 pb-2 text-zinc-500 data-[state=active]:text-blue-700">Maintenance Schedules</TabsTrigger>
-                                <TabsTrigger value="history" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-0 pb-2 text-zinc-500 data-[state=active]:text-blue-700">History & Logs</TabsTrigger>
+                                <TabsTrigger value="details" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-0 pb-2 text-zinc-500 data-[state=active]:text-[#0A3225]">Detailed Specs</TabsTrigger>
+                                <TabsTrigger value="schedules" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-0 pb-2 text-zinc-500 data-[state=active]:text-[#0A3225]">Maintenance Schedules</TabsTrigger>
+                                <TabsTrigger value="history" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-0 pb-2 text-zinc-500 data-[state=active]:text-[#0A3225]">History & Logs</TabsTrigger>
                             </TabsList>
                         </div>
 
@@ -290,7 +290,7 @@ function EquipmentForm({ initialData, isEditing, onCancel, onSave }: { initialDa
                                                 {data.schedules.map(sch => (
                                                     <div key={sch.id} className="bg-white p-4 rounded-lg border shadow-sm flex items-center justify-between group">
                                                         <div className="flex items-start gap-3">
-                                                            <div className={`p-2 rounded-full ${sch.type === 'Calibration' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}`}>
+                                                            <div className={`p-2 rounded-full ${sch.type === 'Calibration' ? 'bg-[#0A3225]/5 text-[#0A3225]' : 'bg-orange-50 text-orange-600'}`}>
                                                                 <Clock className="w-5 h-5" />
                                                             </div>
                                                             <div>
@@ -368,7 +368,7 @@ function EquipmentForm({ initialData, isEditing, onCancel, onSave }: { initialDa
                                                         {val}g
                                                     </div>
                                                     <div
-                                                        className="w-8 bg-blue-500 hover:bg-blue-600 rounded-t transition-all"
+                                                        className="w-8 bg-[#0A3225]/50 hover:bg-[#0A3225] rounded-t transition-all"
                                                         style={{ height: `${(val - 49) * 80}px` }}
                                                     />
                                                     <span className="text-[10px] text-zinc-400">Oct {10 + i}</span>

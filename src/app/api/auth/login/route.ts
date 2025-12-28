@@ -28,7 +28,7 @@ const users: User[] = [
   {
     id: '4',
     email: 'inspector@fwga.com',
-    name: 'FWGA Inspector',
+    name: 'Inspector',
     role: 'inspector',
     millId: undefined,
   },

@@ -86,8 +86,8 @@ export function InstitutionalSupply() {
                 <Card className="hover:shadow-md transition-all border-zinc-200">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Pipeline Velocity</CardTitle>
-                        <div className="p-2 rounded-full bg-blue-50">
-                            <Package className="h-4 w-4 text-blue-600" />
+                        <div className="p-2 rounded-full bg-[#0A3225]/5">
+                            <Package className="h-4 w-4 text-[#0A3225]" />
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -119,7 +119,7 @@ export function InstitutionalSupply() {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Logistics SLA</CardTitle>
                         <div className="p-2 rounded-full bg-purple-50">
-                            <Clock className="h-4 w-4 text-purple-600" />
+                            <Clock className="h-4 w-4 text-orange" />
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -151,7 +151,7 @@ export function InstitutionalSupply() {
                 <CardHeader className="border-b py-3 px-6 bg-white">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-base flex items-center gap-2">
-                            <TrendingUp className="w-4 h-4 text-blue-600" />
+                            <TrendingUp className="w-4 h-4 text-[#0A3225]" />
                             Procurement Performance Index
                         </CardTitle>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -219,7 +219,7 @@ export function InstitutionalSupply() {
                                         {delivery.volume.toLocaleString()}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge className={`border-none px-2 py-0 h-5 text-[9px] font-black tracking-widest ${delivery.status === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                                        <Badge className={`border-none px-2 py-0 h-5 text-[9px] font-black tracking-widest ${delivery.status === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-[#0A3225]/10 text-[#0A3225]'
                                             }`}>
                                             {delivery.status.replace('_', ' ').toUpperCase()}
                                         </Badge>
@@ -324,7 +324,7 @@ export function InstitutionalSupply() {
                 <CardHeader className="border-b py-3 px-6">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-base flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-blue-600" />
+                            <MapPin className="w-4 h-4 text-[#0A3225]" />
                             Market Penetration Matrix
                         </CardTitle>
 
@@ -384,9 +384,9 @@ export function InstitutionalSupply() {
 
                                         <div className="pt-2">
                                             {supplyGap > 0 ? (
-                                                <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-xl border border-blue-100">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                                                    <p className="text-[10px] text-blue-700 font-bold">
+                                                <div className="flex items-center gap-2 p-2 bg-[#0A3225]/5 rounded-xl border border-blue-100">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-[#0A3225]/50 animate-pulse" />
+                                                    <p className="text-[10px] text-[#0A3225] font-bold">
                                                         {supplyGap > 100000 ? 'Strategic priority: Capacity expansion required' : 'Tactical note: Equipment optimization potential'}
                                                     </p>
                                                 </div>
@@ -410,7 +410,7 @@ export function InstitutionalSupply() {
                 <DialogContent className="max-w-3xl">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <MapPin className="w-5 h-5 text-blue-600" />
+                            <MapPin className="w-5 h-5 text-[#0A3225]" />
                             Supply-Demand Gap Analysis
                         </DialogTitle>
                     </DialogHeader>
@@ -427,14 +427,14 @@ export function InstitutionalSupply() {
                                     <p className="text-xs text-orange-600">Western Region Deficit</p>
                                 </CardContent>
                             </Card>
-                            <Card className="bg-blue-50 border-blue-100">
+                            <Card className="bg-[#0A3225]/5 border-blue-100">
                                 <CardContent className="p-4">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <TrendingUp className="w-4 h-4 text-blue-600" />
-                                        <h4 className="font-bold text-sm text-blue-900">Optimization Opportunity</h4>
+                                        <TrendingUp className="w-4 h-4 text-[#0A3225]" />
+                                        <h4 className="font-bold text-sm text-[#0A3225]">Optimization Opportunity</h4>
                                     </div>
-                                    <p className="text-2xl font-black text-blue-700">+45,000 KG</p>
-                                    <p className="text-xs text-blue-600">Nairobi Surplus Available</p>
+                                    <p className="text-2xl font-black text-[#0A3225]">+45,000 KG</p>
+                                    <p className="text-xs text-[#0A3225]">Nairobi Surplus Available</p>
                                 </CardContent>
                             </Card>
                         </div>
@@ -451,7 +451,7 @@ export function InstitutionalSupply() {
                                             <div className="flex-1 px-4">
                                                 <div className="h-2 bg-zinc-200 rounded-full overflow-hidden flex">
                                                     <div
-                                                        className="h-full bg-blue-500"
+                                                        className="h-full bg-[#0A3225]/50"
                                                         style={{ width: `${Math.min((region.supply / region.demand) * 100, 100)}%` }}
                                                     />
                                                     {isDeficit && (
@@ -468,12 +468,12 @@ export function InstitutionalSupply() {
                             </div>
                         </div>
 
-                        <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                            <h4 className="font-bold text-blue-900 text-sm mb-2">AI Recommendation</h4>
-                            <p className="text-xs text-blue-700 leading-relaxed">
+                        <div className="bg-[#0A3225]/5 p-4 rounded-xl border border-blue-100">
+                            <h4 className="font-bold text-[#0A3225] text-sm mb-2">AI Recommendation</h4>
+                            <p className="text-xs text-[#0A3225] leading-relaxed">
                                 Reroute 45k KG from <span className="font-bold">Nairobi</span> surplus to <span className="font-bold">Western</span> region to mitigate critical shortfall. Estimated impact: reduces Western deficit by 38%.
                             </p>
-                            <Button size="sm" className="mt-3 bg-blue-600 hover:bg-blue-700 text-white w-full">
+                            <Button size="sm" className="mt-3 bg-[#0A3225] hover:bg-[#0A3225] text-white w-full">
                                 Apply Allocation Strategy
                             </Button>
                         </div>

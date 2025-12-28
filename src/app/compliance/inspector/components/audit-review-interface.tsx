@@ -91,7 +91,7 @@ export function AuditReviewInterface({ auditId, onBack }: AuditReviewInterfacePr
                 <div className="flex items-center gap-4">
                     <div className="text-right mr-4">
                         <p className="text-xs text-muted-foreground font-bold uppercase">Review Progress</p>
-                        <p className="text-lg font-bold text-blue-600">{calculateReviewProgress()}%</p>
+                        <p className="text-lg font-bold text-[#0A3225]">{calculateReviewProgress()}%</p>
                     </div>
                     <Button disabled={!reviewDecision} onClick={handleSubmitReview} className="bg-zinc-900 text-white">
                         Submit Review
@@ -238,7 +238,7 @@ export function AuditReviewInterface({ auditId, onBack }: AuditReviewInterfacePr
                                     active={reviewDecision === 'ApproveWithConditions'}
                                     onClick={() => setReviewDecision('ApproveWithConditions')}
                                     label="Approve w/ Conditions"
-                                    color="bg-blue-600"
+                                    color="bg-[#0A3225]"
                                 />
                                 <DecisionButton
                                     active={reviewDecision === 'RequestRevision'}
@@ -250,7 +250,7 @@ export function AuditReviewInterface({ auditId, onBack }: AuditReviewInterfacePr
                                     active={reviewDecision === 'ScheduleSiteVisit'}
                                     onClick={() => setReviewDecision('ScheduleSiteVisit')}
                                     label="Schedule Site Visit"
-                                    color="bg-purple-600"
+                                    color="bg-orange"
                                 />
                                 <DecisionButton
                                     active={reviewDecision === 'Reject'}

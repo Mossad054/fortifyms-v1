@@ -126,6 +126,6 @@ export async function PATCH(
             )
         }
     }, {
-        requiredRoles: ['SYSTEM_ADMIN', 'FWGA_PROGRAM_MANAGER', 'MILL_MANAGER']
+        requiredRoles: ['SYSTEM_ADMIN', 'PROGRAM_MANAGER', 'MILL_MANAGER']
     })
 }

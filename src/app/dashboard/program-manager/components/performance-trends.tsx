@@ -127,7 +127,7 @@ export function PerformanceTrends() {
                 <CardHeader className="border-b py-3 px-6 bg-white">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-base flex items-center gap-2">
-                            <Flag className="w-4 h-4 text-purple-600" />
+                            <Flag className="w-4 h-4 text-orange" />
                             National Compliance Roadmap
                         </CardTitle>
                         <div className="flex items-center gap-4">
@@ -194,7 +194,7 @@ export function PerformanceTrends() {
                     {/* Policy Milestones Legend */}
                     <div className="mt-4 flex flex-wrap gap-3">
                         {POLICY_MILESTONES.map((milestone, idx) => (
-                            <Badge key={idx} variant="outline" className="text-purple-700 border-purple-300">
+                            <Badge key={idx} variant="outline" className="text-orange border-purple-300">
                                 <Flag className="w-3 h-3 mr-1" />
                                 {milestone.month}: {milestone.label}
                             </Badge>
@@ -208,7 +208,7 @@ export function PerformanceTrends() {
                 <CardHeader className="border-b py-3 px-6 bg-white">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-base flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                            <CheckCircle2 className="w-4 h-4 text-[#0A3225]" />
                             Aggregated Production (MT)
                         </CardTitle>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -250,13 +250,13 @@ export function PerformanceTrends() {
                     {/* Commodity Shift Analysis */}
                     <div className="mt-6 p-4 bg-zinc-50 rounded-xl border border-zinc-200">
                         <div className="flex items-start gap-3">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <AlertCircle className="w-4 h-4 text-blue-600" />
+                            <div className="p-2 bg-[#0A3225]/10 rounded-lg">
+                                <AlertCircle className="w-4 h-4 text-[#0A3225]" />
                             </div>
                             <div>
                                 <h4 className="font-bold text-sm text-zinc-900">Intelligence Note: Commodity Shift</h4>
                                 <p className="text-xs text-zinc-500 mt-1 leading-relaxed">
-                                    Maize production increased <span className="text-blue-600 font-bold">22%</span> over 12 months.
+                                    Maize production increased <span className="text-[#0A3225] font-bold">22%</span> over 12 months.
                                     Strategic shift detected in central regions towards fortified maize secondary processing.
                                 </p>
                             </div>
@@ -355,10 +355,10 @@ export function PerformanceTrends() {
                         </div>
                         <div className="p-4 bg-purple-50 rounded-lg">
                             <div className="flex items-start gap-2">
-                                <TrendingUp className="w-5 h-5 text-purple-600 mt-0.5" />
+                                <TrendingUp className="w-5 h-5 text-orange mt-0.5" />
                                 <div>
                                     <h4 className="font-semibold text-sm text-purple-900">Training Impact</h4>
-                                    <p className="text-xs text-purple-700 mt-1">
+                                    <p className="text-xs text-orange mt-1">
                                         Training completion correlates at 0.76 with QC performance.
                                         July training initiative resulted in 2% QC improvement.
                                     </p>

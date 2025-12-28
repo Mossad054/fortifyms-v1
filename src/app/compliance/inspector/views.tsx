@@ -80,7 +80,7 @@ export function ScheduleView() {
             {/* Upcoming Schedule */}
             <div className="space-y-4">
                 <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-blue-600" />
+                    <Clock className="w-5 h-5 text-[#0A3225]" />
                     Upcoming Visits
                 </h3>
                 <div className="grid gap-4">
@@ -146,7 +146,7 @@ export function ScheduleView() {
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-sm font-medium text-gray-500">Status</h4>
-                                    <Badge className={selectedSchedule.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
+                                    <Badge className={selectedSchedule.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-[#0A3225]/10 text-[#0A3225]'}>
                                         {selectedSchedule.status}
                                     </Badge>
                                 </div>
@@ -205,7 +205,7 @@ function ScheduleCard({ audit, onClick }: { audit: ScheduleItem, onClick: () => 
         <Card className="hover:shadow-md transition-all cursor-pointer group border-l-4 border-l-blue-500" onClick={onClick}>
             <CardContent className="p-5 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-blue-50 flex flex-col items-center justify-center text-blue-700 border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <div className="h-14 w-14 rounded-xl bg-[#0A3225]/5 flex flex-col items-center justify-center text-[#0A3225] border border-blue-100 group-hover:bg-[#0A3225] group-hover:text-white transition-colors">
                         <span className="font-bold text-xl leading-none">{day}</span>
                         <span className="text-xs font-medium uppercase">{month}</span>
                     </div>
@@ -246,7 +246,7 @@ function CompletedScheduleCard({ audit, onClick }: { audit: ScheduleItem, onClic
                     {audit.findings || "No findings recorded."}
                 </p>
                 <div className="flex justify-end">
-                    <span className="text-xs font-medium text-blue-600 flex items-center group-hover:underline">
+                    <span className="text-xs font-medium text-[#0A3225] flex items-center group-hover:underline">
                         View Report <ChevronRight className="w-3 h-3 ml-1" />
                     </span>
                 </div>

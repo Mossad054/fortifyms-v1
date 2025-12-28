@@ -165,8 +165,8 @@ export async function POST(
 }
 
 async function checkActionPermission(user: any, alert: any): Promise<boolean> {
-  // FWGA users can create actions for any alert
-  if (user.role === 'FWGA_INSPECTOR' || user.role === 'FWGA_PROGRAM_MANAGER') {
+  // Authority users can create actions for any alert
+  if (user.role === 'INSPECTOR' || user.role === 'PROGRAM_MANAGER') {
     return true;
   }
 

@@ -84,7 +84,7 @@ export default function EquipmentPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-2">
-                        <Wrench className="h-8 w-8 text-blue-600" />
+                        <Wrench className="h-8 w-8 text-[#0A3225]" />
                         Equipment Registry
                     </h1>
                     <p className="text-gray-600 mt-1">Manage mill equipment and calibration schedules</p>
@@ -139,7 +139,7 @@ export default function EquipmentPage() {
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1">
                                         <CardTitle className="text-lg flex items-center gap-2">
-                                            <Wrench className="h-5 w-5 text-blue-600" />
+                                            <Wrench className="h-5 w-5 text-[#0A3225]" />
                                             {item.name}
                                         </CardTitle>
                                         <CardDescription className="mt-1">

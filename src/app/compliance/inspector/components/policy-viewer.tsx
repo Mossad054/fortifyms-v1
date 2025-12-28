@@ -87,10 +87,10 @@ export function PolicyViewer() {
     const getStatusColor = (status: PolicyStatus) => {
         switch (status) {
             case 'proposed': return 'bg-gray-100 text-gray-700'
-            case 'adopted': return 'bg-blue-100 text-blue-700'
+            case 'adopted': return 'bg-[#0A3225]/10 text-[#0A3225]'
             case 'implementing': return 'bg-yellow-100 text-yellow-700'
             case 'monitoring': return 'bg-green-100 text-green-700'
-            case 'completed': return 'bg-purple-100 text-purple-700'
+            case 'completed': return 'bg-purple-100 text-orange'
             default: return 'bg-gray-100 text-gray-700'
         }
     }
@@ -99,8 +99,8 @@ export function PolicyViewer() {
         switch (type) {
             case 'mandatory': return 'bg-red-100 text-red-700 border-red-200'
             case 'voluntary': return 'bg-green-100 text-green-700 border-green-200'
-            case 'pilot': return 'bg-blue-100 text-blue-700 border-blue-200'
-            case 'regulatory': return 'bg-purple-100 text-purple-700 border-purple-200'
+            case 'pilot': return 'bg-[#0A3225]/10 text-[#0A3225] border-[#0A3225]/20'
+            case 'regulatory': return 'bg-purple-100 text-orange border-orange/20'
             default: return 'bg-gray-100 text-gray-700 border-gray-200'
         }
     }
@@ -165,7 +165,7 @@ export function PolicyViewer() {
                                         <Button
                                             size="sm"
                                             variant="ghost"
-                                            className="h-8 text-[11px] font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                            className="h-8 text-[11px] font-bold text-[#0A3225] hover:text-[#0A3225] hover:bg-[#0A3225]/5"
                                             onClick={() => {
                                                 setSelectedPolicy(policy)
                                                 setShowPolicyDialog(true)
@@ -217,7 +217,7 @@ export function PolicyViewer() {
                                     </div>
                                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-blue-600 rounded-full"
+                                            className="h-full bg-[#0A3225] rounded-full"
                                             style={{ width: `${selectedPolicy.implementationProgress}%` }}
                                         />
                                     </div>

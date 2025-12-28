@@ -170,7 +170,7 @@ export function QADashboard() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <Button size="sm" variant="ghost" className="text-blue-600 h-8" onClick={() => handleViewCoA(record)}>
+                                                <Button size="sm" variant="ghost" className="text-[#0A3225] h-8" onClick={() => handleViewCoA(record)}>
                                                     <FileText className="w-3 h-3 mr-1" /> View CoC
                                                 </Button>
                                             </TableCell>
@@ -263,7 +263,7 @@ export function QADashboard() {
                                     <div className="relative border-l-2 border-dashed border-gray-200 ml-6 space-y-12 pb-4">
                                         {traceResult.journey.map((step: any, index: number) => (
                                             <div key={index} className="relative pl-8">
-                                                <div className={`absolute -left-[9px] w-4 h-4 rounded-full border-2 border-white ${step.status === 'completed' ? 'bg-green-500' : 'bg-blue-500 shadow-[0_0_0_4px_rgba(59,130,246,0.2)]'}`}></div>
+                                                <div className={`absolute -left-[9px] w-4 h-4 rounded-full border-2 border-white ${step.status === 'completed' ? 'bg-green-500' : 'bg-[#0A3225]/50 shadow-[0_0_0_4px_rgba(59,130,246,0.2)]'}`}></div>
                                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 shadow-sm border p-4 rounded-lg bg-white">
                                                     <div>
                                                         <div className="font-bold text-gray-900">{step.stage}</div>

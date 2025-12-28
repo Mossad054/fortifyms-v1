@@ -204,7 +204,7 @@ function MaintenanceDashboard({ tasks, onCreate, onReport, onExecute, onOpenRegi
         <div className="space-y-6 flex flex-col h-full">
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 shrink-0">
-                <Card className="bg-white border-zinc-200 shadow-sm cursor-pointer hover:border-blue-300 transition-colors" onClick={onOpenRegistry}>
+                <Card className="bg-white border-zinc-200 shadow-sm cursor-pointer hover:border-[#0A3225]/30 transition-colors" onClick={onOpenRegistry}>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-zinc-500">Equipment Registry</CardTitle></CardHeader>
                     <CardContent className="flex items-center justify-between">
                         <div className="text-2xl font-bold text-zinc-900">32</div>
@@ -224,7 +224,7 @@ function MaintenanceDashboard({ tasks, onCreate, onReport, onExecute, onOpenRegi
                         <div className={`text-2xl font-bold ${criticalCount > 0 ? 'text-red-600' : 'text-zinc-900'}`}>{criticalCount}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-zinc-200 shadow-sm cursor-pointer hover:border-blue-300 transition-colors" onClick={onOpenApproval}>
+                <Card className="bg-white border-zinc-200 shadow-sm cursor-pointer hover:border-[#0A3225]/30 transition-colors" onClick={onOpenApproval}>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-zinc-500">Approvals</CardTitle></CardHeader>
                     <CardContent className="flex items-center justify-between">
                         <div className="text-2xl font-bold text-zinc-900">{tasks.filter((t: any) => t.status === 'Completed' || t.status === 'Escalated').length}</div>
@@ -287,7 +287,7 @@ function MaintenanceDashboard({ tasks, onCreate, onReport, onExecute, onOpenRegi
                                     {filteredTasks.filter((t: any) => t.type !== 'Predictive Alert').map((task: any) => (
                                         <div key={task.id} className="flex items-center justify-between p-4 bg-white border rounded-xl hover:shadow-md transition-all group">
                                             <div className="flex items-center gap-4">
-                                                <div className={`p-3 rounded-full ${task.type === 'Calibration' ? 'bg-blue-100 text-blue-600' :
+                                                <div className={`p-3 rounded-full ${task.type === 'Calibration' ? 'bg-[#0A3225]/10 text-[#0A3225]' :
                                                     task.priority === 'Critical' ? 'bg-red-100 text-red-600' : 'bg-zinc-100 text-zinc-600'
                                                     }`}>
                                                     {task.type === 'Calibration' ? <Activity className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
@@ -422,7 +422,7 @@ function TaskScheduler({ onCancel, onSave, defaultType = 'Repair' }: { onCancel:
                         {/* Right Column: AI Optimization */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <div className="p-1.5 bg-purple-100 text-purple-700 rounded-md"><Zap className="w-4 h-4" /></div>
+                                <div className="p-1.5 bg-purple-100 text-orange rounded-md"><Zap className="w-4 h-4" /></div>
                                 <h3 className="font-semibold text-zinc-900">Optimization Engine</h3>
                             </div>
 
@@ -439,7 +439,7 @@ function TaskScheduler({ onCancel, onSave, defaultType = 'Repair' }: { onCancel:
                                                 <div className="font-bold text-zinc-800">{slot.date}</div>
                                                 <div className="text-xs text-zinc-500 mt-0.5">{slot.reason}</div>
                                             </div>
-                                            <Badge variant="secondary" className="bg-purple-100 text-purple-700">{slot.score}% Optimal</Badge>
+                                            <Badge variant="secondary" className="bg-purple-100 text-orange">{slot.score}% Optimal</Badge>
                                         </div>
                                     </div>
                                 ))}
@@ -467,7 +467,7 @@ function TaskScheduler({ onCancel, onSave, defaultType = 'Repair' }: { onCancel:
                 </CardContent>
                 <CardFooter className="justify-between border-t p-6 bg-slate-50 rounded-b-xl shrink-0">
                     <Button variant="ghost" onClick={onCancel}>Cancel</Button>
-                    <Button size="lg" onClick={handleSubmit} disabled={!title || !equipment} className="bg-blue-600 hover:bg-blue-700 px-8">
+                    <Button size="lg" onClick={handleSubmit} disabled={!title || !equipment} className="bg-[#0A3225] hover:bg-[#0A3225] px-8">
                         Confirm Schedule
                     </Button>
                 </CardFooter>

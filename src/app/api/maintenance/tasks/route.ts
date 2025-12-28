@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
             const where: any = {}
 
             // Role-based filtering
-            if (userProfile?.role !== 'SYSTEM_ADMIN' && userProfile?.role !== 'FWGA_PROGRAM_MANAGER') {
+            if (userProfile?.role !== 'SYSTEM_ADMIN' && userProfile?.role !== 'PROGRAM_MANAGER') {
                 if (!userProfile?.millId) {
                     return NextResponse.json({ tasks: [] })
                 }

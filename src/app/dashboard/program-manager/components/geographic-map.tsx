@@ -174,7 +174,7 @@ export function GeographicMap() {
                                     checked={showChoropleth}
                                     onCheckedChange={(checked) => setShowChoropleth(checked as boolean)}
                                 />
-                                <Label htmlFor="choropleth" className="text-sm cursor-pointer font-medium text-blue-600">Heatmap</Label>
+                                <Label htmlFor="choropleth" className="text-sm cursor-pointer font-medium text-[#0A3225]">Heatmap</Label>
                             </div>
                         </div>
                     </div>
@@ -186,7 +186,7 @@ export function GeographicMap() {
                 <CardHeader className="bg-white border-b py-3 px-6">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-base flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-blue-600" />
+                            <Layers className="w-4 h-4 text-[#0A3225]" />
                             Live Asset Mapping
                         </CardTitle>
                         <div className="flex gap-1">
@@ -216,7 +216,7 @@ export function GeographicMap() {
                                 alt="Satellite Map View"
                                 className="w-full h-full object-cover grayscale-[20%] contrast-125 brightness-90"
                             />
-                            <div className="absolute inset-0 bg-blue-900/10 mix-blend-overlay"></div>
+                            <div className="absolute inset-0 bg-[#0A3225]/10 mix-blend-overlay"></div>
                         </div>
 
                         {/* Regional Choropleth (if enabled) ... */}
@@ -347,7 +347,7 @@ export function GeographicMap() {
 
                         {/* Map Note */}
                         <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-xs text-gray-600 max-w-xs border shadow-sm">
-                            <p className="font-semibold mb-1 text-blue-600">Interactive Map View</p>
+                            <p className="font-semibold mb-1 text-[#0A3225]">Interactive Map View</p>
                             <p>Hover over mills for production metrics. Using SVG layer for precision assets.</p>
                         </div>
                     </div>
@@ -402,11 +402,11 @@ export function GeographicMap() {
                     </CardHeader>
                     <CardContent className="pt-3 space-y-2">
                         <div className="flex items-center gap-3">
-                            <div className="w-4 h-0.5 bg-blue-500 border-dashed opacity-50" />
+                            <div className="w-4 h-0.5 bg-[#0A3225]/50 border-dashed opacity-50" />
                             <span className="text-xs text-zinc-600 font-medium">Primary Supply Routes</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-3 h-3 rounded-full bg-blue-500 opacity-20 border border-blue-400" />
+                            <div className="w-3 h-3 rounded-full bg-[#0A3225]/50 opacity-20 border border-blue-400" />
                             <span className="text-xs text-zinc-600 font-medium">Regional Output Heatmap</span>
                         </div>
                     </CardContent>

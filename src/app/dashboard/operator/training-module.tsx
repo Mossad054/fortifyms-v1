@@ -141,7 +141,7 @@ export function TrainingModule() {
                                 <CardContent>
                                     <div className="text-3xl font-bold">35%</div>
                                     <div className="text-sm text-blue-100 mt-1">Overall Completion</div>
-                                    <Progress value={35} className="h-1.5 mt-3 bg-blue-900/30" />
+                                    <Progress value={35} className="h-1.5 mt-3 bg-[#0A3225]/30" />
                                 </CardContent>
                             </Card>
                             <Card className="bg-white border-none shadow-sm">
@@ -350,14 +350,14 @@ function CoursePlayer({ course, onBack, onComplete }: { course: Course, onBack: 
                                 <button
                                     key={mod.id}
                                     onClick={() => setActiveModuleIndex(i)}
-                                    className={`w-full text-left p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors ${i === activeModuleIndex ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
+                                    className={`w-full text-left p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors ${i === activeModuleIndex ? 'bg-[#0A3225]/5 border-l-4 border-l-blue-500' : ''}`}
                                 >
                                     <div className={`mt-0.5 ${mod.completed ? 'text-green-500' : i === activeModuleIndex ? 'text-blue-500' : 'text-gray-300'}`}>
                                         {mod.completed ? <CheckCircle2 className="w-5 h-5" /> :
                                             mod.type === 'video' ? <PlayCircle className="w-5 h-5" /> : <HelpCircle className="w-5 h-5" />}
                                     </div>
                                     <div>
-                                        <h4 className={`text-sm font-medium ${i === activeModuleIndex ? 'text-blue-700' : 'text-gray-700'}`}>{mod.title}</h4>
+                                        <h4 className={`text-sm font-medium ${i === activeModuleIndex ? 'text-[#0A3225]' : 'text-gray-700'}`}>{mod.title}</h4>
                                         <span className="text-xs text-gray-500">{mod.duration}</span>
                                     </div>
                                 </button>
@@ -396,7 +396,7 @@ function CertificateView({ course, onBack }: { course: Course, onBack: () => voi
                 <div className="text-center space-y-8">
                     <div className="text-4xl font-serif text-gray-800">Certificate of Completion</div>
                     <div className="text-gray-500 uppercase tracking-widest text-sm">This certifies that</div>
-                    <div className="text-3xl font-bold text-blue-900 font-serif italic">John A. Operator</div>
+                    <div className="text-3xl font-bold text-[#0A3225] font-serif italic">John A. Operator</div>
                     <div className="text-gray-500 uppercase tracking-widest text-sm">has demonstrated mastery in</div>
                     <div className="text-2xl font-bold text-gray-800">{course.title}</div>
                     <div className="flex justify-between items-end pt-12 px-12">

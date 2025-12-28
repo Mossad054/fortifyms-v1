@@ -12,7 +12,7 @@ const nutrients = [
 
 export const WhatIsFortification = () => {
   return (
-    <section id="resources" className="py-24 bg-white relative">
+    <section id="about" className="py-24 bg-white relative">
       <div className="container mx-auto px-4 lg:px-8">
 
         {/* Intro Section - Matching Screenshot */}
@@ -48,32 +48,42 @@ export const WhatIsFortification = () => {
           </div>
         </div>
 
-        <div className="mb-10">
-          <h3 className="font-display font-bold text-2xl text-[#0A3225]">Types of Fortificants</h3>
+        <div className="mb-12">
+          <h3 className="font-display font-bold text-3xl text-[#0A3225]">Types of Fortificants</h3>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
           {nutrients.map((nutrient, index) => (
             <div
               key={nutrient.name}
-              className={`group p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-default ${nutrient.borderColor} hover:border-opacity-50`}
+              className={`group p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 cursor-default ${nutrient.borderColor} hover:border-opacity-50`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="flex flex-col items-start gap-4">
-                <div className="p-0">
-                  <nutrient.icon className={`w-8 h-8 ${nutrient.color}`} strokeWidth={1.5} />
+                <div className="shrink-0 p-2 rounded-xl bg-gray-50 group-hover:bg-white transition-colors duration-300">
+                  <nutrient.icon className={`w-6 h-6 ${nutrient.color}`} strokeWidth={2} />
                 </div>
-                <div>
-                  <h3 className={`font-display font-semibold text-lg text-gray-900 mb-2`}>
+                <div className="min-w-0">
+                  <h3 className="font-display font-bold text-lg text-gray-900 leading-tight mb-1">
                     {nutrient.name}
                   </h3>
-                  <p className="text-gray-500 text-[15px] leading-relaxed">
+                  <p className="text-gray-500 text-sm leading-relaxed">
                     {nutrient.description}
                   </p>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Digital Backbone Section */}
+        <div className="mt-24 pt-16 border-t border-gray-100 max-w-3xl">
+          <h2 className="font-display text-4xl lg:text-5xl font-bold text-[#0A3225] leading-tight mb-6">
+            The Digital Backbone of Food Fortification
+          </h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            A centralized platform that brings together standards, compliance, quality assurance, and stakeholder coordination, enabling fortification programs to operate reliably at scale.
+          </p>
         </div>
       </div>
     </section>

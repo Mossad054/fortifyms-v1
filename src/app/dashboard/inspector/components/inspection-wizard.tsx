@@ -141,7 +141,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
     const handleSubmit = () => {
         const result = calculateResult()
         toast.success("Audit Submitted", {
-            description: `Mill: ${auditMeta.millId} • Result: ${result} • Sent to FGWA Manager`
+            description: `Mill: ${auditMeta.millId} • Result: ${result} • Sent to Program Manager`
         })
         onOpenChange(false)
         setStep('setup')
@@ -167,7 +167,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                 Official Regulatory Inspection
                             </DialogTitle>
                             <DialogDescription className="text-zinc-400 mt-1">
-                                FWGA Authority • {activeTemplate.regulatoryReference} • v{activeTemplate.version}
+                                Authority • {activeTemplate.regulatoryReference} • v{activeTemplate.version}
                             </DialogDescription>
                         </div>
                         <Badge variant="outline" className="border-zinc-700 text-zinc-300">
@@ -204,7 +204,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                             className="bg-zinc-50 border p-4 rounded-xl flex items-center justify-between cursor-pointer hover:border-zinc-900 transition-colors group"
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div className={`p-3 rounded-full ${schedule.status === 'Overdue' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                                                <div className={`p-3 rounded-full ${schedule.status === 'Overdue' ? 'bg-red-100 text-red-600' : 'bg-[#0A3225]/10 text-[#0A3225]'}`}>
                                                     <Scale className="w-5 h-5" />
                                                 </div>
                                                 <div>
@@ -311,7 +311,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                         {activeTemplate.sections[activeSection].items.map(item => (
                                             <div key={item.id} className="bg-white p-6 rounded-xl border shadow-sm ring-1 ring-zinc-100">
                                                 <div className="flex gap-4">
-                                                    <div className={`p-2 rounded-lg h-fit ${item.criticality === 'Critical' ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                                    <div className={`p-2 rounded-lg h-fit ${item.criticality === 'Critical' ? 'bg-red-100 text-red-600' : 'bg-[#0A3225]/5 text-[#0A3225]'}`}>
                                                         {item.criticality === 'Critical' ? <AlertTriangle className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
                                                     </div>
                                                     <div className="flex-1 space-y-4">
@@ -320,7 +320,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                                                 <div>
                                                                     <h4 className="font-bold text-zinc-900">{item.text}</h4>
                                                                     {item.hint && (
-                                                                        <div className="mt-1.5 flex items-start gap-1.5 text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-100">
+                                                                        <div className="mt-1.5 flex items-start gap-1.5 text-xs text-[#0A3225] bg-[#0A3225]/5 p-2 rounded border border-blue-100">
                                                                             <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
                                                                             <span>{item.hint}</span>
                                                                         </div>
@@ -491,7 +491,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-zinc-400 uppercase">Computed Grade</p>
-                                        <p className="font-bold text-lg text-blue-600">{auditResult.grade}</p>
+                                        <p className="font-bold text-lg text-[#0A3225]">{auditResult.grade}</p>
                                     </div>
                                 </div>
                                 <div className="mt-8 pt-6 border-t text-left">

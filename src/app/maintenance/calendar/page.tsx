@@ -60,7 +60,7 @@ export default function MaintenanceCalendarPage() {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-2">
-                        <CalendarIcon className="h-8 w-8 text-purple-600" />
+                        <CalendarIcon className="h-8 w-8 text-orange" />
                         Maintenance Calendar
                     </h1>
                     <p className="text-gray-600 mt-1">Visual schedule of maintenance tasks</p>
@@ -139,7 +139,7 @@ export default function MaintenanceCalendarPage() {
                                                         text-xs px-1 py-0.5 rounded truncate
                                                         ${task.priority === 'HIGH' ? 'bg-red-100 text-red-700' : ''}
                                                         ${task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' : ''}
-                                                        ${task.priority === 'LOW' ? 'bg-blue-100 text-blue-700' : ''}
+                                                        ${task.priority === 'LOW' ? 'bg-[#0A3225]/10 text-[#0A3225]' : ''}
                                                     `}
                                                 >
                                                     {task.title}
@@ -178,7 +178,7 @@ export default function MaintenanceCalendarPage() {
                                                     className={
                                                         task.priority === 'HIGH' ? 'bg-red-100 text-red-700' :
                                                             task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
-                                                                'bg-blue-100 text-blue-700'
+                                                                'bg-[#0A3225]/10 text-[#0A3225]'
                                                     }
                                                 >
                                                     {task.priority}

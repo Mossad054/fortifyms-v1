@@ -127,7 +127,7 @@ export function InspectorReporting() {
 
     const getCategoryColor = (category: string) => {
         switch (category) {
-            case 'operational': return 'bg-blue-100 text-blue-700'
+            case 'operational': return 'bg-[#0A3225]/10 text-[#0A3225]'
             case 'compliance': return 'bg-red-100 text-red-700'
             default: return 'bg-gray-100 text-gray-700'
         }
@@ -176,7 +176,7 @@ export function InspectorReporting() {
                             <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {REPORT_TEMPLATES.map((template) => (
-                                        <Card key={template.id} className="border-2 hover:border-blue-300 transition-colors">
+                                        <Card key={template.id} className="border-2 hover:border-[#0A3225]/30 transition-colors">
                                             <CardContent className="p-4">
                                                 <div className="flex items-start justify-between mb-3">
                                                     <div className="flex items-center gap-2">

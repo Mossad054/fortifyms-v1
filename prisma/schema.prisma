@@ -1513,3 +1513,15 @@ model AuditLog {
   
   @@map("audit_logs")
 }
+model ContactRequest {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String
+  subject   String?
+  message   String
+  status    String   @default("PENDING") // PENDING, RESPONDED, CLOSED
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+  @@map("contact_requests")
+}

@@ -27,13 +27,13 @@ export default function ProgramManagerDashboard() {
     const [activeTab, setActiveTab] = React.useState('overview')
 
     return (
-        <div className="p-6 space-y-8 max-w-[1800px] mx-auto min-h-screen bg-[#F0EFEA]/30">
+        <div className="p-6 space-y-8 max-w-[1800px] mx-auto min-h-screen bg-white">
             {/* Header */}
             <div className="flex justify-between items-center mb-2">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-premium-dark flex items-center gap-2">
                         <Globe className="w-8 h-8 text-primary/60" />
-                        FWGA Program Manager Dashboard
+                        Program Manager Dashboard
                     </h1>
                     <p className="text-muted-foreground mt-1">
                         National-level strategic oversight and program analytics
@@ -57,56 +57,56 @@ export default function ProgramManagerDashboard() {
                 <TabsList className="grid w-full grid-cols-8 lg:grid-cols-8 bg-white/60 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
                     <TabsTrigger
                         value="overview"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <Activity className="h-4 w-4" />
                         <span className="hidden lg:inline">Overview</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="geographic"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <Map className="h-4 w-4" />
                         <span className="hidden lg:inline">Geographic</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="trends"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <TrendingUp className="h-4 w-4" />
                         <span className="hidden lg:inline">Trends</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="mills"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <Building2 className="h-4 w-4" />
                         <span className="hidden lg:inline">Mills</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="supply"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <Package className="h-4 w-4" />
                         <span className="hidden lg:inline">Supply</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="policy"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <FileText className="h-4 w-4" />
                         <span className="hidden lg:inline">Policy</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="compliance"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <ShieldCheck className="h-4 w-4" />
                         <span className="hidden lg:inline">Compliance</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="reports"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all"
                     >
                         <BarChart3 className="h-4 w-4" />
                         <span className="hidden lg:inline">Reports</span>
@@ -128,7 +128,7 @@ export default function ProgramManagerDashboard() {
                                 <Button onClick={() => setActiveTab('trends')} variant="outline" className="border-sky-200 hover:bg-sky-50 text-sky-700">
                                     <TrendingUp className="mr-2 h-4 w-4" /> Data Explorer
                                 </Button>
-                                <Button onClick={() => setActiveTab('mills')} variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                                <Button onClick={() => setActiveTab('mills')} variant="outline" className="border-[#0A3225]/20 hover:bg-[#0A3225]/5 text-[#0A3225]">
                                     <Building2 className="mr-2 h-4 w-4" /> Mill Performance
                                 </Button>
                                 <Button onClick={() => setActiveTab('supply')} variant="outline" className="border-indigo-200 hover:bg-indigo-50 text-indigo-700">

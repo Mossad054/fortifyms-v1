@@ -208,21 +208,21 @@ export function MillPerformanceAnalysis() {
                 <TabsList className="grid w-full grid-cols-3 lg:w-[600px] bg-white/60 p-1 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
                     <TabsTrigger
                         value="top"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all rounded-lg"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all rounded-lg"
                     >
                         <Trophy className="w-4 h-4" />
                         Top Performers
                     </TabsTrigger>
                     <TabsTrigger
                         value="risk"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all rounded-lg"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all rounded-lg"
                     >
                         <AlertTriangle className="w-4 h-4" />
                         At-Risk Mills
                     </TabsTrigger>
                     <TabsTrigger
                         value="benchmark"
-                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-zinc-900 data-[state=active]:text-white transition-all rounded-lg"
+                        className="flex items-center gap-2 font-bold text-gray-600 data-[state=active]:bg-[#0A3225] data-[state=active]:text-white transition-all rounded-lg"
                     >
                         <Target className="w-4 h-4" />
                         Benchmarking
@@ -297,7 +297,7 @@ export function MillPerformanceAnalysis() {
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-center">
-                                                <div className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                                                <div className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#0A3225]/5 text-[#0A3225] border border-blue-100">
                                                     {mill.productionConsistency}%
                                                 </div>
                                             </TableCell>
@@ -444,7 +444,7 @@ export function MillPerformanceAnalysis() {
                     <Card className="border-none shadow-md overflow-hidden bg-white">
                         <CardHeader className="border-b py-3 px-6">
                             <CardTitle className="text-base flex items-center gap-2">
-                                <Target className="w-4 h-4 text-blue-600" />
+                                <Target className="w-4 h-4 text-[#0A3225]" />
                                 Metric Normalization Engine
                             </CardTitle>
                         </CardHeader>
@@ -563,16 +563,16 @@ export function MillPerformanceAnalysis() {
                                 </div>
                                 <div className="p-6 bg-white rounded-3xl shadow-sm border border-zinc-100 flex flex-col items-center text-center">
                                     <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4">Consistency</p>
-                                    <div className="text-4xl font-black text-blue-600 mb-2">{selectedMill.productionConsistency}%</div>
+                                    <div className="text-4xl font-black text-[#0A3225] mb-2">{selectedMill.productionConsistency}%</div>
                                     <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
-                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${selectedMill.productionConsistency}%` }} />
+                                        <div className="h-full bg-[#0A3225]/50 rounded-full" style={{ width: `${selectedMill.productionConsistency}%` }} />
                                     </div>
                                 </div>
                                 <div className="p-6 bg-white rounded-3xl shadow-sm border border-zinc-100 flex flex-col items-center text-center">
                                     <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4">Percentile</p>
-                                    <div className="text-4xl font-black text-purple-600 mb-2">{selectedMill.ranking.percentile}th</div>
+                                    <div className="text-4xl font-black text-orange mb-2">{selectedMill.ranking.percentile}th</div>
                                     <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
-                                        <div className="h-full bg-purple-500 rounded-full" style={{ width: `${selectedMill.ranking.percentile}%` }} />
+                                        <div className="h-full bg-orange rounded-full" style={{ width: `${selectedMill.ranking.percentile}%` }} />
                                     </div>
                                 </div>
                             </div>
@@ -638,7 +638,7 @@ export function MillPerformanceAnalysis() {
                             <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100">
                                 <h4 className="font-bold text-sm text-zinc-900 mb-2">Select Focus Area</h4>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <Button variant="outline" className="justify-start h-12 hover:border-blue-200 hover:bg-blue-50">
+                                    <Button variant="outline" className="justify-start h-12 hover:border-[#0A3225]/20 hover:bg-[#0A3225]/5">
                                         <div className="text-left">
                                             <div className="font-bold text-xs">QC Automation</div>
                                             <div className="text-[10px] text-zinc-500">Impact on result consistency</div>
@@ -652,7 +652,7 @@ export function MillPerformanceAnalysis() {
                                     </Button>
                                 </div>
                             </div>
-                            <Button className="w-full bg-black text-white" onClick={() => {
+                            <Button className="w-full bg-[#0A3225] text-white hover:bg-[#0A3225]/90" onClick={() => {
                                 setGenerating(true)
                                 setTimeout(() => {
                                     setGenerating(false)
@@ -737,7 +737,7 @@ export function MillPerformanceAnalysis() {
                                     <p className="text-xs text-zinc-500 font-bold uppercase">Primary Contact</p>
                                     <p className="text-sm font-bold text-zinc-900">James Omondi</p>
                                     <p className="text-xs text-zinc-600">Plant Manager</p>
-                                    <p className="text-xs text-blue-600 mt-1">+254 712 345 678</p>
+                                    <p className="text-xs text-[#0A3225] mt-1">+254 712 345 678</p>
                                 </div>
                                 <div className="p-4 bg-zinc-50 rounded-xl space-y-1">
                                     <p className="text-xs text-zinc-500 font-bold uppercase">Facility Details</p>

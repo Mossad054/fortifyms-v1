@@ -6,8 +6,8 @@ export const VALID_ROLES = [
     'MILL_OPERATOR',
     'MILL_TECHNICIAN',
     'MILL_MANAGER',
-    'FWGA_INSPECTOR',
-    'FWGA_PROGRAM_MANAGER',
+    'INSPECTOR',
+    'PROGRAM_MANAGER',
     'INSTITUTIONAL_BUYER',
     'LOGISTICS_PLANNER',
     'SYSTEM_ADMIN'
@@ -18,8 +18,8 @@ export type UserRole = typeof VALID_ROLES[number]
 // Role hierarchy for permission checking
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
     SYSTEM_ADMIN: 100,
-    FWGA_PROGRAM_MANAGER: 90,
-    FWGA_INSPECTOR: 80,
+    PROGRAM_MANAGER: 90,
+    INSPECTOR: 80,
     MILL_MANAGER: 70,
     INSTITUTIONAL_BUYER: 60,
     LOGISTICS_PLANNER: 50,
@@ -30,7 +30,7 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
 // Permission sets for each role
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     SYSTEM_ADMIN: ['*'], // All permissions
-    FWGA_PROGRAM_MANAGER: [
+    PROGRAM_MANAGER: [
         'view:all_mills',
         'view:analytics',
         'view:reports',
@@ -38,7 +38,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
         'view:compliance',
         'export:data'
     ],
-    FWGA_INSPECTOR: [
+    INSPECTOR: [
         'view:assigned_mills',
         'review:audits',
         'approve:compliance',

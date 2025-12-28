@@ -1519,5 +1519,21 @@ COMMENT ON TABLE alerts IS 'System-generated alerts for quality, compliance, and
 COMMENT ON TABLE action_items IS 'Actionable tasks generated from alerts';
 
 -- ============================================================================
+-- CONTACT REQUESTS
+-- ============================================================================
+CREATE TABLE contact_requests (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT,
+    email TEXT NOT NULL,
+    subject TEXT,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'PENDING',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE contact_requests IS 'Inquiries and messages from the contact form';
+
+-- ============================================================================
 -- END OF SCHEMA
 -- ============================================================================

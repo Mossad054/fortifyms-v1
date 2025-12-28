@@ -52,7 +52,7 @@ export default function MaintenanceAlertsPage() {
             CRITICAL: { className: 'bg-red-600', icon: XCircle },
             HIGH: { className: 'bg-orange-500', icon: AlertTriangle },
             MEDIUM: { className: 'bg-yellow-500', icon: Clock },
-            LOW: { className: 'bg-blue-500', icon: Bell },
+            LOW: { className: 'bg-[#0A3225]/50', icon: Bell },
         }
         const config = variants[severity] || variants.MEDIUM
         const Icon = config.icon
@@ -66,9 +66,9 @@ export default function MaintenanceAlertsPage() {
 
     function getTypeBadge(type: string) {
         const colors: Record<string, string> = {
-            MAINTENANCE: 'bg-purple-100 text-purple-700',
+            MAINTENANCE: 'bg-purple-100 text-orange',
             QUALITY: 'bg-red-100 text-red-700',
-            COMPLIANCE: 'bg-blue-100 text-blue-700',
+            COMPLIANCE: 'bg-[#0A3225]/10 text-[#0A3225]',
             PRODUCTION: 'bg-green-100 text-green-700',
         }
         return <Badge variant="outline" className={colors[type] || ''}>{type}</Badge>

@@ -361,7 +361,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Check permissions
-        if (millId && session.user.role !== 'FWGA_PROGRAM_MANAGER' && 
+        if (millId && session.user.role !== 'PROGRAM_MANAGER' && 
             session.user.role !== 'SYSTEM_ADMIN' && 
             session.user.millId !== millId) {
           return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

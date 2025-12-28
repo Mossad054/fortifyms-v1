@@ -4,8 +4,8 @@ import { prisma as db } from "@/lib/prisma"
 const VALID_ROLES = [
   "MILL_OPERATOR",
   "MILL_MANAGER",
-  "FWGA_INSPECTOR",
-  "FWGA_PROGRAM_MANAGER",
+  "INSPECTOR",
+  "PROGRAM_MANAGER",
   "INSTITUTIONAL_BUYER",
   "LOGISTICS_PLANNER",
   "SYSTEM_ADMIN"

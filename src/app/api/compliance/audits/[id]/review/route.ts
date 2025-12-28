@@ -108,6 +108,6 @@ export async function POST(
             )
         }
     }, {
-        requiredRoles: ['FWGA_INSPECTOR', 'FWGA_PROGRAM_MANAGER', 'SYSTEM_ADMIN']
+        requiredRoles: ['INSPECTOR', 'PROGRAM_MANAGER', 'SYSTEM_ADMIN']
     })
 }

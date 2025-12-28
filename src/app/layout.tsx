@@ -5,8 +5,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Fortymis",
-    description: "Fortified Food Procurement Optimization",
+    title: "Fortify MIS | Food Fortification Portal",
+    description: "Strengthening public health through comprehensive food fortification resources, standards, and collaborative tools.",
+    icons: {
+        icon: "/icon.JPG",
+    },
 };
 
 import Navbar from "@/components/navbar";
