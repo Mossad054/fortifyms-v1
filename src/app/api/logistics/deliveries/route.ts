@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * GET /api/logistics/deliveries
@@ -120,14 +121,14 @@ export async function POST(request: NextRequest) {
             if (driverId) {
                 await prisma.alert.create({
                     data: {
-                        type: 'DELIVERY_ASSIGNED',
-                        category: 'LOGISTICS',
-                        severity: 'MEDIUM',
+                        type: AlertType.PRODUCTION_TARGET_MISS,
+                        category: AlertCategory.PRODUCTION,
+                        severity: AlertSeverity.MEDIUM,
                         title: 'Delivery Assigned',
                         message: `Delivery to ${(delivery as any).purchaseOrder.buyer.organizationName} scheduled for ${new Date(scheduledDate).toLocaleDateString()}`,
                         sourceType: 'DELIVERY',
                         sourceId: delivery.id,
-                        status: 'ACTIVE' as any
+                        status: AlertStatus.ACTIVE
                     }
                 })
             }
