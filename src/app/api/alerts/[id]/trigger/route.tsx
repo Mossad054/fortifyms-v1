@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
-import { AlertType, AlertCategory, AlertSeverity } from '@prisma/client';
+import { AlertType, AlertCategory, AlertSeverity, NotificationChannel } from '@prisma/client';
 
 const triggerAlertSchema = z.object({
   triggerType: z.enum([
@@ -330,21 +330,21 @@ async function determineRecipients(type: AlertType, severity: AlertSeverity, mil
   );
 }
 
-function determineNotificationChannels(severity: AlertSeverity, userRole: string) {
-  const channels = ['IN_SYSTEM'];
+function determineNotificationChannels(severity: AlertSeverity, userRole: string): NotificationChannel[] {
+  const channels: NotificationChannel[] = [NotificationChannel.IN_SYSTEM];
 
   switch (severity) {
     case 'CRITICAL':
-      channels.push('PUSH', 'SMS', 'EMAIL');
+      channels.push(NotificationChannel.PUSH, NotificationChannel.SMS, NotificationChannel.EMAIL);
       break;
     case 'HIGH':
-      channels.push('PUSH', 'EMAIL');
+      channels.push(NotificationChannel.PUSH, NotificationChannel.EMAIL);
       break;
     case 'MEDIUM':
-      channels.push('PUSH', 'EMAIL');
+      channels.push(NotificationChannel.PUSH, NotificationChannel.EMAIL);
       break;
     case 'LOW':
-      channels.push('EMAIL');
+      channels.push(NotificationChannel.EMAIL);
       break;
   }
 
