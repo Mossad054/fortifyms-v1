@@ -117,11 +117,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Rest of your existing code...
-    const diagnosticResult = await db.diagnosticResult.create({
-      data: {
-        // ... your existing data
-      }
-    });
+const diagnosticResult = await db.diagnosticResult.create({
+  data: {
+    userId: (session as any).user?.id,
+    category,
+    subcategory: typeof subcategory === 'string' ? subcategory : undefined,
+    responses: JSON.stringify({}),
+    result: 'IN_PROGRESS',
+    status: 'IN_PROGRESS',
+    progress: 0,
+    currentStep: 0,
+    totalSteps: selectedQuestionnaire.questions.length
+  }
+});
 
     return NextResponse.json({
       success: true,
