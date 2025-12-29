@@ -77,7 +77,7 @@ async function generateReportData(type: string, params: any, session: any) {
     case 'daily-production': {
       const productionData = await db.batchLog.findMany({
         where: {
-          millId: millId || session.user.millId,
+          millId: millId || (session.user as any).millId,
           createdAt: { gte: startDate, lte: endDate }
         },
         include: {
@@ -145,7 +145,7 @@ async function generateReportData(type: string, params: any, session: any) {
       const upcoming = maintenanceTasks.filter(t => !t.completedDate && t.scheduledDate >= new Date());
 
       const equipmentStatusData = await db.equipment.findMany({
-        where: { millId: millId || session.user.millId },
+        where: { millId: millId || (session.user as any).millId },
         select: { type: true, isActive: true }
       });
 
@@ -187,7 +187,7 @@ async function generateReportData(type: string, params: any, session: any) {
     case 'monthly-compliance': {
       const audits = await db.complianceAudit.findMany({
         where: {
-          millId: millId || session.user.millId,
+          millId: millId || (session.user as any).millId,
           createdAt: { gte: startDate, lte: endDate }
         },
         include: {
@@ -209,7 +209,7 @@ async function generateReportData(type: string, params: any, session: any) {
 
       const trainingCompletions = await db.trainingProgress.findMany({
         where: {
-          user: { millId: millId || session.user.millId },
+          user: { millId: millId || (session.user as any).millId },
           completedAt: { gte: startDate, lte: endDate },
           status: 'COMPLETED'
         },
@@ -274,7 +274,7 @@ async function generateReportData(type: string, params: any, session: any) {
       // Get broader data for business review
       const productions = await db.batchLog.findMany({
         where: {
-          millId: millId || session.user.millId,
+          millId: millId || (session.user as any).millId,
           createdAt: { gte: startDate, lte: endDate }
         },
         select: { outputWeight: true, createdAt: true }
@@ -282,7 +282,7 @@ async function generateReportData(type: string, params: any, session: any) {
 
       const audits = await db.complianceAudit.findMany({
         where: {
-          millId: millId || session.user.millId,
+          millId: millId || (session.user as any).millId,
           createdAt: { gte: startDate, lte: endDate }
         },
         select: { score: true, createdAt: true }

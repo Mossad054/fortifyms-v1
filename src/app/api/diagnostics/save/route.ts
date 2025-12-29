@@ -10,13 +10,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userId = (session as any).user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { diagnosticId, responses, currentStep } = await request.json();
 
     // Update diagnostic result with progress
     const diagnosticResult = await db.diagnosticResult.update({
       where: { 
         id: diagnosticId,
-        userId: session.user.id // Ensure user can only update their own diagnostics
+        userId: userId // Ensure user can only update their own diagnostics
       },
       data: {
         responses: JSON.stringify(responses),
@@ -46,6 +51,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userId = (session as any).user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const diagnosticId = searchParams.get('diagnosticId');
 
@@ -53,7 +63,7 @@ export async function GET(request: NextRequest) {
       // Return all in-progress diagnostics for the user
       const inProgressDiagnostics = await db.diagnosticResult.findMany({
         where: {
-          userId: session.user.id,
+          userId: userId,
           status: 'IN_PROGRESS'
         },
         include: {
@@ -76,7 +86,7 @@ export async function GET(request: NextRequest) {
     const diagnostic = await db.diagnosticResult.findFirst({
       where: {
         id: diagnosticId,
-        userId: session.user.id
+        userId: userId
       },
       include: {
         questionnaire: true
