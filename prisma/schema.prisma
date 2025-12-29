@@ -16,9 +16,13 @@ datasource db {
 // User Roles and Authentication
 enum UserRole {
   MILL_OPERATOR
+  MILL_MANAGER
+  MILL_TECHNICIAN
   PROGRAM_MANAGER
   INSPECTOR
   ADMIN
+  SYSTEM_ADMIN
+  LOGISTICS_PLANNER
 }
 
 enum AlertType {
