@@ -59,18 +59,27 @@ export async function POST(request: NextRequest) {
                 const dueDate = new Date()
                 dueDate.setHours(dueDate.getHours() + 2) // Due in 2 hours
 
-                await prisma.maintenanceTask.create({
-                    data: {
-                        equipmentId,
-                        millId: equipment.millId,
-                        type: 'INSPECTION',
-                        title: `URGENT: Investigate ${metric} anomaly`,
-                        description: `${metric} detected at ${currentValue}, exceeding threshold of ${threshold}`,
-                        dueDate,
-                        priority: 'HIGH',
-                        status: 'PENDING'
-                    }
+                const requester = await prisma.user.findUnique({
+                    where: { email: user.email! },
+                    select: { id: true }
                 })
+
+                if (requester?.id) {
+                    await prisma.maintenanceTask.create({
+                        data: {
+                            equipmentId,
+                            millId: equipment.millId,
+                            type: 'INSPECTION',
+                            title: `URGENT: Investigate ${metric} anomaly`,
+                            description: `${metric} detected at ${currentValue}, exceeding threshold of ${threshold}`,
+                            scheduledDate: dueDate,
+                            priority: 'HIGH',
+                            status: 'SCHEDULED',
+                            assignedTo: requester.id,
+                            createdBy: requester.id
+                        }
+                    })
+                }
             }
 
             return NextResponse.json({
@@ -106,7 +115,7 @@ export async function GET(request: NextRequest) {
             })
 
             const where: any = {
-                type: { in: [AlertType.EQUIPMENT_DRIFT, AlertType.CALIBRATION_OVERDUE, AlertType.MAINTENANCE_DUE] },
+                type: { in: [AlertType.EQUIPMENT_DRIFT, AlertType.CALIBRATION_OVERDUE, AlertType.CALIBRATION_DUE] },
                 status: AlertStatus.ACTIVE
             }
 
