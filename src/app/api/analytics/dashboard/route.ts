@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
             })
 
             const avgComplianceScore = audits.length > 0
-                ? audits.reduce((sum, a) => sum + a.score, 0) / audits.length
+                ? audits.reduce((sum, a) => sum + (a.score || 0), 0) / audits.length
                 : 0
 
             // Maintenance metrics
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
             })
 
             const overdueMaintenance = maintenanceTasks.filter(
-                t => t.status !== 'COMPLETED' && new Date(t.dueDate) < new Date()
+                t => t.status !== 'COMPLETED' && new Date(t.scheduledDate) < new Date()
             ).length
 
             // Active alerts
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
                 },
                 quality: {
                     qcPassRate: Math.round(qcPassRate * 10) / 10,
-                    totalTests: batches.reduce((sum, b) => sum + (b.qcTests?.length || 0), 0)
+                    totalTests: totalBatches
                 },
                 compliance: {
                     avgScore: Math.round(avgComplianceScore * 10) / 10,
