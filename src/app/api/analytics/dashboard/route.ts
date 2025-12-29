@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
             const batches = await prisma.batchLog.findMany({ where })
 
             const totalBatches = batches.length
-            const totalProduction = batches.reduce((sum, b) => sum + (b.actualOutputWeight || 0), 0)
+            const totalProduction = batches.reduce((sum, b) => sum + (b.outputWeight || 0), 0)
             const avgYield = batches.length > 0
                 ? batches.reduce((sum, b) => sum + (b.yieldPercentage || 0), 0) / batches.length
                 : 0
