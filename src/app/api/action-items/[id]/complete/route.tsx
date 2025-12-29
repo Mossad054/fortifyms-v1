@@ -85,14 +85,18 @@ export async function POST(
         }
       });
 
-      if (manager) {
-        await db.notificationPreference.create({
+      if (manager && actionItem.alertId) {
+        await db.alertNotification.create({
           data: {
-            userId: manager.id,
             alertId: actionItem.alertId,
-            type: 'ACTION_ITEM_REVIEW_REQUIRED',
-            isEnabled: true,
-            channels: JSON.stringify(['in_app', 'email'])
+            userId: manager.id,
+            channel: 'EMAIL',
+            content: JSON.stringify({
+              type: 'ACTION_ITEM_REVIEW_REQUIRED',
+              title: 'Action Item Completed - Review Required',
+              message: `A ${actionItem.priority} priority action item has been completed and requires your review.`,
+              actionItemId: actionItem.id
+            })
           }
         });
       }
