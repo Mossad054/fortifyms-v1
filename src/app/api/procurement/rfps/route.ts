@@ -13,26 +13,19 @@ export async function GET(request: NextRequest) {
         const commodity = searchParams.get('commodity')
 
         try {
-            const userProfile = await prisma.user.findUnique({
-                where: { email: user.email! },
-                select: { role: true }
-            })
-
             const where: any = {}
 
             if (status) where.status = status
             if (commodity) where.commodity = commodity
 
-            // Buyers see only their RFPs
-            if (userProfile?.role === 'INSTITUTIONAL_BUYER') {
-                const dbUser = await prisma.user.findUnique({ where: { email: user.email! } })
-                if (dbUser) {
-                    const buyerProfile = await prisma.buyerProfile.findUnique({
-                        where: { userId: dbUser.id }
-                    })
-                    if (buyerProfile) {
-                        where.buyerId = buyerProfile.id
-                    }
+            // If the current user is a buyer (has BuyerProfile), scope to their RFPs
+            const dbUser = await prisma.user.findUnique({ where: { email: user.email! }, select: { id: true } })
+            if (dbUser) {
+                const buyerProfile = await prisma.buyerProfile.findUnique({
+                    where: { userId: dbUser.id }
+                })
+                if (buyerProfile) {
+                    where.buyerId = buyerProfile.id
                 }
             }
 
