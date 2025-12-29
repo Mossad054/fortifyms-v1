@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * POST /api/compliance/audits/[id]/corrective-actions
@@ -78,14 +79,14 @@ export async function POST(
             if (assignedTo) {
                 await prisma.alert.create({
                     data: {
-                        type: 'CORRECTIVE_ACTION_ASSIGNED',
-                        category: 'COMPLIANCE',
-                        severity: priority === 'HIGH' ? 'HIGH' : 'MEDIUM',
+                        type: AlertType.CORRECTIVE_ACTION_ASSIGNED,
+                        category: AlertCategory.COMPLIANCE,
+                        severity: priority === 'HIGH' ? AlertSeverity.HIGH : AlertSeverity.MEDIUM,
                         title: 'Corrective Action Assigned',
                         message: `You have been assigned a corrective action: ${description}`,
                         sourceType: 'COMPLIANCE_AUDIT',
                         sourceId: params.id,
-                        status: 'ACTIVE' as any
+                        status: AlertStatus.ACTIVE
                     }
                 })
             }

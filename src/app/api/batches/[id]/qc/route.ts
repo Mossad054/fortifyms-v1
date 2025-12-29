@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * POST /api/batches/[id]/qc
@@ -105,15 +106,15 @@ export async function POST(
 
                 await prisma.alert.create({
                     data: {
-                        type: 'QC_FAILURE',
-                        category: 'QUALITY_SAFETY',
-                        severity: 'CRITICAL',
+                        type: AlertType.QC_FAILURE,
+                        category: AlertCategory.QUALITY_SAFETY,
+                        severity: AlertSeverity.CRITICAL,
                         title: 'QC Test Failed',
                         message: `Batch ${batch?.batchId} failed ${testType} test. Result: ${result}, Target: ${target}`,
                         sourceType: 'BATCH_LOG',
                         sourceId: params.id,
                         millId: batch?.millId,
-                        status: 'ACTIVE' as any
+                        status: AlertStatus.ACTIVE
                     }
                 })
             }

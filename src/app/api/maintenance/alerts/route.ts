@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * POST /api/maintenance/alerts
@@ -35,20 +36,21 @@ export async function POST(request: NextRequest) {
             // Create alert
             const alert = await prisma.alert.create({
                 data: {
-                    type: alertType || 'EQUIPMENT_DRIFT',
-                    severity: severity || 'HIGH',
+                    type: (alertType && (AlertType as any)[alertType]) || AlertType.EQUIPMENT_DRIFT,
+                    category: AlertCategory.MAINTENANCE,
+                    severity: (severity && (AlertSeverity as any)[severity]) || AlertSeverity.HIGH,
                     title: `Equipment Alert: ${equipment.name}`,
                     message: description || `${metric} detected: ${currentValue} (threshold: ${threshold})`,
-                    resourceType: 'EQUIPMENT',
-                    resourceId: equipmentId,
+                    sourceType: 'EQUIPMENT',
+                    sourceId: equipmentId,
                     millId: equipment.millId,
-                    status: 'ACTIVE',
-                    metadata: {
+                    status: AlertStatus.ACTIVE,
+                    metadata: JSON.stringify({
                         metric,
                         currentValue,
                         threshold,
                         equipmentId
-                    }
+                    })
                 }
             })
 
@@ -104,8 +106,8 @@ export async function GET(request: NextRequest) {
             })
 
             const where: any = {
-                type: { in: ['EQUIPMENT_DRIFT', 'CALIBRATION_OVERDUE', 'MAINTENANCE_DUE'] },
-                status: 'ACTIVE'
+                type: { in: [AlertType.EQUIPMENT_DRIFT, AlertType.CALIBRATION_OVERDUE, AlertType.MAINTENANCE_DUE] },
+                status: AlertStatus.ACTIVE
             }
 
             if (userProfile?.role !== 'SYSTEM_ADMIN' && userProfile?.role !== 'PROGRAM_MANAGER') {
@@ -117,8 +119,8 @@ export async function GET(request: NextRequest) {
             }
 
             if (equipmentId) {
-                where.resourceId = equipmentId
-                where.resourceType = 'EQUIPMENT'
+                where.sourceId = equipmentId
+                where.sourceType = 'EQUIPMENT'
             }
 
             const alerts = await prisma.alert.findMany({

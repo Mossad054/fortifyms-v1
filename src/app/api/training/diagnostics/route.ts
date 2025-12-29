@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * POST /api/training/diagnostics
@@ -29,11 +30,10 @@ export async function POST(request: NextRequest) {
                     userId: userProfile.id,
                     millId: userProfile.millId,
                     category,
-                    cropType,
-                    equipmentType,
                     status: 'IN_PROGRESS',
-                    responses: {},
-                    recommendations: []
+                    result: 'IN_PROGRESS',
+                    responses: JSON.stringify({}),
+                    recommendations: JSON.stringify([])
                 }
             })
 
@@ -67,7 +67,7 @@ export async function PATCH(
             const { responses, completed } = body
 
             const updateData: any = {
-                responses,
+                responses: typeof responses === 'string' ? responses : JSON.stringify(responses),
                 updatedAt: new Date()
             }
 
@@ -76,8 +76,7 @@ export async function PATCH(
                 const recommendations = analyzeResponses(responses)
 
                 updateData.status = 'COMPLETED'
-                updateData.completedAt = new Date()
-                updateData.recommendations = recommendations
+                updateData.recommendations = JSON.stringify(recommendations)
                 updateData.severity = determineSeverity(recommendations)
             }
 
@@ -90,15 +89,15 @@ export async function PATCH(
             if (completed && diagnostic.severity === 'CRITICAL') {
                 await prisma.alert.create({
                     data: {
-                        type: 'CRITICAL_NON_COMPLIANCE',
-                        category: 'TRAINING_COMPLIANCE',
-                        severity: 'CRITICAL',
+                        type: AlertType.CRITICAL_NON_COMPLIANCE,
+                        category: AlertCategory.TRAINING_COMPLIANCE,
+                        severity: AlertSeverity.CRITICAL,
                         title: 'Critical Issue Identified in Diagnostic',
                         message: `Diagnostic for ${diagnostic.category} identified critical issues requiring immediate attention`,
                         sourceType: 'DIAGNOSTIC',
                         sourceId: diagnostic.id,
                         millId: diagnostic.millId,
-                        status: 'ACTIVE'
+                        status: AlertStatus.ACTIVE
                     }
                 })
             }

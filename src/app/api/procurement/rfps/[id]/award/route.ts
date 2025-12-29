@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * POST /api/procurement/rfps/[id]/award
@@ -93,15 +94,15 @@ export async function POST(
             // Notify mill
             await prisma.alert.create({
                 data: {
-                    type: 'NEW_RFP_MATCH',
-                    category: 'PRODUCTION',
-                    severity: 'MEDIUM',
+                    type: AlertType.NEW_RFP_MATCH,
+                    category: AlertCategory.PRODUCTION,
+                    severity: AlertSeverity.MEDIUM,
                     title: 'Congratulations! Your Bid Was Accepted',
                     message: `Your bid for ${rfp.title} has been accepted. Purchase Order: ${purchaseOrder.poNumber}`,
                     sourceType: 'PURCHASE_ORDER',
                     sourceId: purchaseOrder.id,
                     millId: winningBid.millId,
-                    status: 'ACTIVE'
+                    status: AlertStatus.ACTIVE
                 }
             })
 

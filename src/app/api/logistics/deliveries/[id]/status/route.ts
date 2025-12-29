@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * PATCH /api/logistics/deliveries/[id]/status
@@ -56,16 +57,16 @@ export async function PATCH(
                 const deliveryAny = delivery as any;
                 await prisma.alert.create({
                     data: {
-                        type: 'PRODUCTION_TARGET_MISS',
-                        category: 'PRODUCTION',
-                        severity: 'LOW',
+                        type: AlertType.PRODUCTION_TARGET_MISS,
+                        category: AlertCategory.PRODUCTION,
+                        severity: AlertSeverity.LOW,
                         title: `Delivery ${status}`,
                         message: status === 'IN_TRANSIT'
                             ? `Delivery departed from ${deliveryAny.purchaseOrder.mill.name}`
                             : `Delivery completed to ${deliveryAny.purchaseOrder.buyer.organizationName}`,
                         sourceType: 'DELIVERY',
                         sourceId: delivery.id,
-                        status: 'ACTIVE' as any
+                        status: AlertStatus.ACTIVE
                     }
                 })
             }

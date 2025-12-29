@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * GET /api/maintenance/tasks
@@ -141,15 +142,15 @@ export async function POST(request: NextRequest) {
 
                 await prisma.alert.create({
                     data: {
-                        type: 'CALIBRATION_DUE',
-                        category: 'MAINTENANCE',
-                        severity: daysUntilDue <= 7 ? 'HIGH' : 'MEDIUM',
+                        type: AlertType.CALIBRATION_DUE,
+                        category: AlertCategory.MAINTENANCE,
+                        severity: daysUntilDue <= 7 ? AlertSeverity.HIGH : AlertSeverity.MEDIUM,
                         title: 'Maintenance Task Assigned',
                         message: `${type}: ${title} - Due in ${daysUntilDue} days`,
                         sourceType: 'MAINTENANCE_TASK',
                         sourceId: task.id,
                         millId: userProfile.millId,
-                        status: 'ACTIVE' as any
+                        status: AlertStatus.ACTIVE
                     }
                 })
             }

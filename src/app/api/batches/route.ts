@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * GET /api/batches
@@ -228,15 +229,15 @@ export async function POST(request: NextRequest) {
                 // Create alert for high variance
                 await prisma.alert.create({
                     data: {
-                        type: 'PREMIX_USAGE_ANOMALY',
-                        category: 'QUALITY_SAFETY',
-                        severity: Math.abs(variance) > 15 ? 'CRITICAL' : 'HIGH',
+                        type: AlertType.PREMIX_USAGE_ANOMALY,
+                        category: AlertCategory.QUALITY_SAFETY,
+                        severity: Math.abs(variance) > 15 ? AlertSeverity.CRITICAL : AlertSeverity.HIGH,
                         title: 'Premix Usage Anomaly Detected',
                         message: `Batch ${batchId} has ${variance.toFixed(1)}% premix variance`,
                         sourceType: 'BATCH_LOG',
                         sourceId: batch.id,
                         millId: userProfile.millId,
-                        status: 'ACTIVE'
+                        status: AlertStatus.ACTIVE
                     }
                 })
             }

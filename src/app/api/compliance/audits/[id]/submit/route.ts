@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * POST /api/compliance/audits/[id]/submit
@@ -47,15 +48,15 @@ export async function POST(
             // Create alert for inspector
             await prisma.alert.create({
                 data: {
-                    type: (audit.score && audit.score < 60) ? 'CRITICAL_NON_COMPLIANCE' : 'COMPLIANCE_SCORE_DROP',
-                    category: 'COMPLIANCE',
-                    severity: (audit.score && audit.score < 60) ? 'HIGH' : 'MEDIUM',
+                    type: (audit.score && audit.score < 60) ? AlertType.CRITICAL_NON_COMPLIANCE : AlertType.COMPLIANCE_SCORE_DROP,
+                    category: AlertCategory.COMPLIANCE,
+                    severity: (audit.score && audit.score < 60) ? AlertSeverity.HIGH : AlertSeverity.MEDIUM,
                     title: 'New Audit Submitted for Review',
                     message: `${audit.mill.name} submitted compliance audit. Score: ${audit.score || 0}%`,
                     sourceType: 'COMPLIANCE_AUDIT',
                     sourceId: audit.id,
                     millId: audit.millId,
-                    status: 'ACTIVE' as any
+                    status: AlertStatus.ACTIVE
                 }
             })
 

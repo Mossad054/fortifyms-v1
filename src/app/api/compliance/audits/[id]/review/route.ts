@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/rbac'
 import { prisma } from '@/lib/prisma'
+import { AlertType, AlertCategory, AlertSeverity, AlertStatus } from '@prisma/client'
 
 /**
  * POST /api/compliance/audits/[id]/review
@@ -70,15 +71,15 @@ export async function POST(
             // Create alert for mill
             await prisma.alert.create({
                 data: {
-                    type: decision === 'APPROVED' ? 'COMPLIANCE_SCORE_DROP' : 'CRITICAL_NON_COMPLIANCE',
-                    category: 'COMPLIANCE',
-                    severity: decision === 'APPROVED' ? 'LOW' : 'HIGH',
+                    type: decision === 'APPROVED' ? AlertType.COMPLIANCE_SCORE_DROP : AlertType.CRITICAL_NON_COMPLIANCE,
+                    category: AlertCategory.COMPLIANCE,
+                    severity: decision === 'APPROVED' ? AlertSeverity.LOW : AlertSeverity.HIGH,
                     title: `Audit ${decision}`,
                     message: `Your compliance audit has been ${decision.toLowerCase()}. ${comments || ''}`,
                     sourceType: 'COMPLIANCE_AUDIT',
                     sourceId: audit.id,
                     millId: audit.millId,
-                    status: 'ACTIVE' as any
+                    status: AlertStatus.ACTIVE
                 }
             })
 
