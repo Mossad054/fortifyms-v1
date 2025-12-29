@@ -25,10 +25,15 @@ export async function GET(request: NextRequest) {
                     select: {
                         id: true,
                         name: true,
-                        location: true,
+                        code: true,
+                        country: true,
+                        region: true,
+                        address: true,
+                        phone: true,
+                        email: true,
                         registrationNumber: true,
                         certificationStatus: true,
-                        commodities: true
+                        certificationDate: true
                     }
                 },
                 profile: true
@@ -95,12 +100,12 @@ export async function PATCH(request: NextRequest) {
                         create: {
                             timezone: timezone || 'UTC',
                             language: language || 'en',
-                            phoneNumber
+                            phone: phoneNumber
                         },
                         update: {
                             timezone,
                             language,
-                            phoneNumber
+                            phone: phoneNumber
                         }
                     }
                 }
