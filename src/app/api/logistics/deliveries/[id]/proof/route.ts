@@ -78,8 +78,8 @@ export async function POST(
             const deliveryAny = delivery as any;
             await prisma.alert.create({
                 data: {
-                    type: 'DELIVERY_COMPLETED',
-                    category: 'LOGISTICS',
+                    type: 'PRODUCTION_TARGET_MISS',
+                    category: 'PRODUCTION',
                     severity: 'LOW',
                     title: 'Delivery Completed',
                     message: `Delivery to ${deliveryAny.purchaseOrder.buyer.organizationName} completed. Please review and confirm.`,

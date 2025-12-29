@@ -70,7 +70,7 @@ export async function POST(
             // Create alert for mill
             await prisma.alert.create({
                 data: {
-                    type: 'AUDIT_REVIEWED',
+                    type: decision === 'APPROVED' ? 'COMPLIANCE_SCORE_DROP' : 'CRITICAL_NON_COMPLIANCE',
                     category: 'COMPLIANCE',
                     severity: decision === 'APPROVED' ? 'LOW' : 'HIGH',
                     title: `Audit ${decision}`,

@@ -47,7 +47,7 @@ export async function POST(
             // Create alert for inspector
             await prisma.alert.create({
                 data: {
-                    type: 'AUDIT_SUBMITTED',
+                    type: (audit.score && audit.score < 60) ? 'CRITICAL_NON_COMPLIANCE' : 'COMPLIANCE_SCORE_DROP',
                     category: 'COMPLIANCE',
                     severity: (audit.score && audit.score < 60) ? 'HIGH' : 'MEDIUM',
                     title: 'New Audit Submitted for Review',

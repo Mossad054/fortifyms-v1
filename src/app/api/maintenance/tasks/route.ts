@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
 
                 await prisma.alert.create({
                     data: {
-                        type: 'MAINTENANCE_DUE',
+                        type: 'CALIBRATION_DUE',
                         category: 'MAINTENANCE',
                         severity: daysUntilDue <= 7 ? 'HIGH' : 'MEDIUM',
                         title: 'Maintenance Task Assigned',

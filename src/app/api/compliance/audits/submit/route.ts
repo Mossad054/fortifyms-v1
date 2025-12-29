@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { AlertSeverity } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
   try {

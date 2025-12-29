@@ -94,7 +94,7 @@ export async function POST(
             await prisma.alert.create({
                 data: {
                     type: 'NEW_RFP_MATCH',
-                    category: 'PROCUREMENT',
+                    category: 'PRODUCTION',
                     severity: 'MEDIUM',
                     title: 'Congratulations! Your Bid Was Accepted',
                     message: `Your bid for ${rfp.title} has been accepted. Purchase Order: ${purchaseOrder.poNumber}`,

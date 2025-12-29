@@ -56,8 +56,8 @@ export async function PATCH(
                 const deliveryAny = delivery as any;
                 await prisma.alert.create({
                     data: {
-                        type: 'DELIVERY_UPDATE',
-                        category: 'LOGISTICS',
+                        type: 'PRODUCTION_TARGET_MISS',
+                        category: 'PRODUCTION',
                         severity: 'LOW',
                         title: `Delivery ${status}`,
                         message: status === 'IN_TRANSIT'

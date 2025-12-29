@@ -90,12 +90,13 @@ export async function PATCH(
             if (completed && diagnostic.severity === 'CRITICAL') {
                 await prisma.alert.create({
                     data: {
-                        type: 'DIAGNOSTIC_CRITICAL',
+                        type: 'CRITICAL_NON_COMPLIANCE',
+                        category: 'TRAINING_COMPLIANCE',
                         severity: 'CRITICAL',
                         title: 'Critical Issue Identified in Diagnostic',
                         message: `Diagnostic for ${diagnostic.category} identified critical issues requiring immediate attention`,
-                        resourceType: 'DIAGNOSTIC',
-                        resourceId: diagnostic.id,
+                        sourceType: 'DIAGNOSTIC',
+                        sourceId: diagnostic.id,
                         millId: diagnostic.millId,
                         status: 'ACTIVE'
                     }
