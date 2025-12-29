@@ -44,11 +44,15 @@ export async function POST(
                 where: { id: params.id },
                 data: {
                     status: 'DELIVERED',
-                    actualDeliveryDate: new Date(),
-                    proofOfDelivery
+                    actualDate: new Date(),
+                    receivedBy: recipientName,
+                    receivedQuantity: parseFloat(quantityReceived),
+                    conditionNotes,
+                    issues: JSON.stringify(issuesReported || []),
+                    proofOfDelivery: JSON.stringify(proofOfDelivery)
                 },
                 include: {
-                    order: {
+                    purchaseOrder: {
                         include: {
                             buyer: true
                         }
@@ -58,28 +62,30 @@ export async function POST(
 
             // Update order status if all deliveries complete
             const allDeliveries = await prisma.delivery.findMany({
-                where: { orderId: delivery.orderId }
+                where: { poId: delivery.poId }
             })
 
             const allDelivered = allDeliveries.every(d => d.status === 'DELIVERED')
 
             if (allDelivered) {
                 await prisma.purchaseOrder.update({
-                    where: { id: delivery.orderId },
+                    where: { id: delivery.poId },
                     data: { status: 'DELIVERED' }
                 })
             }
 
             // Notify buyer
+            const deliveryAny = delivery as any;
             await prisma.alert.create({
                 data: {
                     type: 'DELIVERY_COMPLETED',
+                    category: 'LOGISTICS',
                     severity: 'LOW',
                     title: 'Delivery Completed',
-                    message: `Delivery to ${delivery.order.buyer.organizationName} completed. Please review and confirm.`,
-                    resourceType: 'DELIVERY',
-                    resourceId: delivery.id,
-                    status: 'ACTIVE'
+                    message: `Delivery to ${deliveryAny.purchaseOrder.buyer.organizationName} completed. Please review and confirm.`,
+                    sourceType: 'DELIVERY',
+                    sourceId: delivery.id,
+                    status: 'ACTIVE' as any
                 }
             })
 

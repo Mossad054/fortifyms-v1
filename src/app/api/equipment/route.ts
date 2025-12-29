@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
             }
 
             if (type) where.type = type
-            if (status) where.status = status
+            if (status) where.isActive = status === 'ACTIVE'
 
             const equipment = await prisma.equipment.findMany({
                 where,
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
                         where: {
                             status: { in: ['PENDING', 'IN_PROGRESS'] }
                         },
-                        orderBy: { dueDate: 'asc' },
+                        orderBy: { scheduledDate: 'asc' },
                         take: 5
                     }
                 }
@@ -115,16 +115,17 @@ export async function POST(request: NextRequest) {
                     serialNumber,
                     installationDate: installationDate ? new Date(installationDate) : null,
                     location,
-                    status: 'ACTIVE',
-                    calibrationFrequency: calibrationFrequency || 90, // Default 90 days
-                    specifications: specifications || {}
+                    isActive: true,
+                    nextCalibrationDue: calibrationFrequency
+                        ? new Date(Date.now() + calibrationFrequency * 24 * 60 * 60 * 1000)
+                        : null
                 }
             })
 
-            // Create initial calibration schedule
+            // Create initial calibration task
             if (calibrationFrequency) {
-                const nextCalibrationDate = new Date()
-                nextCalibrationDate.setDate(nextCalibrationDate.getDate() + calibrationFrequency)
+                const scheduledDate = new Date()
+                scheduledDate.setDate(scheduledDate.getDate() + calibrationFrequency)
 
                 await prisma.maintenanceTask.create({
                     data: {
@@ -133,9 +134,10 @@ export async function POST(request: NextRequest) {
                         type: 'CALIBRATION',
                         title: `Calibration: ${name}`,
                         description: 'Regular calibration maintenance',
-                        dueDate: nextCalibrationDate,
+                        assignedTo: userProfile.id, // Assign to creator by default
+                        scheduledDate: scheduledDate,
                         priority: 'MEDIUM',
-                        status: 'PENDING'
+                        status: 'SCHEDULED'
                     }
                 })
             }

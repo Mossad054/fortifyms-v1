@@ -61,12 +61,16 @@ export async function POST(
                 createdAt: new Date().toISOString()
             }
 
-            const updatedActions = [...(audit.correctiveActions as any[] || []), newAction]
+            const actions = typeof audit.correctiveActions === 'string'
+                ? JSON.parse(audit.correctiveActions)
+                : (audit.correctiveActions || [])
+
+            const updatedActions = [...(actions as any[]), newAction]
 
             await prisma.complianceAudit.update({
                 where: { id: params.id },
                 data: {
-                    correctiveActions: updatedActions
+                    correctiveActions: JSON.stringify(updatedActions)
                 }
             })
 
@@ -75,12 +79,13 @@ export async function POST(
                 await prisma.alert.create({
                     data: {
                         type: 'CORRECTIVE_ACTION_ASSIGNED',
+                        category: 'COMPLIANCE',
                         severity: priority === 'HIGH' ? 'HIGH' : 'MEDIUM',
                         title: 'Corrective Action Assigned',
                         message: `You have been assigned a corrective action: ${description}`,
-                        resourceType: 'COMPLIANCE_AUDIT',
-                        resourceId: params.id,
-                        status: 'ACTIVE'
+                        sourceType: 'COMPLIANCE_AUDIT',
+                        sourceId: params.id,
+                        status: 'ACTIVE' as any
                     }
                 })
             }
@@ -124,8 +129,11 @@ export async function PATCH(
                 )
             }
 
-            const actions = audit.correctiveActions as any[] || []
-            const actionIndex = actions.findIndex(a => a.id === actionId)
+            const actions = typeof audit.correctiveActions === 'string'
+                ? JSON.parse(audit.correctiveActions)
+                : (audit.correctiveActions || [])
+
+            const actionIndex = (actions as any[]).findIndex(a => a.id === actionId)
 
             if (actionIndex === -1) {
                 return NextResponse.json(
@@ -145,7 +153,7 @@ export async function PATCH(
             await prisma.complianceAudit.update({
                 where: { id: params.id },
                 data: {
-                    correctiveActions: actions
+                    correctiveActions: JSON.stringify(actions)
                 }
             })
 

@@ -40,11 +40,19 @@ export async function POST(
             }
 
             // Get evaluation criteria from RFP
-            const criteria = rfp.evaluationCriteria as any || {
+            let criteria = {
                 price: 40,
                 quality: 30,
                 delivery: 20,
                 trackRecord: 10
+            }
+
+            if (rfp.evaluationCriteria) {
+                try {
+                    criteria = JSON.parse(rfp.evaluationCriteria)
+                } catch (e) {
+                    console.error('Error parsing evaluation criteria:', e)
+                }
             }
 
             // Evaluate each bid
@@ -52,18 +60,18 @@ export async function POST(
                 const scores: any = {}
 
                 // Price score (lower is better, normalized to 0-100)
-                const prices = rfp.bids.map(b => b.totalPrice)
+                const prices = rfp.bids.map(b => b.totalBidAmount)
                 const minPrice = Math.min(...prices)
-                scores.price = bid.totalPrice > 0 ? (minPrice / bid.totalPrice) * 100 : 0
+                scores.price = bid.totalBidAmount > 0 ? (minPrice / bid.totalBidAmount) * 100 : 0
 
                 // Quality score (based on compliance)
                 const latestAudit = bid.mill.complianceAudits[0]
                 scores.quality = latestAudit?.score || 0
 
                 // Delivery score (based on lead time - shorter is better)
-                const leadTimes = rfp.bids.map(b => b.deliveryTimeline?.leadTime || 30)
+                const leadTimes = rfp.bids.map(b => b.leadTime || 30)
                 const minLeadTime = Math.min(...leadTimes)
-                const bidLeadTime = bid.deliveryTimeline?.leadTime || 30
+                const bidLeadTime = bid.leadTime || 30
                 scores.delivery = bidLeadTime > 0 ? (minLeadTime / bidLeadTime) * 100 : 0
 
                 // Track record score (placeholder - would use actual order history)
@@ -80,7 +88,7 @@ export async function POST(
                     bidId: bid.id,
                     millId: bid.millId,
                     millName: bid.mill.name,
-                    totalPrice: bid.totalPrice,
+                    totalPrice: bid.totalBidAmount,
                     scores,
                     totalScore: Math.round(totalScore * 10) / 10,
                     complianceScore: latestAudit?.score || 0,

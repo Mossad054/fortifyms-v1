@@ -56,12 +56,11 @@ export async function POST(
                 where: { id: params.id },
                 data: {
                     status: 'COMPLETED',
-                    completedAt: new Date(),
-                    completedById: userProfile.id,
-                    completionNotes,
-                    calibrationReadings: calibrationReadings || {},
-                    partsReplaced: partsReplaced || [],
-                    evidence: evidence || []
+                    completedDate: new Date(),
+                    notes: completionNotes,
+                    calibrationData: calibrationReadings ? JSON.stringify(calibrationReadings) : null,
+                    partsReplaced: partsReplaced ? JSON.stringify(partsReplaced) : null,
+                    evidence: evidence ? JSON.stringify(evidence) : null
                 }
             })
 
@@ -71,7 +70,7 @@ export async function POST(
                     where: { id: task.equipmentId },
                     data: {
                         lastCalibration: new Date(),
-                        status: 'ACTIVE'
+                        isActive: true
                     }
                 })
 
@@ -103,7 +102,7 @@ export async function POST(
                     action: 'MAINTENANCE_COMPLETE',
                     resourceType: 'MAINTENANCE_TASK',
                     resourceId: task.id,
-                    newValues: JSON.stringify({ status: 'COMPLETED', completionNotes }),
+                    newValues: JSON.stringify({ status: 'COMPLETED', notes: completionNotes }),
                     ipAddress: request.ip || 'unknown',
                     userAgent: request.headers.get('user-agent') || 'unknown'
                 }

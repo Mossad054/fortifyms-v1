@@ -14,11 +14,13 @@ export async function POST(
         try {
             const body = await request.json()
             const {
-                pricePerUnit,
-                totalPrice,
-                deliveryTimeline,
-                qualityAssurance,
-                supportingDocuments
+                unitPrice,
+                totalBidAmount,
+                priceValidity,
+                deliverySchedule,
+                leadTime,
+                qualityGuarantee,
+                supportingDocs
             } = body
 
             const userProfile = await prisma.user.findUnique({
@@ -50,12 +52,16 @@ export async function POST(
                 data: {
                     rfpId: params.id,
                     millId: userProfile.millId,
-                    pricePerUnit,
-                    totalPrice,
-                    deliveryTimeline,
-                    qualityAssurance: qualityAssurance || {},
-                    supportingDocuments: supportingDocuments || [],
-                    status: 'SUBMITTED'
+                    unitPrice,
+                    totalProductCost: totalBidAmount, // Fallback
+                    totalBidAmount,
+                    priceValidity: priceValidity || 30,
+                    deliverySchedule: typeof deliverySchedule === 'object' ? JSON.stringify(deliverySchedule) : deliverySchedule,
+                    leadTime: leadTime || 14,
+                    qualityGuarantee,
+                    supportingDocs: typeof supportingDocs === 'object' ? JSON.stringify(supportingDocs) : supportingDocs,
+                    status: 'SUBMITTED',
+                    submittedAt: new Date()
                 }
             })
 

@@ -27,4 +27,7 @@ export class AuthManager {
             role: 'admin'
         };
     }
+    static removeSession(token: string): void {
+        // Mock implementation
+    }
 }

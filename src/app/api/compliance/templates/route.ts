@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         description,
         commodity,
         country,
-        standard,
+        standardReference,
         certificationType,
         sections,
         scoringRules
@@ -68,25 +68,29 @@ export async function POST(request: NextRequest) {
       }
 
       // Get latest version for this template name
-      const latestVersion = await prisma.complianceTemplate.findFirst({
+      const latestTemplate = await prisma.complianceTemplate.findFirst({
         where: { name },
-        orderBy: { version: 'desc' },
+        orderBy: { createdAt: 'desc' },
         select: { version: true }
       })
 
-      const version = latestVersion ? latestVersion.version + 1 : 1
+      let versionNumber = 1
+      if (latestTemplate && latestTemplate.version) {
+        const match = latestTemplate.version.match(/(\d+)/)
+        if (match) versionNumber = parseInt(match[1]) + 1
+      }
+      const version = `v${versionNumber}`
 
       const template = await prisma.complianceTemplate.create({
         data: {
           name,
-          description,
           commodity,
           country,
-          standard,
+          standardReference,
           certificationType,
           version,
-          sections,
-          scoringRules: scoringRules || {
+          sections: typeof sections === 'object' ? JSON.stringify(sections) : sections,
+          scoringRules: JSON.stringify(scoringRules || {
             passingThreshold: 75,
             categories: {
               excellent: { min: 90, max: 100 },
@@ -94,7 +98,7 @@ export async function POST(request: NextRequest) {
               needsImprovement: { min: 60, max: 74 },
               nonCompliant: { min: 0, max: 59 }
             }
-          },
+          }),
           isActive: true
         }
       })

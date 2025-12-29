@@ -17,7 +17,7 @@ export async function GET(
                 include: {
                     mill: true,
                     maintenanceTasks: {
-                        orderBy: { dueDate: 'desc' },
+                        orderBy: { scheduledDate: 'desc' },
                         take: 10
                     }
                 }
@@ -64,12 +64,10 @@ export async function PATCH(
 
             const updateData: any = {}
             if (name) updateData.name = name
-            if (status) updateData.status = status
+            if (status) updateData.isActive = status === 'ACTIVE'
             if (location) updateData.location = location
-            if (calibrationFrequency !== undefined) updateData.calibrationFrequency = calibrationFrequency
             if (lastCalibration) updateData.lastCalibration = new Date(lastCalibration)
-            if (specifications) updateData.specifications = specifications
-            if (notes) updateData.notes = notes
+            if (body.nextCalibrationDue) updateData.nextCalibrationDue = new Date(body.nextCalibrationDue)
 
             const equipment = await prisma.equipment.update({
                 where: { id: params.id },

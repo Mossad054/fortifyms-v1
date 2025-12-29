@@ -20,11 +20,10 @@ export async function POST(
                 testType,
                 testMethod,
                 testLocation,
-                labCertificateNumber,
+                labCertificate,
                 result,
-                targetValue,
+                target,
                 tolerance,
-                visualInspection,
                 notes
             } = body
 
@@ -43,15 +42,15 @@ export async function POST(
 
             // Determine test status based on result vs target
             let status = 'PASS'
-            if (targetValue && tolerance) {
-                const lowerBound = targetValue * (1 - tolerance / 100)
-                const upperBound = targetValue * (1 + tolerance / 100)
+            if (target && tolerance && result !== null) {
+                const lowerBound = target * (1 - tolerance / 100)
+                const upperBound = target * (1 + tolerance / 100)
 
                 if (result < lowerBound * 0.75 || result > upperBound * 1.25) {
                     status = 'FAIL'
                 } else if (result < lowerBound || result > upperBound) {
                     status = 'MARGINAL'
-                } else if (result >= targetValue * 0.95 && result <= targetValue * 1.05) {
+                } else if (result >= target * 0.95 && result <= target * 1.05) {
                     status = 'EXCELLENT'
                 }
             }
@@ -61,18 +60,15 @@ export async function POST(
                     batchId: params.id,
                     testerId: userProfile.id,
                     sampleId,
-                    sampleCollectionPoint,
-                    sampleCollectionTime: sampleCollectionTime ? new Date(sampleCollectionTime) : new Date(),
                     testType,
                     testMethod,
                     testLocation,
                     testDate: new Date(),
-                    labCertificateNumber,
+                    labCertificate,
                     result,
-                    targetValue,
+                    target,
                     tolerance,
                     status,
-                    visualInspection: visualInspection || {},
                     notes
                 }
             })
@@ -97,7 +93,7 @@ export async function POST(
 
             await prisma.batchLog.update({
                 where: { id: params.id },
-                data: { qcStatus: batchQCStatus }
+                data: { status: batchQCStatus as any }
             })
 
             // Create alert if QC failed
@@ -110,13 +106,14 @@ export async function POST(
                 await prisma.alert.create({
                     data: {
                         type: 'QC_FAILURE',
+                        category: 'QUALITY_SAFETY',
                         severity: 'CRITICAL',
                         title: 'QC Test Failed',
-                        message: `Batch ${batch?.batchId} failed ${testType} test. Result: ${result}, Target: ${targetValue}`,
-                        resourceType: 'BATCH',
-                        resourceId: params.id,
+                        message: `Batch ${batch?.batchId} failed ${testType} test. Result: ${result}, Target: ${target}`,
+                        sourceType: 'BATCH_LOG',
+                        sourceId: params.id,
                         millId: batch?.millId,
-                        status: 'ACTIVE'
+                        status: 'ACTIVE' as any
                     }
                 })
             }

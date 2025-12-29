@@ -49,15 +49,15 @@ export async function POST(
                 where: { id: params.id },
                 data: {
                     status: decision,
-                    reviewerId: userProfile?.id,
+                    reviewedBy: userProfile?.id,
                     reviewedAt: new Date(),
                     reviewComments: comments,
-                    correctiveActions: correctiveActions || []
+                    correctiveActions: typeof correctiveActions === 'object' ? JSON.stringify(correctiveActions) : correctiveActions
                 }
             })
 
             // Update mill certification status if approved
-            if (decision === 'APPROVED' && audit.score >= 75) {
+            if (decision === 'APPROVED' && audit.score && audit.score >= 75) {
                 await prisma.mill.update({
                     where: { id: audit.millId },
                     data: {
@@ -71,13 +71,14 @@ export async function POST(
             await prisma.alert.create({
                 data: {
                     type: 'AUDIT_REVIEWED',
+                    category: 'COMPLIANCE',
                     severity: decision === 'APPROVED' ? 'LOW' : 'HIGH',
                     title: `Audit ${decision}`,
                     message: `Your compliance audit has been ${decision.toLowerCase()}. ${comments || ''}`,
-                    resourceType: 'COMPLIANCE_AUDIT',
-                    resourceId: audit.id,
+                    sourceType: 'COMPLIANCE_AUDIT',
+                    sourceId: audit.id,
                     millId: audit.millId,
-                    status: 'ACTIVE'
+                    status: 'ACTIVE' as any
                 }
             })
 

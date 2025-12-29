@@ -29,28 +29,20 @@ export async function PATCH(
                 updatedAt: new Date()
             }
 
-            if (status === 'IN_TRANSIT') {
-                updateData.departureTime = new Date()
-            }
-
             if (status === 'DELIVERED') {
-                updateData.actualDeliveryDate = new Date()
-                updateData.proofOfDelivery = proofOfDelivery || {}
-            }
-
-            if (location) {
-                updateData.currentLocation = location
+                updateData.actualDate = new Date()
+                updateData.proofOfDelivery = typeof proofOfDelivery === 'object' ? JSON.stringify(proofOfDelivery) : proofOfDelivery
             }
 
             if (notes) {
-                updateData.notes = notes
+                updateData.conditionNotes = notes
             }
 
             const delivery = await prisma.delivery.update({
                 where: { id: params.id },
                 data: updateData,
                 include: {
-                    order: {
+                    purchaseOrder: {
                         include: {
                             buyer: true,
                             mill: true
@@ -61,17 +53,19 @@ export async function PATCH(
 
             // Create notification for buyer
             if (status === 'IN_TRANSIT' || status === 'DELIVERED') {
+                const deliveryAny = delivery as any;
                 await prisma.alert.create({
                     data: {
                         type: 'DELIVERY_UPDATE',
+                        category: 'LOGISTICS',
                         severity: 'LOW',
                         title: `Delivery ${status}`,
                         message: status === 'IN_TRANSIT'
-                            ? `Delivery departed from ${delivery.order.mill.name}`
-                            : `Delivery completed to ${delivery.order.buyer.organizationName}`,
-                        resourceType: 'DELIVERY',
-                        resourceId: delivery.id,
-                        status: 'ACTIVE'
+                            ? `Delivery departed from ${deliveryAny.purchaseOrder.mill.name}`
+                            : `Delivery completed to ${deliveryAny.purchaseOrder.buyer.organizationName}`,
+                        sourceType: 'DELIVERY',
+                        sourceId: delivery.id,
+                        status: 'ACTIVE' as any
                     }
                 })
             }

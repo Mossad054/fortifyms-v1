@@ -38,13 +38,13 @@ export async function GET(request: NextRequest) {
             if (type) where.type = type
 
             if (overdue === 'true') {
-                where.dueDate = { lt: new Date() }
-                where.status = { in: ['PENDING', 'IN_PROGRESS'] }
+                where.scheduledDate = { lt: new Date() }
+                where.status = { in: ['SCHEDULED', 'IN_PROGRESS'] }
             }
 
             const tasks = await prisma.maintenanceTask.findMany({
                 where,
-                orderBy: { dueDate: 'asc' },
+                orderBy: { scheduledDate: 'asc' },
                 include: {
                     equipment: {
                         select: {
@@ -53,13 +53,7 @@ export async function GET(request: NextRequest) {
                             type: true
                         }
                     },
-                    assignedTo: {
-                        select: {
-                            id: true,
-                            name: true
-                        }
-                    },
-                    completedBy: {
+                    assignee: {
                         select: {
                             id: true,
                             name: true
@@ -92,10 +86,9 @@ export async function POST(request: NextRequest) {
                 type,
                 title,
                 description,
-                dueDate,
+                scheduledDate,
                 priority,
-                assignedToId,
-                recurrence
+                assignedTo
             } = body
 
             const userProfile = await prisma.user.findUnique({
@@ -110,9 +103,9 @@ export async function POST(request: NextRequest) {
                 )
             }
 
-            if (!equipmentId || !type || !title || !dueDate) {
+            if (!equipmentId || !type || !title || !scheduledDate || !assignedTo) {
                 return NextResponse.json(
-                    { error: 'Equipment, type, title, and due date are required' },
+                    { error: 'Equipment, type, title, scheduled date, and assigned user are required' },
                     { status: 400 }
                 )
             }
@@ -124,15 +117,15 @@ export async function POST(request: NextRequest) {
                     type,
                     title,
                     description,
-                    dueDate: new Date(dueDate),
+                    scheduledDate: new Date(scheduledDate),
                     priority: priority || 'MEDIUM',
-                    status: 'PENDING',
-                    assignedToId,
-                    recurrence: recurrence || null
+                    status: 'SCHEDULED',
+                    assignedTo,
+                    createdBy: userProfile.id
                 },
                 include: {
                     equipment: true,
-                    assignedTo: {
+                    assignee: {
                         select: {
                             id: true,
                             name: true,
@@ -143,19 +136,20 @@ export async function POST(request: NextRequest) {
             })
 
             // Create alert for assigned user
-            if (assignedToId) {
-                const daysUntilDue = Math.ceil((new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+            if (assignedTo) {
+                const daysUntilDue = Math.ceil((new Date(scheduledDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 
                 await prisma.alert.create({
                     data: {
                         type: 'MAINTENANCE_DUE',
+                        category: 'MAINTENANCE',
                         severity: daysUntilDue <= 7 ? 'HIGH' : 'MEDIUM',
                         title: 'Maintenance Task Assigned',
                         message: `${type}: ${title} - Due in ${daysUntilDue} days`,
-                        resourceType: 'MAINTENANCE_TASK',
-                        resourceId: task.id,
+                        sourceType: 'MAINTENANCE_TASK',
+                        sourceId: task.id,
                         millId: userProfile.millId,
-                        status: 'ACTIVE'
+                        status: 'ACTIVE' as any
                     }
                 })
             }

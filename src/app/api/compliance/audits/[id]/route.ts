@@ -19,7 +19,7 @@ export async function GET(
                         auditor: { select: { id: true, name: true, email: true } },
                         reviewer: { select: { id: true, name: true, email: true } },
                         annotations: {
-                            include: { user: { select: { id: true, name: true } } },
+                            include: { annotator: { select: { id: true, name: true } } },
                             orderBy: { createdAt: 'desc' }
                         }
                     }
@@ -116,16 +116,18 @@ export async function PATCH(
             }
 
             // Calculate score based on responses and template scoring rules
-            const score = calculateAuditScore(responses, currentAudit.template)
-            const redFlags = identifyRedFlags(responses, currentAudit.template)
+            const templateAny = currentAudit.template as any;
+            const sections = typeof templateAny.sections === 'string' ? JSON.parse(templateAny.sections) : templateAny.sections;
+            const score = calculateAuditScore(responses, { ...templateAny, sections })
+            const flaggedIssues = identifyRedFlags(responses, { ...templateAny, sections })
 
             const audit = await prisma.complianceAudit.update({
                 where: { id: params.id },
                 data: {
-                    responses: responses || currentAudit.responses,
-                    evidence: evidence || currentAudit.evidence,
+                    responses: responses ? JSON.stringify(responses) : currentAudit.responses,
+                    evidence: evidence ? JSON.stringify(evidence) : currentAudit.evidence,
                     score,
-                    redFlags,
+                    flaggedIssues: JSON.stringify(flaggedIssues),
                     notes: notes || currentAudit.notes
                 }
             })
@@ -134,7 +136,7 @@ export async function PATCH(
                 message: 'Audit updated successfully',
                 audit,
                 score,
-                redFlags
+                flaggedIssues
             })
         } catch (error) {
             console.error('Error updating audit:', error)

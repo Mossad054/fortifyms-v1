@@ -29,14 +29,14 @@ export async function POST(
             const annotation = await prisma.complianceAnnotation.create({
                 data: {
                     auditId: params.id,
-                    userId: userProfile.id,
-                    sectionId,
+                    annotatorId: userProfile.id,
                     itemId,
-                    comment,
-                    annotationType: annotationType || 'COMMENT'
+                    content: comment,
+                    type: annotationType || 'TEXT_CALLOUT',
+                    position: JSON.stringify({ x: 0, y: 0 }) // Default position
                 },
                 include: {
-                    user: {
+                    annotator: {
                         select: {
                             id: true,
                             name: true
@@ -72,7 +72,7 @@ export async function GET(
             const annotations = await prisma.complianceAnnotation.findMany({
                 where: { auditId: params.id },
                 include: {
-                    user: {
+                    annotator: {
                         select: {
                             id: true,
                             name: true,

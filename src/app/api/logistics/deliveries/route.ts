@@ -30,20 +30,20 @@ export async function GET(request: NextRequest) {
                     where: { millId: userProfile.millId },
                     select: { id: true }
                 })
-                where.orderId = { in: orders.map(o => o.id) }
+                where.poId = { in: orders.map(o => o.id) }
             }
 
             const deliveries = await prisma.delivery.findMany({
                 where,
                 orderBy: { scheduledDate: 'asc' },
                 include: {
-                    order: {
+                    purchaseOrder: {
                         include: {
                             mill: {
                                 select: {
                                     id: true,
                                     name: true,
-                                    location: true
+                                    region: true
                                 }
                             },
                             buyer: {
@@ -51,13 +51,6 @@ export async function GET(request: NextRequest) {
                                     organizationName: true
                                 }
                             }
-                        }
-                    },
-                    driver: {
-                        select: {
-                            id: true,
-                            name: true,
-                            phone: true
                         }
                     }
                 }
@@ -83,33 +76,35 @@ export async function POST(request: NextRequest) {
         try {
             const body = await request.json()
             const {
-                orderId,
+                poId,
                 scheduledDate,
-                deliveryLocations,
+                locationId,
+                quantity,
                 driverId,
                 vehicleInfo,
                 notes
             } = body
 
-            if (!orderId || !scheduledDate || !deliveryLocations || deliveryLocations.length === 0) {
+            if (!poId || !scheduledDate || !locationId || quantity === undefined) {
                 return NextResponse.json(
-                    { error: 'Order ID, scheduled date, and delivery locations are required' },
+                    { error: 'PO ID, scheduled date, location ID, and quantity are required' },
                     { status: 400 }
                 )
             }
 
             const delivery = await prisma.delivery.create({
                 data: {
-                    orderId,
+                    poId,
                     scheduledDate: new Date(scheduledDate),
-                    deliveryLocations,
+                    locationId,
+                    quantity: parseFloat(quantity),
                     driverId,
-                    vehicleInfo: vehicleInfo || {},
+                    vehicleInfo: typeof vehicleInfo === 'object' ? JSON.stringify(vehicleInfo) : vehicleInfo,
                     status: 'SCHEDULED',
-                    notes
+                    conditionNotes: notes
                 },
                 include: {
-                    order: {
+                    purchaseOrder: {
                         include: {
                             buyer: {
                                 select: {
@@ -126,12 +121,13 @@ export async function POST(request: NextRequest) {
                 await prisma.alert.create({
                     data: {
                         type: 'DELIVERY_ASSIGNED',
+                        category: 'LOGISTICS',
                         severity: 'MEDIUM',
                         title: 'Delivery Assigned',
-                        message: `Delivery to ${delivery.order.buyer.organizationName} scheduled for ${new Date(scheduledDate).toLocaleDateString()}`,
-                        resourceType: 'DELIVERY',
-                        resourceId: delivery.id,
-                        status: 'ACTIVE'
+                        message: `Delivery to ${(delivery as any).purchaseOrder.buyer.organizationName} scheduled for ${new Date(scheduledDate).toLocaleDateString()}`,
+                        sourceType: 'DELIVERY',
+                        sourceId: delivery.id,
+                        status: 'ACTIVE' as any
                     }
                 })
             }

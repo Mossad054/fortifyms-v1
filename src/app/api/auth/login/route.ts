@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Find user by email (in production, verify password hash)
     const user = users.find(u => u.email === email);
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
+        { error: 'Invalid input', details: error.issues },
         { status: 400 }
       );
     }

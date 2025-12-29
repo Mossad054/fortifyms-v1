@@ -40,7 +40,7 @@ export async function POST(
                 data: {
                     status: 'SUBMITTED',
                     submittedAt: new Date(),
-                    submitterId: (await prisma.user.findUnique({ where: { email: user.email! } }))?.id
+                    submittedBy: (await prisma.user.findUnique({ where: { email: user.email! } }))?.id
                 }
             })
 
@@ -48,13 +48,14 @@ export async function POST(
             await prisma.alert.create({
                 data: {
                     type: 'AUDIT_SUBMITTED',
-                    severity: audit.score < 60 ? 'HIGH' : 'MEDIUM',
+                    category: 'COMPLIANCE',
+                    severity: (audit.score && audit.score < 60) ? 'HIGH' : 'MEDIUM',
                     title: 'New Audit Submitted for Review',
-                    message: `${audit.mill.name} submitted compliance audit. Score: ${audit.score}%`,
-                    resourceType: 'COMPLIANCE_AUDIT',
-                    resourceId: audit.id,
+                    message: `${audit.mill.name} submitted compliance audit. Score: ${audit.score || 0}%`,
+                    sourceType: 'COMPLIANCE_AUDIT',
+                    sourceId: audit.id,
                     millId: audit.millId,
-                    status: 'ACTIVE'
+                    status: 'ACTIVE' as any
                 }
             })
 

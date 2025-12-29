@@ -20,7 +20,7 @@ export async function GET(
                             id: true,
                             name: true,
                             code: true,
-                            location: true
+                            region: true
                         }
                     },
                     operator: {
@@ -40,7 +40,7 @@ export async function GET(
                             }
                         },
                         orderBy: {
-                            testDate: 'desc'
+                            createdAt: 'desc'
                         }
                     }
                 }
@@ -78,8 +78,8 @@ export async function PATCH(
         try {
             const body = await request.json()
             const {
-                actualOutputWeight,
-                actualPremixUsage,
+                outputWeight,
+                actualPremixUsed,
                 storageLocation,
                 numberOfUnits,
                 notes
@@ -99,17 +99,17 @@ export async function PATCH(
 
             const updateData: any = {}
 
-            if (actualOutputWeight !== undefined) {
-                updateData.actualOutputWeight = actualOutputWeight
+            if (outputWeight !== undefined) {
+                updateData.outputWeight = outputWeight
                 updateData.yieldPercentage = currentBatch.inputWeight
-                    ? (actualOutputWeight / currentBatch.inputWeight) * 100
+                    ? (outputWeight / currentBatch.inputWeight) * 100
                     : 0
             }
 
-            if (actualPremixUsage !== undefined) {
-                updateData.actualPremixUsage = actualPremixUsage
-                updateData.premixVariance = currentBatch.expectedPremixUsage
-                    ? ((actualPremixUsage - currentBatch.expectedPremixUsage) / currentBatch.expectedPremixUsage) * 100
+            if (actualPremixUsed !== undefined) {
+                updateData.actualPremixUsed = actualPremixUsed
+                updateData.variance = currentBatch.expectedPremix
+                    ? ((actualPremixUsed - currentBatch.expectedPremix) / currentBatch.expectedPremix) * 100
                     : 0
             }
 

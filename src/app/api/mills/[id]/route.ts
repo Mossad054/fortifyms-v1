@@ -29,7 +29,6 @@ export async function GET(
                             id: true,
                             name: true,
                             type: true,
-                            status: true,
                             lastCalibration: true
                         }
                     },
@@ -78,9 +77,8 @@ export async function PATCH(
                 address,
                 phone,
                 email,
-                commodities,
-                location,
-                certificationStatus
+                certificationStatus,
+                country
             } = body
 
             const mill = await prisma.mill.update({
@@ -92,9 +90,8 @@ export async function PATCH(
                     address,
                     phone,
                     email,
-                    commodities,
-                    location,
-                    certificationStatus
+                    certificationStatus,
+                    country: country || 'Kenya' // Default if not provided
                 }
             })
 

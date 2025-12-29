@@ -100,9 +100,9 @@ export async function POST(request: NextRequest) {
           templateId,
           auditorId: userProfile.id,
           auditDate: auditDate ? new Date(auditDate) : new Date(),
-          batchId,
+          batchPeriod: batchId,
           status: 'IN_PROGRESS',
-          responses: {},
+          responses: JSON.stringify({}),
           score: 0,
           notes
         },

@@ -25,11 +25,14 @@ export async function GET(request: NextRequest) {
 
             // Buyers see only their RFPs
             if (userProfile?.role === 'INSTITUTIONAL_BUYER') {
-                const buyerProfile = await prisma.buyerProfile.findUnique({
-                    where: { userId: (await prisma.user.findUnique({ where: { email: user.email! } }))!.id }
-                })
-                if (buyerProfile) {
-                    where.buyerId = buyerProfile.id
+                const dbUser = await prisma.user.findUnique({ where: { email: user.email! } })
+                if (dbUser) {
+                    const buyerProfile = await prisma.buyerProfile.findUnique({
+                        where: { userId: dbUser.id }
+                    })
+                    if (buyerProfile) {
+                        where.buyerId = buyerProfile.id
+                    }
                 }
             }
 
@@ -71,22 +74,27 @@ export async function POST(request: NextRequest) {
             const {
                 title,
                 commodity,
-                quantity,
-                qualityRequirements,
-                deliveryDeadline,
+                totalVolume,
+                unitPackaging,
+                qualitySpecs,
+                bidDeadline,
                 deliveryLocations,
-                pricingTerms,
+                preferredPaymentTerms,
                 evaluationCriteria,
                 eligibilityCriteria
             } = body
 
-            const userProfile = await prisma.user.findUnique({
+            const dbUser = await prisma.user.findUnique({
                 where: { email: user.email! },
                 select: { id: true }
             })
 
+            if (!dbUser) {
+                return NextResponse.json({ error: 'User not found' }, { status: 404 })
+            }
+
             const buyerProfile = await prisma.buyerProfile.findUnique({
-                where: { userId: userProfile!.id }
+                where: { userId: dbUser.id }
             })
 
             if (!buyerProfile) {
@@ -100,14 +108,15 @@ export async function POST(request: NextRequest) {
                 data: {
                     buyerId: buyerProfile.id,
                     title,
+                    referenceNumber: `RFP-${Date.now()}`,
                     commodity,
-                    quantity,
-                    qualityRequirements: qualityRequirements || {},
-                    deliveryDeadline: new Date(deliveryDeadline),
-                    deliveryLocations: deliveryLocations || [],
-                    pricingTerms: pricingTerms || {},
-                    evaluationCriteria: evaluationCriteria || {},
-                    eligibilityCriteria: eligibilityCriteria || {},
+                    totalVolume: parseFloat(totalVolume),
+                    unitPackaging: unitPackaging || 'CUSTOM',
+                    qualitySpecs: typeof qualitySpecs === 'object' ? JSON.stringify(qualitySpecs) : qualitySpecs,
+                    bidDeadline: new Date(bidDeadline),
+                    deliveryLocations: typeof deliveryLocations === 'object' ? JSON.stringify(deliveryLocations) : deliveryLocations,
+                    preferredPaymentTerms: preferredPaymentTerms || 'NET_30',
+                    evaluationCriteria: typeof evaluationCriteria === 'object' ? JSON.stringify(evaluationCriteria) : evaluationCriteria,
                     status: 'OPEN'
                 }
             })
