@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
             }
 
             if (status) {
-                where.qcStatus = status
+                where.status = status
             }
 
             const [batches, total] = await Promise.all([
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
                     where,
                     skip,
                     take: limit,
-                    orderBy: { productionDate: 'desc' },
+                    orderBy: { batchDateTime: 'desc' },
                     include: {
                         mill: {
                             select: {
@@ -102,23 +102,24 @@ export async function POST(request: NextRequest) {
             const body = await request.json()
             const {
                 productionLine,
-                productionDate,
+                batchDateTime,
                 shift,
                 cropType,
+                productType,
                 grade,
-                rawMaterialLotNumber,
+                rawMaterialLot,
                 rawMaterialSource,
                 inputWeight,
                 expectedOutputWeight,
-                actualOutputWeight,
+                outputWeight,
                 premixType,
                 premixBatchNumber,
                 premixManufacturer,
                 premixExpiryDate,
-                targetFortificationLevel,
-                premixDosingRate,
-                expectedPremixUsage,
-                actualPremixUsage,
+                targetFortification,
+                dosingRate,
+                expectedPremix,
+                actualPremixUsed,
                 doserSettings,
                 mixerSettings,
                 processParameters,
@@ -147,17 +148,19 @@ export async function POST(request: NextRequest) {
             })
 
             // Generate batch ID: [MillCode]-[Line]-[YYYYMMDD]-[Sequence]
-            const date = new Date(productionDate)
+            const date = new Date(batchDateTime || new Date())
             const dateStr = date.toISOString().split('T')[0].replace(/-/g, '')
 
             // Get today's batch count for sequence
-            const todayStart = new Date(date.setHours(0, 0, 0, 0))
-            const todayEnd = new Date(date.setHours(23, 59, 59, 999))
+            const todayStart = new Date(date)
+            todayStart.setHours(0, 0, 0, 0)
+            const todayEnd = new Date(date)
+            todayEnd.setHours(23, 59, 59, 999)
 
             const todayBatchCount = await prisma.batchLog.count({
                 where: {
                     millId: userProfile.millId,
-                    productionDate: {
+                    batchDateTime: {
                         gte: todayStart,
                         lte: todayEnd
                     }
@@ -168,13 +171,13 @@ export async function POST(request: NextRequest) {
             const batchId = `${mill?.code}-${productionLine}-${dateStr}-${sequence}`
 
             // Calculate premix variance
-            const premixVariance = expectedPremixUsage
-                ? ((actualPremixUsage - expectedPremixUsage) / expectedPremixUsage) * 100
+            const variance = expectedPremix
+                ? ((actualPremixUsed - expectedPremix) / expectedPremix) * 100
                 : 0
 
             // Calculate yield
             const yieldPercentage = inputWeight
-                ? (actualOutputWeight / inputWeight) * 100
+                ? (outputWeight / inputWeight) * 100
                 : 0
 
             const batch = await prisma.batchLog.create({
@@ -183,32 +186,32 @@ export async function POST(request: NextRequest) {
                     millId: userProfile.millId,
                     operatorId: userProfile.id,
                     productionLine,
-                    productionDate: new Date(productionDate),
+                    batchDateTime: date,
                     shift,
                     cropType,
+                    productType,
                     grade,
-                    rawMaterialLotNumber,
+                    rawMaterialLot,
                     rawMaterialSource,
                     inputWeight,
                     expectedOutputWeight,
-                    actualOutputWeight,
+                    outputWeight,
                     yieldPercentage,
                     premixType,
                     premixBatchNumber,
                     premixManufacturer,
                     premixExpiryDate: premixExpiryDate ? new Date(premixExpiryDate) : null,
-                    targetFortificationLevel,
-                    premixDosingRate,
-                    expectedPremixUsage,
-                    actualPremixUsage,
-                    premixVariance,
-                    doserSettings: doserSettings || {},
-                    mixerSettings: mixerSettings || {},
-                    processParameters: processParameters || {},
+                    targetFortification: typeof targetFortification === 'object' ? JSON.stringify(targetFortification) : targetFortification,
+                    dosingRate,
+                    expectedPremix,
+                    actualPremixUsed,
+                    variance,
+                    doserSettings: typeof doserSettings === 'object' ? JSON.stringify(doserSettings) : (doserSettings || ''),
+                    processParameters: typeof processParameters === 'object' ? JSON.stringify(processParameters) : (processParameters || ''),
                     storageLocation,
                     packagingType,
                     numberOfUnits,
-                    qcStatus: 'PENDING' // Initial status
+                    status: 'QC_PENDING' // Initial status
                 },
                 include: {
                     mill: {
@@ -221,16 +224,17 @@ export async function POST(request: NextRequest) {
             })
 
             // Check for premix variance alert
-            if (Math.abs(premixVariance) > 10) {
+            if (Math.abs(variance) > 10) {
                 // Create alert for high variance
                 await prisma.alert.create({
                     data: {
-                        type: 'PREMIX_VARIANCE',
-                        severity: Math.abs(premixVariance) > 15 ? 'CRITICAL' : 'HIGH',
+                        type: 'PREMIX_USAGE_ANOMALY',
+                        category: 'QUALITY_SAFETY',
+                        severity: Math.abs(variance) > 15 ? 'CRITICAL' : 'HIGH',
                         title: 'Premix Usage Anomaly Detected',
-                        message: `Batch ${batchId} has ${premixVariance.toFixed(1)}% premix variance`,
-                        resourceType: 'BATCH',
-                        resourceId: batch.id,
+                        message: `Batch ${batchId} has ${variance.toFixed(1)}% premix variance`,
+                        sourceType: 'BATCH_LOG',
+                        sourceId: batch.id,
                         millId: userProfile.millId,
                         status: 'ACTIVE'
                     }

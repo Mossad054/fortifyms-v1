@@ -72,60 +72,55 @@ const REPORT_TEMPLATES = {
 // Generate report data based on type and parameters
 async function generateReportData(type: string, params: any, session: any) {
   const { millId, startDate, endDate, includeComparisons = false } = params;
-  
+
   switch (type) {
     case 'daily-production': {
-      const productionData = await db.production.findMany({
+      const productionData = await db.batchLog.findMany({
         where: {
           millId: millId || session.user.millId,
           createdAt: { gte: startDate, lte: endDate }
         },
         include: {
-          line: { select: { name: true } },
           operator: { select: { name: true } },
-          batches: {
-            include: {
-              qcTests: { select: { status: true, parameter: true, resultValue: true } }
-            }
-          }
+          qcTests: { select: { status: true, testType: true, result: true } }
         },
         orderBy: { createdAt: 'asc' }
       });
 
-      const totalOutput = productionData.reduce((sum, p) => sum + (p.actualOutputWeight || 0), 0);
-      const totalBatches = productionData.reduce((sum, p) => sum + p.batches.length, 0);
-      const qcPasses = productionData.reduce((sum, p) => 
-        sum + p.batches.filter(b => b.qcTests.every(t => t.status !== 'FAIL')).length, 0
-      );
+      const totalOutput = productionData.reduce((sum, p) => sum + (p.outputWeight || 0), 0);
+      const totalBatches = productionData.length;
+      const qcPasses = productionData.filter(p =>
+        p.qcTests.every(t => t.status !== 'FAIL')
+      ).length;
 
       return {
         summary: {
           date: startDate.toISOString().split('T')[0],
           totalOutput: totalOutput.toLocaleString() + ' kg',
           totalBatches,
-          qcPassRate: ((qcPasses / totalBatches) * 100).toFixed(1) + '%',
-          linesActive: new Set(productionData.map(p => p.lineId)).size
+          qcPassRate: (totalBatches > 0 ? (qcPasses / totalBatches) * 100 : 0).toFixed(1) + '%',
+          linesActive: new Set(productionData.map(p => p.productionLine)).size
         },
         production: productionData.map(p => ({
           time: p.createdAt.toLocaleTimeString(),
-          line: p.line.name,
-          output: p.actualOutputWeight,
-          yield: p.yield?.toFixed(1) + '%',
+          line: p.productionLine,
+          output: p.outputWeight,
+          yield: p.yieldPercentage?.toFixed(1) + '%',
           operator: p.operator.name
         })),
-        quality: productionData.flatMap(p => p.batches.map(b => ({
-          batchId: b.id,
-          parameter: b.qcTests.map(t => t.parameter).join(', '),
-          status: b.qcTests.every(t => t.status !== 'FAIL') ? 'PASS' : 'FAIL',
-          issues: b.qcTests.filter(t => t.status === 'FAIL').map(t => t.parameter)
-        }))),
+        quality: productionData.map(p => ({
+          batchId: p.batchId,
+          parameter: p.qcTests.map(t => t.testType).join(', '),
+          status: p.qcTests.every(t => t.status !== 'FAIL') ? 'PASS' : 'FAIL',
+          issues: p.qcTests.filter(t => t.status === 'FAIL').map(t => t.testType)
+        })),
         issues: productionData
-          .filter(p => p.yield && p.yield < 90)
+          .filter(p => p.yieldPercentage && p.yieldPercentage < 90)
           .map(p => ({
             time: p.createdAt.toLocaleTimeString(),
-            line: p.line.name,
-            issue: `Low yield: ${p.yield?.toFixed(1)}%`,
-            severity: p.yield < 80 ? 'HIGH' : 'MEDIUM'
+            line: p.productionLine,
+            issue: `Low yield: ${p.yieldPercentage?.toFixed(1)}%`,
+            severity: p.yieldPercentage! < 80 ? 'HIGH' : 'MEDIUM'
           }))
       };
     }
@@ -133,47 +128,47 @@ async function generateReportData(type: string, params: any, session: any) {
     case 'weekly-maintenance': {
       const maintenanceTasks = await db.maintenanceTask.findMany({
         where: {
-          equipment: { millId: millId || session.user.millId },
-          dueDate: { gte: startDate, lte: endDate }
+          equipment: { millId: millId || (session.user as any).millId },
+          scheduledDate: { gte: startDate, lte: endDate }
         },
         include: {
           equipment: {
             select: { name: true, type: true, location: true }
           },
-          assignedTo: { select: { name: true } }
+          assignee: { select: { name: true } }
         },
-        orderBy: { dueDate: 'asc' }
+        orderBy: { scheduledDate: 'asc' }
       });
 
-      const completed = maintenanceTasks.filter(t => t.completedAt);
-      const overdue = maintenanceTasks.filter(t => !t.completedAt && t.dueDate < new Date());
-      const upcoming = maintenanceTasks.filter(t => !t.completedAt && t.dueDate >= new Date());
+      const completed = maintenanceTasks.filter(t => t.completedDate);
+      const overdue = maintenanceTasks.filter(t => !t.completedDate && t.scheduledDate < new Date());
+      const upcoming = maintenanceTasks.filter(t => !t.completedDate && t.scheduledDate >= new Date());
 
-      const equipmentStatus = await db.equipment.findMany({
+      const equipmentStatusData = await db.equipment.findMany({
         where: { millId: millId || session.user.millId },
-        select: { type: true, status: true }
-      }).then(equipment => 
-        equipment.reduce((acc, e) => {
-          acc[e.type] = (acc[e.type] || { active: 0, maintenance: 0, inactive: 0 });
-          acc[e.type][e.status.toLowerCase() as keyof typeof acc[string]]++;
-          return acc;
-        }, {} as Record<string, any>)
-      );
+        select: { type: true, isActive: true }
+      });
+
+      const equipmentStatus = equipmentStatusData.reduce((acc, e) => {
+        acc[e.type] = (acc[e.type] || { active: 0, inactive: 0 });
+        acc[e.type][e.isActive ? 'active' : 'inactive']++;
+        return acc;
+      }, {} as Record<string, any>);
 
       return {
         completed: completed.map(t => ({
           equipment: t.equipment.name,
           type: t.type,
-          completedDate: t.completedAt?.toLocaleDateString(),
-          technician: t.assignedTo?.name,
-          duration: t.duration + ' hours'
+          completedDate: t.completedDate?.toLocaleDateString(),
+          technician: t.assignee?.name,
+          duration: (t.downtime || 0) / 60 + ' hours'
         })),
         overdue: overdue.map(t => ({
           equipment: t.equipment.name,
           type: t.type,
-          dueDate: t.dueDate.toLocaleDateString(),
-          daysOverdue: Math.ceil((new Date().getTime() - t.dueDate.getTime()) / (1000 * 60 * 60 * 24)),
-          technician: t.assignedTo?.name
+          dueDate: t.scheduledDate.toLocaleDateString(),
+          daysOverdue: Math.ceil((new Date().getTime() - t.scheduledDate.getTime()) / (1000 * 60 * 60 * 24)),
+          technician: t.assignee?.name
         })),
         equipmentStatus: Object.entries(equipmentStatus).map(([type, status]) => ({
           type,
@@ -182,39 +177,45 @@ async function generateReportData(type: string, params: any, session: any) {
         upcoming: upcoming.slice(0, 10).map(t => ({
           equipment: t.equipment.name,
           type: t.type,
-          dueDate: t.dueDate.toLocaleDateString(),
-          technician: t.assignedTo?.name,
-          priority: t.dueDate <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? 'HIGH' : 'MEDIUM'
+          dueDate: t.scheduledDate.toLocaleDateString(),
+          technician: t.assignee?.name,
+          priority: t.scheduledDate <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? 'HIGH' : 'MEDIUM'
         }))
       };
     }
 
     case 'monthly-compliance': {
-      const audits = await db.audit.findMany({
+      const audits = await db.complianceAudit.findMany({
         where: {
           millId: millId || session.user.millId,
           createdAt: { gte: startDate, lte: endDate }
         },
         include: {
-          inspector: { select: { name: true } },
-          checklist: { select: { name: true } }
+          auditor: { select: { name: true } },
+          template: { select: { name: true } }
         },
         orderBy: { createdAt: 'desc' }
       });
 
-      const avgScore = audits.reduce((sum, a) => sum + a.score, 0) / audits.length;
-      const criticalIssues = audits.flatMap(a => 
-        a.responses.filter(r => r.criticality === 'CRITICAL' && r.response === 'No')
-      );
+      const avgScore = audits.length > 0 ? (audits.reduce((sum, a) => sum + (a.score || 0), 0) / audits.length) : 0;
+      const criticalIssues = audits.flatMap(a => {
+        try {
+          const responses = JSON.parse(a.responses);
+          return Array.isArray(responses) ? responses.filter((r: any) => r.criticality === 'CRITICAL' && r.response === 'No') : [];
+        } catch (e) {
+          return [];
+        }
+      });
 
-      const trainingCompletions = await db.trainingCompletion.findMany({
+      const trainingCompletions = await db.trainingProgress.findMany({
         where: {
           user: { millId: millId || session.user.millId },
-          completedAt: { gte: startDate, lte: endDate }
+          completedAt: { gte: startDate, lte: endDate },
+          status: 'COMPLETED'
         },
         include: {
           user: { select: { name: true, role: true } },
-          course: { select: { title: true, duration: number } }
+          course: { select: { title: true, duration: true } }
         }
       });
 
@@ -230,16 +231,28 @@ async function generateReportData(type: string, params: any, session: any) {
         complianceScores: audits.map(a => ({
           date: a.createdAt.toLocaleDateString(),
           score: a.score,
-          inspector: a.inspector.name,
-          checklist: a.checklist.name
+          inspector: a.auditor?.name || 'N/A',
+          checklist: a.template.name
         })),
-        auditFindings: audits.map(a => ({
-          date: a.createdAt.toLocaleDateString(),
-          score: a.score,
-          criticalIssues: a.responses.filter(r => r.criticality === 'CRITICAL' && r.response === 'No').length,
-          majorIssues: a.responses.filter(r => r.criticality === 'MAJOR' && r.response === 'No').length,
-          status: a.status
-        })),
+        auditFindings: audits.map(a => {
+          let criticalCount = 0;
+          let majorCount = 0;
+          try {
+            const responses = JSON.parse(a.responses);
+            if (Array.isArray(responses)) {
+              criticalCount = responses.filter((r: any) => r.criticality === 'CRITICAL' && r.response === 'No').length;
+              majorCount = responses.filter((r: any) => r.criticality === 'MAJOR' && r.response === 'No').length;
+            }
+          } catch (e) { }
+
+          return {
+            date: a.createdAt.toLocaleDateString(),
+            score: a.score,
+            criticalIssues: criticalCount,
+            majorIssues: majorCount,
+            status: a.status
+          };
+        }),
         correctiveActions: criticalIssues.slice(0, 10).map(issue => ({
           issue: issue.question,
           requiredAction: issue.requiredAction,
@@ -259,15 +272,15 @@ async function generateReportData(type: string, params: any, session: any) {
 
     case 'quarterly-business': {
       // Get broader data for business review
-      const productions = await db.production.findMany({
+      const productions = await db.batchLog.findMany({
         where: {
           millId: millId || session.user.millId,
           createdAt: { gte: startDate, lte: endDate }
         },
-        select: { actualOutputWeight: true, createdAt: true }
+        select: { outputWeight: true, createdAt: true }
       });
 
-      const audits = await db.audit.findMany({
+      const audits = await db.complianceAudit.findMany({
         where: {
           millId: millId || session.user.millId,
           createdAt: { gte: startDate, lte: endDate }
@@ -278,26 +291,26 @@ async function generateReportData(type: string, params: any, session: any) {
       const monthlyData = Array.from({ length: 3 }, (_, i) => {
         const monthStart = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
         const monthEnd = new Date(startDate.getFullYear(), startDate.getMonth() + i + 1, 0);
-        
-        const monthProduction = productions.filter(p => 
+
+        const monthProduction = productions.filter(p =>
           p.createdAt >= monthStart && p.createdAt <= monthEnd
         );
-        const monthAudits = audits.filter(a => 
+        const monthAudits = audits.filter(a =>
           a.createdAt >= monthStart && a.createdAt <= monthEnd
         );
 
         return {
           month: monthStart.toLocaleDateString('en', { month: 'long' }),
-          production: monthProduction.reduce((sum, p) => sum + (p.actualOutputWeight || 0), 0),
-          avgCompliance: monthAudits.length > 0 
-            ? monthAudits.reduce((sum, a) => sum + a.score, 0) / monthAudits.length 
+          production: monthProduction.reduce((sum, p) => sum + (p.outputWeight || 0), 0),
+          avgCompliance: monthAudits.length > 0
+            ? monthAudits.reduce((sum, a) => sum + (a.score || 0), 0) / monthAudits.length
             : 0
         };
       });
 
-      const totalProduction = productions.reduce((sum, p) => sum + (p.actualOutputWeight || 0), 0);
-      const avgCompliance = audits.length > 0 
-        ? audits.reduce((sum, a) => sum + a.score, 0) / audits.length 
+      const totalProduction = productions.reduce((sum, p) => sum + (p.outputWeight || 0), 0);
+      const avgCompliance = audits.length > 0
+        ? audits.reduce((sum, a) => sum + (a.score || 0), 0) / audits.length
         : 0;
 
       return {
@@ -360,10 +373,11 @@ export async function GET(request: NextRequest) {
           return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
         }
 
+        const user = session.user as any;
         // Check permissions
-        if (millId && session.user.role !== 'PROGRAM_MANAGER' && 
-            session.user.role !== 'SYSTEM_ADMIN' && 
-            session.user.millId !== millId) {
+        if (millId && user.role !== 'PROGRAM_MANAGER' &&
+          user.role !== 'SYSTEM_ADMIN' &&
+          user.millId !== millId) {
           return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -383,10 +397,11 @@ export async function GET(request: NextRequest) {
       }
 
       case 'scheduled': {
+        const user = session.user as any;
         // Get scheduled reports for the user
         const scheduledReports = await db.scheduledReport.findMany({
           where: {
-            userId: session.user.id
+            userId: user.id
           },
           include: {
             template: true
@@ -424,14 +439,16 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
+        const user = session.user as any;
         // Create scheduled report
         const scheduledReport = await db.scheduledReport.create({
           data: {
-            userId: session.user.id,
+            userId: user.id,
             templateId,
-            schedule,
-            parameters: parameters || {},
-            recipients,
+            name: data.name || 'New Scheduled Report',
+            schedule: typeof schedule === 'string' ? schedule : JSON.stringify(schedule),
+            parameters: parameters ? JSON.stringify(parameters) : null,
+            recipients: typeof recipients === 'string' ? recipients : JSON.stringify(recipients),
             isActive: true,
             nextRun: calculateNextRun(schedule)
           }
@@ -452,10 +469,10 @@ export async function POST(request: NextRequest) {
           data: {
             name,
             description,
-            sections,
-            styling: styling || {},
+            sections: typeof sections === 'string' ? sections : JSON.stringify(sections),
+            styling: styling ? (typeof styling === 'string' ? styling : JSON.stringify(styling)) : null,
             isCustom: true,
-            createdBy: session.user.id
+            createdBy: (session.user as any).id
           }
         });
 
@@ -551,12 +568,12 @@ function calculateNextRun(schedule: any): Date {
       const nextWeekly = new Date(now);
       const targetDay = dayMap[day];
       const currentDay = now.getDay();
-      
+
       let daysUntilTarget = targetDay - currentDay;
       if (daysUntilTarget <= 0) {
         daysUntilTarget += 7;
       }
-      
+
       nextWeekly.setDate(nextWeekly.getDate() + daysUntilTarget);
       nextWeekly.setHours(weekHours, weekMinutes, 0, 0);
       return nextWeekly;

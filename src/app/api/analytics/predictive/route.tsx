@@ -73,11 +73,10 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
   });
 
   // Get QC failures
-  const qcFailures = await db.qCTestResult.count({
+  // Get QC failures
+  const qcFailures = await db.qCTest.count({
     where: {
-      batch: {
-        production: { millId }
-      },
+      batch: { millId },
       status: 'FAIL',
       createdAt: { gte: startDate, lte: endDate }
     }
@@ -86,20 +85,20 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
   // Get maintenance compliance
   const maintenanceTasks = await db.maintenanceTask.findMany({
     where: {
-      equipment: { millId },
-      dueDate: { gte: startDate, lte: endDate }
+      mill: { id: millId },
+      scheduledDate: { gte: startDate, lte: endDate }
     }
   });
 
   const overdueMaintenance = maintenanceTasks.filter(task =>
-    task.completedAt === null && task.dueDate < new Date()
+    task.completedDate === null && task.scheduledDate < new Date()
   ).length;
 
   // Calculate risk components
   let complianceRisk = 0;
   if (complianceData.length > 0) {
     const recentScores = complianceData.slice(-5);
-    const avgScore = recentScores.reduce((sum, item) => sum + item.score, 0) / recentScores.length;
+    const avgScore = recentScores.reduce((sum, item) => sum + (item.score || 0), 0) / recentScores.length;
     complianceRisk = avgScore < 80 ? 30 : avgScore < 90 ? 15 : 0;
   }
 
@@ -112,7 +111,7 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
   // Trend analysis
   let trendRisk = 0;
   if (complianceData.length >= 3) {
-    const scores = complianceData.map(item => item.score);
+    const scores = complianceData.map(item => item.score || 0);
     const regression = linearRegression(scores);
     if (regression.slope < -0.5) trendRisk = 25;
     else if (regression.slope < -0.2) trendRisk = 10;
@@ -128,7 +127,7 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
       quality: qcRisk,
       trend: trendRisk
     },
-    riskLevel: totalRisk >= 70 ? 'HIGH' : totalRisk >= 40 ? 'MEDIUM' : 'LOW',
+    riskLevel: (totalRisk >= 70 ? 'HIGH' : totalRisk >= 40 ? 'MEDIUM' : 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW',
     dataPoints: {
       complianceData: complianceData.length,
       qcFailures,
@@ -151,11 +150,12 @@ export async function GET(request: NextRequest) {
     const timeframe = parseInt(searchParams.get('timeframe') || '30');
     const forecastPeriods = parseInt(searchParams.get('forecastPeriods') || '12');
 
+    const user = session.user as any;
     // Check permissions based on user role
-    if (session.user.role !== 'PROGRAM_MANAGER' &&
-      session.user.role !== 'INSPECTOR' &&
-      session.user.role !== 'SYSTEM_ADMIN' &&
-      millId && session.user.millId !== millId) {
+    if (user.role !== 'PROGRAM_MANAGER' &&
+      user.role !== 'INSPECTOR' &&
+      user.role !== 'SYSTEM_ADMIN' &&
+      millId && user.millId !== millId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -166,15 +166,15 @@ export async function GET(request: NextRequest) {
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - timeframe);
 
-        const productionData = await db.production.findMany({
+        const productionData = await db.batchLog.findMany({
           where: {
             millId: millId || undefined,
             createdAt: { gte: startDate, lte: endDate }
           },
           select: {
-            actualOutputWeight: true,
+            outputWeight: true,
             createdAt: true,
-            lineId: true
+            productionLine: true
           },
           orderBy: { createdAt: 'asc' }
         });
@@ -183,7 +183,7 @@ export async function GET(request: NextRequest) {
         const dailyData = productionData.reduce((acc, item) => {
           const date = item.createdAt.toISOString().split('T')[0];
           if (!acc[date]) acc[date] = 0;
-          acc[date] += item.actualOutputWeight || 0;
+          acc[date] += item.outputWeight || 0;
           return acc;
         }, {} as Record<string, number>);
 
@@ -229,7 +229,7 @@ export async function GET(request: NextRequest) {
           orderBy: { createdAt: 'asc' }
         });
 
-        const scores = complianceData.map(item => item.score);
+        const scores = complianceData.map(item => item.score || 0);
         const regression = linearRegression(scores);
 
         // Generate forecast
@@ -263,38 +263,36 @@ export async function GET(request: NextRequest) {
         startDate.setDate(endDate.getDate() - timeframe);
 
         // Get production anomalies
-        const productionData = await db.production.findMany({
+        const productionData = await db.batchLog.findMany({
           where: {
             millId: millId || undefined,
             createdAt: { gte: startDate, lte: endDate }
           },
           select: {
-            actualOutputWeight: true,
+            outputWeight: true,
             createdAt: true,
-            yield: true
+            yieldPercentage: true
           },
           orderBy: { createdAt: 'asc' }
         });
 
-        const outputValues = productionData.map(item => item.actualOutputWeight || 0);
-        const yieldValues = productionData.map(item => item.yield || 0);
+        const outputValues = productionData.map(item => item.outputWeight || 0);
+        const yieldValues = productionData.map(item => item.yieldPercentage || 0);
 
         const outputAnomalies = detectAnomalies(outputValues);
         const yieldAnomalies = detectAnomalies(yieldValues);
 
         // Get QC anomalies
-        const qcData = await db.qCTestResult.findMany({
+        const qcData = await db.qCTest.findMany({
           where: {
             batch: {
-              production: {
-                millId: millId || undefined,
-                createdAt: { gte: startDate, lte: endDate }
-              }
+              millId: millId || undefined,
+              createdAt: { gte: startDate, lte: endDate }
             }
           },
           select: {
-            resultValue: true,
-            parameter: true,
+            result: true,
+            testType: true,
             status: true,
             createdAt: true
           },
@@ -303,10 +301,10 @@ export async function GET(request: NextRequest) {
 
         const qcAnomalies = qcData
           .filter(test => test.status === 'FAIL')
-          .map(test => ({
+          .map((test: any) => ({
             type: 'QC_FAILURE',
-            parameter: test.parameter,
-            value: test.resultValue,
+            parameter: test.testType,
+            value: test.result,
             date: test.createdAt
           }));
 
@@ -336,14 +334,14 @@ export async function GET(request: NextRequest) {
         if (!millId) {
           // Get all mills for program managers
           const mills = await db.mill.findMany({
-            select: { id: true, name: true, location: true }
+            select: { id: true, name: true, region: true }
           });
 
           const riskScores = await Promise.all(
             mills.map(async (mill) => ({
               millId: mill.id,
               millName: mill.name,
-              location: mill.location,
+              location: mill.region,
               ...(await calculateMillRiskScore(mill.id, timeframe))
             }))
           );
@@ -375,9 +373,9 @@ export async function GET(request: NextRequest) {
         // Get calibration data
         const calibrationData = await db.maintenanceTask.findMany({
           where: {
-            equipment: { millId },
+            mill: { id: millId },
             type: 'CALIBRATION',
-            completedAt: { not: null },
+            completedDate: { not: null },
             createdAt: { gte: startDate, lte: endDate }
           },
           include: {
@@ -389,23 +387,17 @@ export async function GET(request: NextRequest) {
         });
 
         // Get QC data for premix usage analysis
-        const qcData = await db.qCTestResult.findMany({
+        const qcData = await db.qCTest.findMany({
           where: {
             batch: {
-              production: {
-                millId,
-                createdAt: { gte: startDate, lte: endDate }
-              }
+              millId,
+              createdAt: { gte: startDate, lte: endDate }
             },
-            parameter: { in: ['Iron', 'Vitamin A', 'Vitamin B1', 'Vitamin B2'] }
+            testType: { in: ['Iron Content', 'Vitamin A', 'Vitamin B1', 'Vitamin B2'] }
           },
           include: {
             batch: {
-              include: {
-                production: {
-                  select: { premixUsed: true, expectedPremixUsage: true }
-                }
-              }
+              select: { actualPremixUsed: true, expectedPremix: true }
             }
           }
         });
@@ -416,10 +408,10 @@ export async function GET(request: NextRequest) {
           : 90; // default
 
         // Analyze QC performance
-        const avgQCScores = qcData.reduce((acc, test) => {
-          const param = test.parameter;
+        const avgQCScores = qcData.reduce((acc: any, test: any) => {
+          const param = test.testType;
           if (!acc[param]) acc[param] = [];
-          acc[param].push(test.resultValue);
+          acc[param].push(test.result || 0);
           return acc;
         }, {} as Record<string, number[]>);
 
@@ -438,11 +430,10 @@ export async function GET(request: NextRequest) {
         }
 
         // Premix usage recommendations
-        const premixVariance = qcData.reduce((acc, test) => {
-          const variance = Math.abs(
-            (test.batch.production.premixUsed - test.batch.production.expectedPremixUsage) /
-            test.batch.production.expectedPremixUsage * 100
-          );
+        const premixVariance = qcData.reduce((acc: any, test: any) => {
+          const actual = test.batch.actualPremixUsed || 0;
+          const expected = test.batch.expectedPremix || 1;
+          const variance = Math.abs((actual - expected) / expected * 100);
           return acc + variance;
         }, 0) / Math.max(qcData.length, 1);
 
@@ -459,8 +450,9 @@ export async function GET(request: NextRequest) {
 
         // Quality improvement recommendations
         Object.entries(avgQCScores).forEach(([parameter, values]) => {
-          const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
-          const target = parameter === 'Iron' ? 30 : parameter === 'Vitamin A' ? 15000 : 15; // Example targets
+          const vals = values as number[];
+          const avg = vals.reduce((sum, val) => sum + val, 0) / vals.length;
+          const target = parameter === 'Iron Content' ? 30 : parameter === 'Vitamin A' ? 15000 : 15; // Example targets
 
           if (avg < target * 0.9) {
             recommendations.push({
@@ -476,7 +468,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
           recommendations: recommendations.sort((a, b) => {
-            const priorityOrder = { 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };
+            const priorityOrder: Record<string, number> = { 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };
             return priorityOrder[b.priority] - priorityOrder[a.priority];
           }),
           analysis: {

@@ -17,7 +17,7 @@ export async function GET(
                     select: {
                         name: true,
                         code: true,
-                        location: true,
+                        region: true,
                         certificationStatus: true,
                         certificationDate: true
                     }
@@ -26,11 +26,10 @@ export async function GET(
                     select: {
                         testType: true,
                         result: true,
-                        targetValue: true,
                         status: true,
-                        testDate: true
+                        createdAt: true
                     },
-                    orderBy: { testDate: 'desc' }
+                    orderBy: { createdAt: 'desc' }
                 }
             }
         })
@@ -45,31 +44,30 @@ export async function GET(
         const certificate = {
             verified: true,
             batchId: batch.batchId,
-            productionDate: batch.productionDate,
+            productionDate: batch.batchDateTime,
             cropType: batch.cropType,
             mill: {
                 name: batch.mill.name,
-                location: batch.mill.location,
+                location: batch.mill.region,
                 certified: batch.mill.certificationStatus === 'CERTIFIED',
                 certificationDate: batch.mill.certificationDate
             },
             fortification: {
                 premixType: batch.premixType,
-                targetLevel: batch.targetFortificationLevel,
-                dosingRate: batch.premixDosingRate
+                targetLevel: batch.targetFortification,
+                dosingRate: batch.dosingRate
             },
             quality: {
-                status: batch.qcStatus,
+                status: batch.status,
                 tests: batch.qcTests.map(test => ({
                     type: test.testType,
                     result: test.result,
-                    target: test.targetValue,
                     status: test.status,
-                    date: test.testDate
+                    date: test.createdAt
                 }))
             },
             traceability: {
-                rawMaterialLot: batch.rawMaterialLotNumber,
+                rawMaterialLot: batch.rawMaterialLot,
                 rawMaterialSource: batch.rawMaterialSource,
                 premixBatch: batch.premixBatchNumber,
                 premixManufacturer: batch.premixManufacturer

@@ -4,7 +4,7 @@ import { AuthManager } from '@/lib/auth';
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { error: 'No authentication token found' },
@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const user = await AuthManager.validateSession(token);
-    
+    const user = await AuthManager.verifyToken(token);
+
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid or expired token' },

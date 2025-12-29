@@ -5,18 +5,19 @@ import { NextRequest, NextResponse } from "next/server"
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session) {
       return NextResponse.json({ user: null }, { status: 200 })
     }
 
-    return NextResponse.json({ 
+    const user = session.user as any
+    return NextResponse.json({
       user: {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name,
-        role: session.user.role,
-        millId: session.user.millId
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        millId: user.millId
       }
     })
   } catch (error) {

@@ -17,9 +17,9 @@ export async function POST(request: NextRequest) {
       where: {
         id: auditId,
         OR: [
-          { submittedBy: session.user.id },
-          { auditorId: session.user.id },
-          { mill: { users: { some: { id: session.user.id } } } }
+          { submittedBy: (session.user as any).id },
+          { auditorId: (session.user as any).id },
+          { mill: { users: { some: { id: (session.user as any).id } } } }
         ]
       },
       include: {
@@ -36,11 +36,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse template sections and scoring rules
-    const template = JSON.parse(audit.template.sections);
-    const scoringRules = JSON.parse(audit.template.scoringRules);
+    const auditAny = audit as any;
+    const templateData = JSON.parse(auditAny.template.sections);
+    const scoringRules = JSON.parse(auditAny.template.scoringRules);
 
     // Calculate compliance score
-    const scoringResult = calculateComplianceScore(responses, template, scoringRules);
+    const scoringResult = calculateComplianceScore(responses, templateData, scoringRules);
 
     // Update audit with results
     const updatedAudit = await db.complianceAudit.update({
@@ -59,20 +60,25 @@ export async function POST(request: NextRequest) {
       include: {
         mill: true,
         template: true,
-        auditor: true,
-        submitter: true
+        auditor: { select: { name: true } },
+        submitter: { select: { name: true } }
       }
     });
 
-    // Create notification for inspectors
+    // Create alert for inspectors
     if (audit.auditType === 'SELF_AUDIT') {
-      await db.notification.create({
+      const auditAny = audit as any;
+      await db.alert.create({
         data: {
-          type: 'COMPLIANCE_SUBMISSION',
+          type: 'CRITICAL_NON_COMPLIANCE',
+          category: 'COMPLIANCE',
+          severity: (scoringResult.overallScore < 60 ? 'CRITICAL' : 'HIGH') as AlertSeverity,
           title: 'New Compliance Audit Submitted',
-          message: `${audit.mill.name} has submitted a ${audit.template.certificationType} compliance audit for review`,
-          priority: scoringResult.overallScore < 60 ? 'HIGH' : 'MEDIUM',
-          actionUrl: `/compliance/review/${auditId}`,
+          message: `${auditAny.mill.name} has submitted a ${auditAny.template.certificationType} compliance audit for review`,
+          sourceType: 'COMPLIANCE_AUDIT',
+          sourceId: auditId,
+          millId: audit.millId,
+          status: 'ACTIVE',
           metadata: JSON.stringify({
             auditId,
             millId: audit.millId,
@@ -96,9 +102,9 @@ export async function POST(request: NextRequest) {
 }
 
 function calculateComplianceScore(responses: any, template: any, scoringRules: any) {
-  const sectionScores = {};
-  const flaggedIssues = [];
-  const correctiveActions = [];
+  const sectionScores: any = {};
+  const flaggedIssues: any[] = [];
+  const correctiveActions: any[] = [];
   let totalPoints = 0;
   let earnedPoints = 0;
 
@@ -106,13 +112,13 @@ function calculateComplianceScore(responses: any, template: any, scoringRules: a
   template.sections.forEach((section: any) => {
     let sectionTotal = 0;
     let sectionEarned = 0;
-    const sectionIssues = [];
-    const sectionActions = [];
+    const sectionIssues: any[] = [];
+    const sectionActions: any[] = [];
 
     section.items.forEach((item: any) => {
       const response = responses[item.id];
       const weight = item.weight || getWeightByCriticality(item.criticality);
-      
+
       sectionTotal += weight;
       totalPoints += weight;
 
@@ -141,7 +147,7 @@ function calculateComplianceScore(responses: any, template: any, scoringRules: a
           const tolerance = item.tolerance || 0.1;
           const deviation = Math.abs(response - target);
           const maxDeviation = target * tolerance;
-          
+
           if (deviation <= maxDeviation) {
             itemScore = weight;
           } else if (deviation <= maxDeviation * 2) {

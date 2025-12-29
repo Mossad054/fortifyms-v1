@@ -52,8 +52,7 @@ export async function POST(
                 where: { id },
                 data: {
                     status: 'AWARDED',
-                    awardedBidId: bidId,
-                    awardedAt: new Date()
+                    awardedBidId: bidId
                 }
             })
 
@@ -75,30 +74,32 @@ export async function POST(
             // Create purchase order
             const purchaseOrder = await prisma.purchaseOrder.create({
                 data: {
+                    poNumber: `PO-${Date.now()}`,
                     rfpId: id,
                     bidId: bidId,
                     buyerId: rfp.buyerId,
                     millId: winningBid.millId,
-                    orderNumber: `PO-${Date.now()}`,
-                    commodity: rfp.commodity,
-                    quantity: rfp.quantity,
-                    unitPrice: winningBid.pricePerUnit,
-                    totalAmount: winningBid.totalPrice,
-                    deliverySchedule: winningBid.deliveryTimeline,
-                    status: 'CONFIRMED',
-                    notes
+                    productSpecs: JSON.stringify({ commodity: rfp.commodity }),
+                    quantity: rfp.totalVolume,
+                    unitPrice: winningBid.unitPrice,
+                    totalAmount: winningBid.totalBidAmount,
+                    deliverySchedule: winningBid.deliverySchedule || '',
+                    paymentTerms: winningBid.paymentTerms || 'Standard',
+                    qualityStandards: rfp.qualitySpecs || 'Standard',
+                    status: 'CONFIRMED'
                 }
             })
 
             // Notify mill
             await prisma.alert.create({
                 data: {
-                    type: 'BID_AWARDED',
+                    type: 'NEW_RFP_MATCH',
+                    category: 'PROCUREMENT',
                     severity: 'MEDIUM',
                     title: 'Congratulations! Your Bid Was Accepted',
-                    message: `Your bid for ${rfp.title} has been accepted. Purchase Order: ${purchaseOrder.orderNumber}`,
-                    resourceType: 'PURCHASE_ORDER',
-                    resourceId: purchaseOrder.id,
+                    message: `Your bid for ${rfp.title} has been accepted. Purchase Order: ${purchaseOrder.poNumber}`,
+                    sourceType: 'PURCHASE_ORDER',
+                    sourceId: purchaseOrder.id,
                     millId: winningBid.millId,
                     status: 'ACTIVE'
                 }

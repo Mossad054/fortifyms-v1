@@ -132,8 +132,6 @@ export async function POST(request: NextRequest) {
                     address,
                     phone,
                     email,
-                    commodities: commodities || [],
-                    location: location || {},
                     certificationStatus: 'PENDING'
                 }
             })
