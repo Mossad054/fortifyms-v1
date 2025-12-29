@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       status: 'in_progress',
       diagnostic: diagnosticResult,
-      analysis: analysis.partialAnalysis || null
+      analysis: analysis
     });
   } catch (error) {
     console.error('Error submitting diagnostic:', error);
