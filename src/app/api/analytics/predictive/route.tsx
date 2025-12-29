@@ -7,15 +7,15 @@ import { db } from '@/lib/db';
 function linearRegression(data: number[]) {
   const n = data.length;
   if (n === 0) return { slope: 0, intercept: 0, r2: 0 };
-  
+
   const sumX = data.reduce((sum, _, i) => sum + i, 0);
   const sumY = data.reduce((sum, val) => sum + val, 0);
   const sumXY = data.reduce((sum, val, i) => sum + val * i, 0);
   const sumXX = data.reduce((sum, _, i) => sum + i * i, 0);
-  
+
   const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
   const intercept = (sumY - slope * sumX) / n;
-  
+
   // Calculate R-squared
   const meanY = sumY / n;
   const ssTotal = data.reduce((sum, val) => sum + Math.pow(val - meanY, 2), 0);
@@ -24,14 +24,14 @@ function linearRegression(data: number[]) {
     return sum + Math.pow(val - predicted, 2);
   }, 0);
   const r2 = 1 - (ssResidual / ssTotal);
-  
+
   return { slope, intercept, r2 };
 }
 
 // Exponential smoothing for forecasting
 function exponentialSmoothing(data: number[], alpha: number = 0.3) {
   if (data.length === 0) return [];
-  
+
   const smoothed = [data[0]];
   for (let i = 1; i < data.length; i++) {
     smoothed.push(alpha * data[i] + (1 - alpha) * smoothed[i - 1]);
@@ -42,12 +42,12 @@ function exponentialSmoothing(data: number[], alpha: number = 0.3) {
 // Anomaly detection using statistical methods
 function detectAnomalies(data: number[], threshold: number = 2) {
   if (data.length < 3) return [];
-  
+
   const mean = data.reduce((sum, val) => sum + val, 0) / data.length;
   const stdDev = Math.sqrt(
     data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length
   );
-  
+
   return data.map((value, index) => ({
     index,
     value,
@@ -61,9 +61,9 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(endDate.getDate() - timeframe);
-  
+
   // Get compliance scores
-  const complianceData = await db.audit.findMany({
+  const complianceData = await db.complianceAudit.findMany({
     where: {
       millId,
       createdAt: { gte: startDate, lte: endDate }
@@ -71,7 +71,7 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
     select: { score: true, createdAt: true },
     orderBy: { createdAt: 'asc' }
   });
-  
+
   // Get QC failures
   const qcFailures = await db.qCTestResult.count({
     where: {
@@ -82,7 +82,7 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
       createdAt: { gte: startDate, lte: endDate }
     }
   });
-  
+
   // Get maintenance compliance
   const maintenanceTasks = await db.maintenanceTask.findMany({
     where: {
@@ -90,11 +90,11 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
       dueDate: { gte: startDate, lte: endDate }
     }
   });
-  
-  const overdueMaintenance = maintenanceTasks.filter(task => 
+
+  const overdueMaintenance = maintenanceTasks.filter(task =>
     task.completedAt === null && task.dueDate < new Date()
   ).length;
-  
+
   // Calculate risk components
   let complianceRisk = 0;
   if (complianceData.length > 0) {
@@ -102,13 +102,13 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
     const avgScore = recentScores.reduce((sum, item) => sum + item.score, 0) / recentScores.length;
     complianceRisk = avgScore < 80 ? 30 : avgScore < 90 ? 15 : 0;
   }
-  
-  const maintenanceRisk = maintenanceTasks.length > 0 
-    ? (overdueMaintenance / maintenanceTasks.length) * 25 
+
+  const maintenanceRisk = maintenanceTasks.length > 0
+    ? (overdueMaintenance / maintenanceTasks.length) * 25
     : 0;
-  
+
   const qcRisk = Math.min((qcFailures / Math.max(complianceData.length, 1)) * 20, 20);
-  
+
   // Trend analysis
   let trendRisk = 0;
   if (complianceData.length >= 3) {
@@ -117,9 +117,9 @@ async function calculateMillRiskScore(millId: string, timeframe: number = 30) {
     if (regression.slope < -0.5) trendRisk = 25;
     else if (regression.slope < -0.2) trendRisk = 10;
   }
-  
+
   const totalRisk = Math.min(complianceRisk + maintenanceRisk + qcRisk + trendRisk, 100);
-  
+
   return {
     totalRisk,
     components: {
@@ -152,10 +152,10 @@ export async function GET(request: NextRequest) {
     const forecastPeriods = parseInt(searchParams.get('forecastPeriods') || '12');
 
     // Check permissions based on user role
-    if (session.user.role !== 'PROGRAM_MANAGER' && 
-        session.user.role !== 'INSPECTOR' && 
-        session.user.role !== 'SYSTEM_ADMIN' &&
-        millId && session.user.millId !== millId) {
+    if (session.user.role !== 'PROGRAM_MANAGER' &&
+      session.user.role !== 'INSPECTOR' &&
+      session.user.role !== 'SYSTEM_ADMIN' &&
+      millId && session.user.millId !== millId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -165,14 +165,14 @@ export async function GET(request: NextRequest) {
         const endDate = new Date();
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - timeframe);
-        
+
         const productionData = await db.production.findMany({
           where: {
             millId: millId || undefined,
             createdAt: { gte: startDate, lte: endDate }
           },
-          select: { 
-            actualOutputWeight: true, 
+          select: {
+            actualOutputWeight: true,
             createdAt: true,
             lineId: true
           },
@@ -190,7 +190,7 @@ export async function GET(request: NextRequest) {
         const values = Object.values(dailyData);
         const regression = linearRegression(values);
         const smoothed = exponentialSmoothing(values);
-        
+
         // Generate forecast
         const forecast = [];
         const lastValue = values[values.length - 1] || 0;
@@ -219,8 +219,8 @@ export async function GET(request: NextRequest) {
         const endDate = new Date();
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - timeframe * 7); // Convert to weeks
-        
-        const complianceData = await db.audit.findMany({
+
+        const complianceData = await db.complianceAudit.findMany({
           where: {
             millId: millId || undefined,
             createdAt: { gte: startDate, lte: endDate }
@@ -231,12 +231,12 @@ export async function GET(request: NextRequest) {
 
         const scores = complianceData.map(item => item.score);
         const regression = linearRegression(scores);
-        
+
         // Generate forecast
         const forecast = [];
         const lastScore = scores[scores.length - 1] || 100;
         for (let i = 1; i <= forecastPeriods; i++) {
-          const predictedScore = Math.min(100, Math.max(0, 
+          const predictedScore = Math.min(100, Math.max(0,
             regression.slope * (scores.length + i) + regression.intercept
           ));
           forecast.push({
@@ -261,15 +261,15 @@ export async function GET(request: NextRequest) {
         const endDate = new Date();
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - timeframe);
-        
+
         // Get production anomalies
         const productionData = await db.production.findMany({
           where: {
             millId: millId || undefined,
             createdAt: { gte: startDate, lte: endDate }
           },
-          select: { 
-            actualOutputWeight: true, 
+          select: {
+            actualOutputWeight: true,
             createdAt: true,
             yield: true
           },
@@ -278,22 +278,22 @@ export async function GET(request: NextRequest) {
 
         const outputValues = productionData.map(item => item.actualOutputWeight || 0);
         const yieldValues = productionData.map(item => item.yield || 0);
-        
+
         const outputAnomalies = detectAnomalies(outputValues);
         const yieldAnomalies = detectAnomalies(yieldValues);
-        
+
         // Get QC anomalies
         const qcData = await db.qCTestResult.findMany({
           where: {
             batch: {
-              production: { 
+              production: {
                 millId: millId || undefined,
                 createdAt: { gte: startDate, lte: endDate }
               }
             }
           },
-          select: { 
-            resultValue: true, 
+          select: {
+            resultValue: true,
             parameter: true,
             status: true,
             createdAt: true
@@ -338,7 +338,7 @@ export async function GET(request: NextRequest) {
           const mills = await db.mill.findMany({
             select: { id: true, name: true, location: true }
           });
-          
+
           const riskScores = await Promise.all(
             mills.map(async (mill) => ({
               millId: mill.id,
@@ -371,7 +371,7 @@ export async function GET(request: NextRequest) {
         const endDate = new Date();
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - timeframe * 2); // Extended timeframe for better analysis
-        
+
         // Get calibration data
         const calibrationData = await db.maintenanceTask.findMany({
           where: {
@@ -392,7 +392,7 @@ export async function GET(request: NextRequest) {
         const qcData = await db.qCTestResult.findMany({
           where: {
             batch: {
-              production: { 
+              production: {
                 millId,
                 createdAt: { gte: startDate, lte: endDate }
               }
@@ -411,7 +411,7 @@ export async function GET(request: NextRequest) {
         });
 
         // Analyze calibration patterns
-        const calibrationFrequency = calibrationData.length > 0 
+        const calibrationFrequency = calibrationData.length > 0
           ? timeframe / (calibrationData.length / 30) // days between calibrations
           : 90; // default
 
@@ -440,7 +440,7 @@ export async function GET(request: NextRequest) {
         // Premix usage recommendations
         const premixVariance = qcData.reduce((acc, test) => {
           const variance = Math.abs(
-            (test.batch.production.premixUsed - test.batch.production.expectedPremixUsage) / 
+            (test.batch.production.premixUsed - test.batch.production.expectedPremixUsage) /
             test.batch.production.expectedPremixUsage * 100
           );
           return acc + variance;
@@ -461,7 +461,7 @@ export async function GET(request: NextRequest) {
         Object.entries(avgQCScores).forEach(([parameter, values]) => {
           const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
           const target = parameter === 'Iron' ? 30 : parameter === 'Vitamin A' ? 15000 : 15; // Example targets
-          
+
           if (avg < target * 0.9) {
             recommendations.push({
               type: 'QUALITY',
