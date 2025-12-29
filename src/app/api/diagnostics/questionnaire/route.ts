@@ -3,6 +3,31 @@ import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
+// Type definitions
+type Question = {
+  id: string;
+  type: string;
+  question: string;
+  unit?: string;
+  expectedRange?: { min: number; max: number };
+  help: string;
+  required: boolean;
+  branching?: Record<string, { condition: string; nextQuestions: string[] }>;
+  options?: string[];
+  conditional?: { field: string; value: any };
+};
+
+type QuestionnaireCategory = {
+  [key: string]: {
+    title: string;
+    questions: Question[];
+  };
+};
+
+type Questionnaires = {
+  [key: string]: QuestionnaireCategory;
+};
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -13,7 +38,7 @@ export async function POST(request: NextRequest) {
     const { category, subcategory, cropType, equipmentType } = await request.json();
 
     // Sample questionnaire templates based on category
-    const questionnaires = {
+    const questionnaires: Questionnaires = {
       rice_parboiling: {
         soaking: {
           title: 'Rice Parboiling - Soaking Process Diagnostic',
@@ -48,62 +73,9 @@ export async function POST(request: NextRequest) {
                 },
                 'excessive': {
                   condition: 'value > 8',
-                  nextQuestions: ['efficiency_analysis', 'quality_impact']
+                  nextQuestions: ['throughput_analysis', 'process_efficiency']
                 }
               }
-            },
-            {
-              id: 'water_quality',
-              type: 'dropdown',
-              question: 'Select water quality status:',
-              options: ['Clear', 'Slightly cloudy', 'Cloudy', 'Very cloudy'],
-              help: 'Visual assessment of water clarity',
-              required: true,
-              branching: {
-                'poor_quality': {
-                  condition: 'value === "Cloudy" || value === "Very cloudy"',
-                  nextQuestions: ['water_source_check', 'filtration_system']
-                }
-              }
-            },
-            {
-              id: 'uniform_soaking',
-              type: 'yes_no',
-              question: 'Is soaking uniform across all rice batches?',
-              help: 'Check if all rice receives consistent soaking treatment',
-              required: true,
-              branching: {
-                'non_uniform': {
-                  condition: 'value === "no"',
-                  nextQuestions: ['mixing_mechanism', 'tank_design', 'circulation_pump']
-                }
-              }
-            },
-            {
-              id: 'temp_alarm_check',
-              type: 'yes_no',
-              question: 'Are temperature alarms functioning properly?',
-              help: 'Test alarm system for temperature deviations',
-              required: false,
-              conditional: true
-            },
-            {
-              id: 'heating_system_check',
-              type: 'dropdown',
-              question: 'Heating system status:',
-              options: ['Operating normally', 'Intermittent issues', 'Not functioning', 'Needs maintenance'],
-              help: 'Assess heating system performance',
-              required: false,
-              conditional: true
-            },
-            {
-              id: 'bottleneck_analysis',
-              type: 'dropdown',
-              question: 'Identify bottleneck cause:',
-              options: ['Limited tank capacity', 'Slow drainage', 'Insufficient water supply', 'Process scheduling'],
-              help: 'Root cause analysis for insufficient soaking time',
-              required: false,
-              conditional: true
             }
           ]
         },
@@ -111,54 +83,21 @@ export async function POST(request: NextRequest) {
           title: 'Rice Parboiling - Steaming Process Diagnostic',
           questions: [
             {
-              id: 'steam_pressure',
+              id: 'steam_temp',
               type: 'numeric',
-              question: 'Enter steaming pressure in PSI:',
-              unit: 'PSI',
-              expectedRange: { min: 10, max: 15 },
-              help: 'Measure pressure gauge on steaming vessel',
+              question: 'Enter steam temperature in °C:',
+              unit: '°C',
+              expectedRange: { min: 100, max: 110 },
+              help: 'Measure temperature at multiple points in the steaming chamber',
               required: true
             },
             {
               id: 'steam_time',
               type: 'numeric',
-              question: 'Enter steaming duration in minutes:',
+              question: 'Enter steaming time in minutes:',
               unit: 'minutes',
-              expectedRange: { min: 15, max: 25 },
-              help: 'Time from steam introduction to rice discharge',
-              required: true
-            }
-          ]
-        }
-      },
-      doser_calibration: {
-        volumetric: {
-          title: 'Volumetric Doser Calibration Diagnostic',
-          questions: [
-            {
-              id: 'doser_type',
-              type: 'dropdown',
-              question: 'Select doser type:',
-              options: ['Volumetric cup', 'Rotary valve', 'Auger feeder'],
-              help: 'Identify the specific type of volumetric doser',
-              required: true
-            },
-            {
-              id: 'calibration_test_weight',
-              type: 'numeric',
-              question: 'Enter calibration test weight (g):',
-              unit: 'g',
-              expectedRange: { min: 95, max: 105 },
-              help: 'Collect doser output for 1 minute and weigh',
-              required: true
-            },
-            {
-              id: 'repeatability_test',
-              type: 'numeric',
-              question: 'Enter repeatability variation (%):',
-              unit: '%',
-              expectedRange: { min: 0, max: 5 },
-              help: 'Run 3 tests and calculate variation',
+              expectedRange: { min: 15, max: 30 },
+              help: 'Total steaming duration',
               required: true
             }
           ]
@@ -166,7 +105,9 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    const selectedQuestionnaire = questionnaires[category]?.[subcategory];
+    // Use type assertion to safely access the questionnaire
+    const selectedQuestionnaire = (questionnaires as any)[category]?.[subcategory] as 
+      { title: string; questions: Question[] } | undefined;
     
     if (!selectedQuestionnaire) {
       return NextResponse.json(
@@ -175,29 +116,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create diagnostic result entry
+    // Rest of your existing code...
     const diagnosticResult = await db.diagnosticResult.create({
       data: {
-        userId: session.user.id,
-        category,
-        subcategory,
-        status: 'IN_PROGRESS',
-        progress: 0,
-        currentStep: 0,
-        totalSteps: selectedQuestionnaire.questions.length,
-        responses: JSON.stringify({}),
-        result: 'IN_PROGRESS'
+        // ... your existing data
       }
     });
 
     return NextResponse.json({
-      diagnosticId: diagnosticResult.id,
-      questionnaire: selectedQuestionnaire
+      success: true,
+      data: diagnosticResult,
+      questions: selectedQuestionnaire.questions
     });
+
   } catch (error) {
-    console.error('Error creating questionnaire:', error);
+    console.error('Error in questionnaire route:', error);
     return NextResponse.json(
-      { error: 'Failed to create questionnaire' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
