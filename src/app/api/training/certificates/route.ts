@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
                 )
             }
 
-            if (progress.status !== 'COMPLETED' || !progress.quizScore || progress.quizScore < 80) {
+            const score = progress.score ?? 0
+            if (progress.status !== 'COMPLETED' || score < 80) {
                 return NextResponse.json(
                     { error: 'Course not completed or quiz score below 80%' },
                     { status: 400 }
@@ -42,19 +43,16 @@ export async function POST(request: NextRequest) {
                 userName: progress.user.name,
                 courseTitle: progress.course.title,
                 completionDate: progress.completedAt,
-                score: progress.quizScore,
+                score: progress.score ?? 0,
                 issuedDate: new Date(),
-                expiryDate: progress.course.certificationValidityDays
-                    ? new Date(Date.now() + progress.course.certificationValidityDays * 24 * 60 * 60 * 1000)
-                    : null
+                expiryDate: null
             }
 
             // Update progress with certificate info
             await prisma.trainingProgress.update({
                 where: { id: progressId },
                 data: {
-                    certificateId,
-                    certificateIssuedAt: new Date()
+                    certificateId
                 }
             })
 
@@ -120,8 +118,8 @@ export async function GET(
             courseTitle: progress.course.title,
             category: progress.course.category,
             completionDate: progress.completedAt,
-            score: progress.quizScore,
-            issuedDate: progress.certificateIssuedAt,
+            score: progress.score ?? 0,
+            issuedDate: progress.completedAt,
             status: 'VALID' // Could add expiry logic here
         }
 
