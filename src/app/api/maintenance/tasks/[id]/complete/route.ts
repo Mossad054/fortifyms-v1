@@ -74,24 +74,36 @@ export async function POST(
                     }
                 })
 
-                // Create next calibration task if recurring
-                if (task.recurrence) {
-                    const nextDueDate = new Date()
-                    nextDueDate.setDate(nextDueDate.getDate() + task.recurrence)
+                // Create next calibration task based on frequency
+                if (task.frequency) {
+                    const frequencyMap: Record<string, number> = {
+                        DAILY: 1,
+                        WEEKLY: 7,
+                        MONTHLY: 30,
+                        QUARTERLY: 90,
+                        YEARLY: 365
+                    }
+                    const daysOffset = frequencyMap[task.frequency] ?? 0
+                    if (daysOffset > 0) {
+                        const nextScheduledDate = new Date()
+                        nextScheduledDate.setDate(nextScheduledDate.getDate() + daysOffset)
 
-                    await prisma.maintenanceTask.create({
-                        data: {
-                            equipmentId: task.equipmentId,
-                            millId: task.millId,
-                            type: task.type,
-                            title: task.title,
-                            description: task.description,
-                            dueDate: nextDueDate,
-                            priority: task.priority,
-                            status: 'PENDING',
-                            recurrence: task.recurrence
-                        }
-                    })
+                        await prisma.maintenanceTask.create({
+                            data: {
+                                equipmentId: task.equipmentId,
+                                millId: task.millId,
+                                type: task.type,
+                                title: task.title,
+                                description: task.description,
+                                scheduledDate: nextScheduledDate,
+                                scheduledTime: nextScheduledDate,
+                                priority: task.priority,
+                                status: 'SCHEDULED',
+                                assignedTo: task.assignedTo,
+                                createdBy: userProfile.id
+                            }
+                        })
+                    }
                 }
             }
 
