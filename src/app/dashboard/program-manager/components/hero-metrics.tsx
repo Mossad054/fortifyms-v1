@@ -207,7 +207,12 @@ export function HeroMetrics() {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
                                 <XAxis dataKey="month" axisLine={false} tickLine={false} />
                                 <YAxis axisLine={false} tickLine={false} tickFormatter={(value) => formatNumber(value)} />
-                                <Tooltip formatter={(value: number) => formatNumber(value) + ' kg'} />
+                                <Tooltip
+                                    formatter={(value: number | string | undefined) => {
+                                        const num = typeof value === 'number' ? value : Number(value ?? 0)
+                                        return `${formatNumber(num)} kg`
+                                    }}
+                                />
                                 <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4 }} />
                             </LineChart>
                         </ResponsiveContainer>

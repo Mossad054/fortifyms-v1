@@ -14,7 +14,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import {
-    MapPin, Building2, School, Hospital, Package, Layers,
+    MapPin, Building2, School, Package, Layers,
     ZoomIn, ZoomOut, Maximize2, Download, Filter
 } from 'lucide-react'
 

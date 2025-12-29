@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
     ShieldCheck, AlertTriangle, MapPin, Calendar,
-    ChevronRight, Activity, TrendingUp, LayoutDashboard, FileText, list, ClipboardCheck, Building2, Zap, Plus
+    ChevronRight, Activity, TrendingUp, LayoutDashboard, FileText, ClipboardCheck, Building2, Zap, Plus
 } from 'lucide-react'
 import { ScheduleView, AuditsView, FlagsView } from './views'
 import { InspectorReporting } from './components/inspector-reporting'
@@ -41,7 +41,7 @@ export default function InspectorDashboard() {
                         View Map
                     </Button>
                     <Button onClick={() => setShowInspectionWizard(true)} className="bg-zinc-900 text-white hover:bg-zinc-800">
-                        <fileText className="w-4 h-4 mr-2" />
+                        <FileText className="w-4 h-4 mr-2" />
                         New Audit
                     </Button>
                 </div>

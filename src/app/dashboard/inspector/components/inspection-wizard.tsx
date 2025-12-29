@@ -39,6 +39,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
             if (found) item = found
         })
         if (!item) return
+        const itemWeight = item.weight || 0
 
         if (value === 'N/A') {
             setResponses(prev => ({
@@ -49,7 +50,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
                     value: 'N/A',
                     isNA: true,
                     score: 0,
-                    maxScore: item.weight || 0,
+                    maxScore: itemWeight,
                     isNonCompliant: false,
                     flagLevel: 'None'
                 }
@@ -61,7 +62,7 @@ export function InspectionWizard({ open, onOpenChange }: InspectionWizardProps) 
         let flagLevel: 'Red' | 'Yellow' | 'None' = 'None'
         let score = 0
         let deviationPercent = 0
-        const maxScore = item.weight || 0
+        const maxScore = itemWeight
 
         // 1. Numeric Scoring (Sliding Scale)
         if (item.type === 'Numeric' && item.numericConfig && typeof value === 'number') {

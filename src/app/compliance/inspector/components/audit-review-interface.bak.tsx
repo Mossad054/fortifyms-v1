@@ -205,8 +205,8 @@ export function AuditReviewInterface({ auditId, onBack }: AuditReviewInterfacePr
                                         </div>
                                     </div>
                                     <div className="p-3 text-xs text-gray-600 border-t bg-white">
-                                        <div className="font-semibold mb-1">Evidence for Item {Object.keys(responses).find(k => responses[k].evidence?.includes(ev))}</div>
-                                        {ev.notes}
+                                        <div className="font-semibold mb-1">Evidence for Item {ev.itemId}</div>
+                                        {responses[ev.itemId]?.notes || ''}
                                     </div>
                                 </Card>
                             ))}

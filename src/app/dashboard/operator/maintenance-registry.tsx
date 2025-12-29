@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Plus, Search, Settings, Wrench, Calendar, MoreHorizontal, ArrowLeft, Trash2, Save, Clock } from 'lucide-react'
+import { Plus, Search, Settings, Wrench, Calendar, MoreHorizontal, ArrowLeft, Trash2, Save, Clock, FileText } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // --- TYPES ---

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import * as React from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -29,7 +29,7 @@ const CopyButton = ({ value, label }: { value: string, label: string }) => {
         setTimeout(() => setCopied(false), 2000)
     }
 
-    return (
+return (
         <button
             onClick={handleCopy}
             className="group flex items-center gap-1 text-[10px] font-bold text-[hsl(165,40%,45%)] hover:text-orange transition-all px-1.5 py-0.5 rounded bg-white border border-zinc-200 hover:border-orange/30 shadow-sm"
@@ -85,7 +85,7 @@ const DemoAccountsCard = () => (
     </Card>
 )
 
-export default function AuthPage() {
+function AuthPageInner() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [loading, setLoading] = React.useState(false)
@@ -462,7 +462,7 @@ export default function AuthPage() {
                     <CardFooter className="flex flex-col space-y-2 text-center text-sm">
                         <div className="text-[hsl(165,40%,35%)]">
                             <Link href="/" className="underline text-[hsl(165,72%,14%)] hover:text-[hsl(165,72%,18%)] font-medium">
-                                ← Back to home
+                                â† Back to home
                             </Link>
                         </div>
                     </CardFooter>
@@ -499,4 +499,12 @@ export default function AuthPage() {
             </div>
         </div>
     )
+}
+
+export default function AuthPage() {
+  return (
+    <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+      <AuthPageInner />
+    </React.Suspense>
+  )
 }

@@ -10,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, Beaker, Save } from 'lucide-react'
 
-export default function QCTestEntryPage() {
+function QCTestEntryPageInner() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const batchIdParam = searchParams.get('batchId')
@@ -294,5 +294,13 @@ export default function QCTestEntryPage() {
                 </CardContent>
             </Card>
         </div>
+    )
+}
+
+export default function QCTestEntryPage() {
+    return (
+        <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+            <QCTestEntryPageInner />
+        </React.Suspense>
     )
 }

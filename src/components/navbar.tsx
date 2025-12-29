@@ -52,7 +52,7 @@ export default function Navbar() {
     if (pathname === '/login' || pathname === '/register' || pathname === '/auth' || pathname === '/') return null
 
     return (
-        <nav className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/60 backdrop-blur-xl">
+        <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-primary/95 backdrop-blur-md shadow-sm">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -60,7 +60,7 @@ export default function Navbar() {
                             <div className="h-8 w-8 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center">
                                 <img src="/icon.JPG" alt="Fortify Logo" className="w-full h-full object-cover" />
                             </div>
-                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 hidden sm:block">
+                            <span className="text-xl font-semibold text-white hidden sm:block">
                                 Fortifymis
                             </span>
                         </Link>
@@ -77,7 +77,7 @@ export default function Navbar() {
                             {user ? (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="relative h-12 w-12 rounded-full hover:bg-white/50">
+                                        <Button variant="ghost" className="relative h-12 w-12 rounded-full hover:bg-white/10">
                                             <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 border-2 border-green-200 text-lg font-bold">
                                                 {user.email?.charAt(0).toUpperCase()}
                                             </div>
@@ -137,11 +137,11 @@ export default function Navbar() {
 
             {/* Mobile menu */}
             {isMenuOpen && (
-                <div className="md:hidden bg-white/90 backdrop-blur-md border-b">
+                <div className="md:hidden bg-primary/95 backdrop-blur-md border-b border-white/10">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         {/* Mobile links */}
                     </div>
-                    <div className="pt-4 pb-4 border-t border-gray-200">
+                    <div className="pt-4 pb-4 border-t border-white/10">
                         {user ? (
                             <div className="flex items-center px-5">
                                 <div className="flex-shrink-0">
@@ -150,8 +150,8 @@ export default function Navbar() {
                                     </div>
                                 </div>
                                 <div className="ml-3">
-                                    <div className="text-base font-medium leading-none text-gray-800">{user.email}</div>
-                                    <div className="text-sm font-medium leading-none text-gray-500 mt-1">{user.user_metadata?.role}</div>
+                                    <div className="text-base font-medium leading-none text-white">{user.email}</div>
+                                    <div className="text-sm font-medium leading-none text-white/70 mt-1">{user.user_metadata?.role}</div>
                                 </div>
                                 <Button variant="ghost" size="icon" className="ml-auto text-red-600" onClick={handleSignOut}>
                                     <LogOut className="h-5 w-5" />

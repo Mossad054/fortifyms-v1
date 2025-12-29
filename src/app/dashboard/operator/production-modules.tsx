@@ -41,7 +41,7 @@ const QC_TESTS = [
 
 // ... imports (retaining existing imports, added new ones)
 import {
-    ProductionBatch, QCResult, PREMIX_TYPES, PACKAGING_TYPES,
+    ProductionBatch, QCResult, QCStatus, PREMIX_TYPES, PACKAGING_TYPES,
     RawMaterial, FortificationSettings, EquipmentSettings
 } from './production-types'
 

@@ -182,7 +182,7 @@ export function SelfAuditModal({ open, onOpenChange }: SelfAuditModalProps) {
                                                 <div className="pt-2 border-t">
                                                     <Button variant="outline" size="sm" className="w-full border-dashed text-zinc-500 gap-2 h-10 hover:bg-[#0A3225]/5 hover:text-[#0A3225] hover:border-[#0A3225]/20">
                                                         <Camera className="w-4 h-4" />
-                                                        {responses[item.id]?.evidenceUrls ? 'Evidence Attached' : 'Capture Required Evidence'}
+                                                        {(responses[item.id]?.evidence?.length ?? 0) > 0 ? 'Evidence Attached' : 'Capture Required Evidence'}
                                                     </Button>
                                                 </div>
                                             )}

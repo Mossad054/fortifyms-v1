@@ -178,7 +178,7 @@ export function MaintenanceModule({ initialMode = 'dashboard', initialTaskType }
                     <MaintenanceApproval
                         tasks={tasks}
                         onApprove={(id, notes) => handleCompleteTask(id, notes, 'Completed')} // Use Completed for approve for now
-                        onReject={(id, notes) => handleCompleteTask(id, notes, 'Pending')} // Revert to pending
+                        onReject={(id, notes) => handleCompleteTask(id, notes, 'Escalated')} // Escalate rejected tasks for follow-up
                     />
                 )}
             </AnimatePresence>
