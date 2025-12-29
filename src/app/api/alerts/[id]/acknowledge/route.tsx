@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
+import { UserRole } from '@prisma/client';
 
 const acknowledgeAlertSchema = z.object({
   userId: z.string(),
@@ -201,15 +202,15 @@ async function triggerEscalation(alertId: string, reason: string, notes?: string
   const nextLevel = currentLevel + 1;
 
   // Define escalation paths based on alert type
-  const escalationPaths = {
+  const escalationPaths: Record<string, Array<{ role: UserRole; delay: number }>> = {
     QC_FAILURE: [
-      { role: 'MILL_MANAGER', delay: 2 * 60 * 60 * 1000 }, // 2 hours
-      { role: 'INSPECTOR', delay: 24 * 60 * 60 * 1000 }, // 24 hours
-      { role: 'PROGRAM_MANAGER', delay: 72 * 60 * 60 * 1000 } // 72 hours
+      { role: UserRole.MILL_MANAGER, delay: 2 * 60 * 60 * 1000 }, // 2 hours
+      { role: UserRole.INSPECTOR, delay: 24 * 60 * 60 * 1000 }, // 24 hours
+      { role: UserRole.PROGRAM_MANAGER, delay: 72 * 60 * 60 * 1000 } // 72 hours
     ],
     CRITICAL_NON_COMPLIANCE: [
-      { role: 'INSPECTOR', delay: 24 * 60 * 60 * 1000 }, // 24 hours
-      { role: 'PROGRAM_MANAGER', delay: 72 * 60 * 60 * 1000 } // 72 hours
+      { role: UserRole.INSPECTOR, delay: 24 * 60 * 60 * 1000 }, // 24 hours
+      { role: UserRole.PROGRAM_MANAGER, delay: 72 * 60 * 60 * 1000 } // 72 hours
     ],
     // Add other alert types as needed
   };
@@ -224,7 +225,7 @@ async function triggerEscalation(alertId: string, reason: string, notes?: string
     where: {
       role: nextRecipient.role,
       isActive: true,
-      ...(alert.millId && nextRecipient.role !== 'INSPECTOR' && nextRecipient.role !== 'PROGRAM_MANAGER'
+      ...(alert.millId && nextRecipient.role !== UserRole.INSPECTOR && nextRecipient.role !== UserRole.PROGRAM_MANAGER
         ? { millId: alert.millId }
         : {})
     }
